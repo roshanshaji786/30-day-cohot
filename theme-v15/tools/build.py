@@ -28,7 +28,7 @@ SKIP_NAMES = {".DS_Store", "Thumbs.db"}
 def theme_root():
     here = os.path.dirname(os.path.abspath(__file__))
     for candidate in (os.path.dirname(here),
-                      os.path.join(os.path.dirname(here), "theme-v14")):
+                      os.path.join(os.path.dirname(here), "theme-v15")):
         if os.path.exists(os.path.join(candidate, "config", "settings_schema.json")):
             return candidate
     raise SystemExit("Could not find the theme folder. Pass it as the first argument.")
@@ -37,7 +37,7 @@ def theme_root():
 def main():
     theme = (sys.argv[1] if len(sys.argv) > 1 else theme_root()).rstrip("/")
     out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(
-        os.path.dirname(theme) or ".", "ai-shopify-business-bootcamp-v14.zip")
+        os.path.dirname(theme) or ".", "ai-shopify-business-bootcamp-v15.zip")
 
     print("==", "verify".upper(), "=" * 46)
     result = subprocess.run([sys.executable, os.path.join(theme, "tools/verify.py"), theme])
@@ -52,6 +52,16 @@ def main():
         raise SystemExit("\nBuild aborted: the rendered page did not pass the visual gate.\n"
                          "Screenshots for inspection: "
                          + os.environ.get("RENDER_OUT", "/tmp/theme-render") + "/shots")
+
+    print("\n==", "resilience".upper(), "=" * 40)
+    print("  confirming the page still renders if the :root token block is lost")
+    resilience = subprocess.run([sys.executable, os.path.join(theme, "tools/render_check.py"),
+                                 "--no-vars"],
+                                env=dict(os.environ, PYTHONPATH=os.environ.get(
+                                    "PYTHONPATH", "/home/user/pylibs")))
+    if resilience.returncode != 0:
+        raise SystemExit("\nBuild aborted: the theme does not survive a lost token block.\n"
+                         "Add literal fallbacks to the var() declarations in assets/theme.css.")
 
     print("\n==", "package".upper(), "=" * 45)
     files = 0

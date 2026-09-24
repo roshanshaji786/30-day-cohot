@@ -13,7 +13,7 @@ And it still rendered in the merchant's real store as **Times New Roman text wit
 transparent buttons and invisible cards**.
 
 The reason is worth remembering: the syntax error sat in the `<head>` render
-chain, so `snippets/css-variables.liquid` never emitted its `:root` block.
+chain, so the `:root` token block never reached the page.
 Without those custom properties every `var()` in `assets/theme.css` was invalid
 at computed-value time, and the whole storefront silently fell back to browser
 defaults. Nothing in the stylesheet was broken — the link in the chain was.

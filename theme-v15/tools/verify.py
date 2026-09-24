@@ -245,6 +245,74 @@ def check_shopify_syntax(theme):
         ok(f"Shopify syntax traps: {len(files)} files clean (braces, parens, phantom objects)")
 
 
+# --------------------------------------- check 1c: theme token sync + fallbacks
+def custom_properties(src):
+    """Every `--name:` declaration in a source file, e.g. from :root{}."""
+    return set(re.findall(r"(--[a-z0-9-]+)\s*:", src))
+
+
+def check_theme_tokens(theme):
+    """Every var() in the stylesheet must carry a literal fallback, and the token
+    block inlined in layout/theme.liquid must match snippets/css-variables.liquid.
+
+    Both rules come from the live-store outage: the storefront rendered as
+    unstyled Times New Roman because `:root` never reached the page, and 422
+    var() declarations had no fallback to fall back to. A theme must degrade to
+    its intended look, not to browser defaults.
+    """
+    css_path = os.path.join(theme, "assets/theme.css")
+    if not os.path.exists(css_path):
+        fail("tokens", "assets/theme.css is missing")
+        return
+    css = read(css_path)
+
+    bare = sorted(set(re.findall(r"var\((--[a-z0-9-]+)\)", css)))
+    if bare:
+        fail("tokens", f"{len(bare)} var() declaration(s) have no fallback, so the page "
+                       f"degrades to browser defaults if :root is missing: {bare[:8]}")
+
+    # Every layout must carry the token block: theme.liquid, password.liquid and
+    # gift_card.liquid each serve a different <head>, and none of them may depend
+    # on a snippet render for the page to look right.
+    layouts = {}
+    for name in ("layout/theme.liquid", "layout/password.liquid", "layout/gift_card.liquid"):
+        path = os.path.join(theme, name)
+        if os.path.exists(path):
+            layouts[name] = custom_properties(read(path))
+
+    missing_layouts = [n for n in ("layout/theme.liquid", "layout/password.liquid",
+                                   "layout/gift_card.liquid")
+                       if n not in layouts or "--c-accent" not in layouts[n]]
+    if missing_layouts:
+        fail("tokens", f"these layouts are missing the design-token block entirely "
+                       f"(their pages would render unstyled): {missing_layouts}")
+
+    if layouts:
+        reference = layouts.get("layout/theme.liquid", next(iter(layouts.values())))
+        for name, tokens in layouts.items():
+            gap = reference - tokens
+            if gap:
+                fail("tokens", f"{name} is missing token(s) present in theme.liquid: {sorted(gap)[:8]}")
+        notes.append(f"Theme tokens: {len(reference)} inlined in {len(layouts)} layout(s), "
+                     f"all var() declarations carry fallbacks")
+
+    # A var() may legitimately be defined locally (a rule that sets its own token,
+    # e.g. .btn{--btn-bg:...}) or injected inline from a section's style attribute
+    # (--media-ratio). Only flag tokens nothing defines at all.
+    locally_defined = custom_properties(css)
+    inline_defined = set()
+    for path in glob.glob(os.path.join(theme, "**/*.liquid"), recursive=True):
+        for value in re.findall(r"style=\"([^\"]*)\"", read(path)):
+            inline_defined |= custom_properties(value)
+    used = set(re.findall(r"var\((--[a-z0-9-]+)\s*,", css))
+    all_layout_tokens = set()
+    for name in layouts:
+        all_layout_tokens |= layouts[name]
+    undefined = used - all_layout_tokens - locally_defined - inline_defined
+    if undefined:
+        fail("tokens", f"var() fallbacks reference tokens nothing defines: {sorted(undefined)[:8]}")
+
+
 # ------------------------------------------- check 2/3/4: schemas + references
 def check_schemas_and_refs(theme):
     section_files = sorted(glob.glob(os.path.join(theme, "sections/*.liquid")))
@@ -512,10 +580,10 @@ def check_js(theme):
 
 
 def default_theme():
-    """Use the parent of tools/ when it looks like a theme, else look for theme-v14."""
+    """Use the parent of tools/ when it looks like a theme, else look for theme-v15."""
     here = os.path.dirname(os.path.abspath(__file__))
     for candidate in (os.path.dirname(here),
-                      os.path.join(os.path.dirname(here), "theme-v14")):
+                      os.path.join(os.path.dirname(here), "theme-v15")):
         if os.path.exists(os.path.join(candidate, "config", "settings_schema.json")):
             return candidate
     return "."
@@ -527,6 +595,7 @@ def main():
     print(f"Verifying {theme}\n")
     check_parse(theme)
     check_shopify_syntax(theme)
+    check_theme_tokens(theme)
     check_schemas_and_refs(theme)
     check_locales(theme)
     check_links(theme)

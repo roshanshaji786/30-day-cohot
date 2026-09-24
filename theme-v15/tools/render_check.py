@@ -7,12 +7,12 @@ Why this exists
 Static checks are not enough. A theme can parse cleanly, have zero dead links and
 100% CSS-class coverage and still render as unstyled Times New Roman in a merchant's
 real store. That is exactly what happened once: a Liquid syntax error in the <head>
-aborted the render chain, snippets/css-variables.liquid never emitted the :root
+aborted the render chain, the :root token block never reached the page
 block, and every var() in the stylesheet collapsed to its fallback.
 
 So this tool does what a merchant actually does:
 
-  1. renders layout/theme.liquid behaviour -- css-variables, jsonld, header group,
+  1. renders layout/theme.liquid behaviour -- tokens, jsonld, header group,
      JSON template sections, footer group -- through a real Liquid engine,
   2. writes the page next to the real assets/theme.css and theme.js,
   3. loads every page in a REAL headless Chromium at 1280px AND 390px,
@@ -24,7 +24,7 @@ So this tool does what a merchant actually does:
 
 Exit code is non-zero on any failure, and tools/build.py refuses to package a zip.
 
-Run:  PYTHONPATH=/home/user/pylibs python3 theme-v14/tools/render_check.py
+Run:  PYTHONPATH=/home/user/pylibs python3 theme-v15/tools/render_check.py
 """
 
 import glob
@@ -537,6 +537,15 @@ const cfg = JSON.parse(process.argv[2]);
           let rules; try { rules = sheet.cssRules; } catch (e) { continue; }
           const walk = list => {
             for (const r of Array.from(list || [])) {
+              // skip @media blocks that do not match this viewport, and @supports
+              // that do not apply -- otherwise their :root rules are counted as
+              // "defined but empty" when they simply never applied.
+              if (r.conditionText !== undefined) {
+                if (r.constructor.name === 'CSSMediaRule'
+                    && !window.matchMedia(r.conditionText).matches) continue;
+                if (r.constructor.name === 'CSSSupportsRule'
+                    && !CSS.supports(r.conditionText)) continue;
+              }
               if (r.style && r.selectorText !== undefined) {
                 for (const prop of Array.from(r.style)) {
                   if (!prop.startsWith('--')) continue;
@@ -689,6 +698,12 @@ def run_browser(pages, shotdir, report_path):
 PAGES = ["index", "product", "collection", "cart", "page", "search", "list-collections",
          "blog", "article", "404", "password"]
 
+# Simulate the live-store outage: the storefront rendered as unstyled Times New
+# Roman because the :root token block never reached the page. --no-vars strips it
+# from the rendered HTML so the stylesheet has to stand on its own fallbacks.
+# If the theme can survive that, this class of outage can never take the store down.
+STRIP_THEME_VARS = "--no-vars" in sys.argv
+
 
 def main():
     print("Rendering the theme in a real browser\n")
@@ -700,7 +715,9 @@ def main():
     from liquid import Environment, FileSystemLoader
 
     os.makedirs(OUT, exist_ok=True)
-    shotdir = os.path.join(OUT, "shots")
+    # In resilience mode write elsewhere BEFORE wiping anything, otherwise the
+    # --no-vars run deletes the normal run's screenshots.
+    shotdir = os.path.join(OUT, "shots-no-vars" if STRIP_THEME_VARS else "shots")
     shutil.rmtree(shotdir, ignore_errors=True)
     os.makedirs(shotdir, exist_ok=True)
 
@@ -761,6 +778,15 @@ def main():
                 fail(f"jsonld on {name}: invalid JSON -- {error}")
     ok("JSON-LD: parses as valid JSON on index + product")
 
+    if STRIP_THEME_VARS:
+        print("  · --no-vars: stripping the :root token block to test fallback resilience")
+        for entry in pages:
+            html = read(entry["file"])
+            stripped = re.sub(r"<style>.*?</style>",
+                              "<style>/* tokens removed for the resilience run */</style>",
+                              html, count=1, flags=re.S)
+            with open(entry["file"], "w", encoding="utf-8") as fh:
+                fh.write(stripped)
     report, error = run_browser(pages, shotdir, os.path.join(OUT, "report.json"))
     if error:
         fail(f"browser run failed -- {error}")
@@ -774,19 +800,22 @@ def main():
             fail(f"{tag}: a Liquid error is visible on the rendered page")
         if p["missingStrings"]:
             fail(f"{tag}: missing translations rendered: {p['missingStrings']}")
-        if p["varDefined"] == 0:
+        if p["varDefined"] == 0 and not STRIP_THEME_VARS:
             fail(f"{tag}: no theme custom properties were emitted -- "
-                 "css-variables.liquid did not reach the page")
+                 "the token block did not reach the page")
+        visual_only = STRIP_THEME_VARS  # in resilience mode, missing tokens are the setup, not the bug
+        if visual_only and p["varDefined"] == 0:
+            pass  # expected
         if p.get("stillHidden"):
             fail(f"{tag}: scroll-reveal content never became visible "
                  f"({len(p['stillHidden'])} element(s)): {p['stillHidden'][:3]}")
         if p["strayDialogs"]:
             fail(f"{tag}: closed <dialog> is still rendered (missing a "
                  f":not([open]){{display:none}} guard): {p['strayDialogs']}")
-        if p["emptyVars"]:
+        if p["emptyVars"] and not STRIP_THEME_VARS:
             fail(f"{tag}: custom properties defined but EMPTY (var() fallbacks will not "
                  f"apply and the theme reverts to browser defaults): {p['emptyVars']}")
-        if not p["fontBody"]:
+        if not p["fontBody"] and not STRIP_THEME_VARS:
             fail(f"{tag}: --font-body is missing -- the theme font stack did not reach the page")
         if p["varUndefined"]:
             fail(f"{tag}: stylesheet uses undefined custom properties: {p['varUndefined']}")
@@ -816,7 +845,8 @@ def main():
         fail(f"pages rendered suspiciously short (likely nothing rendered): {empty}")
 
     if not problems:
-        ok(f"Browser: {desktop} page types \u00d7 2 viewports rendered clean")
+        mode = " (tokens stripped)" if STRIP_THEME_VARS else ""
+        ok(f"Browser: {desktop} page types \u00d7 2 viewports rendered clean{mode}")
         ok("Visual assertions: fonts, custom properties, buttons, card surfaces, overflow")
         total_vars = report["pages"][0]["probe"]["varDefined"]
         ok(f"Theme custom properties live on the page: {total_vars}")

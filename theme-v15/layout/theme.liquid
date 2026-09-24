@@ -1,0 +1,134 @@
+<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}">
+<head>
+  <!-- Bootcamp theme v15.0.0 · 2026-09-24 · every CSS variable now carries a literal
+       fallback, so the storefront cannot render unstyled. Token block is inlined.
+       To confirm which version is live: right-click the storefront → View page
+       source → search this file for "Bootcamp theme v". -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="{{ settings.color_dark }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {%- if settings.favicon != blank -%}
+    <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+  {%- endif -%}
+
+  <title>
+    {{- page_title -}}
+    {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t }} {{ current_page }}{% endif -%}
+    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+  </title>
+
+  {%- render 'meta-tags' -%}
+
+  {%- comment -%} Theme tokens. Inline on purpose: this is the shape Shopify's own
+      Dawn theme uses, and it must never depend on a snippet render succeeding,
+      because every var() in theme.css reads from here. {%- endcomment -%}
+  {%- liquid
+    assign heading_font = settings.type_heading_font
+    assign heading_font_bold = heading_font | font_modify: 'weight', 'bold'
+    assign heading_font_black = heading_font | font_modify: 'weight', 'bolder'
+    assign body_font = settings.type_body_font
+    assign body_font_bold = body_font | font_modify: 'weight', 'bold'
+    assign body_font_italic = body_font | font_modify: 'style', 'italic'
+
+    # A custom property that exists but is EMPTY is not "undefined": var() will not
+    # use its fallback, and the declaration becomes invalid at computed-value time.
+    # An empty --font-body therefore silently reverts the whole storefront to the
+    # browser's serif default. Never let these be empty.
+    assign heading_family = heading_font.family | default: 'Assistant'
+    assign heading_fallback = heading_font.fallback_families | default: 'sans-serif'
+    assign body_family = body_font.family | default: 'Assistant'
+    assign body_fallback = body_font.fallback_families | default: 'sans-serif'
+  -%}
+  {% style %}
+    {{ heading_font | font_face: font_display: 'swap' }}
+    {{ heading_font_bold | font_face: font_display: 'swap' }}
+    {{ heading_font_black | font_face: font_display: 'swap' }}
+    {{ body_font | font_face: font_display: 'swap' }}
+    {{ body_font_bold | font_face: font_display: 'swap' }}
+    {{ body_font_italic | font_face: font_display: 'swap' }}
+
+    :root{
+      --font-heading: {{ heading_family }}, {{ heading_fallback }};
+      --font-body: {{ body_family }}, {{ body_fallback }};
+      --heading-scale: {{ settings.heading_scale | divided_by: 100.0 }};
+      --body-scale: {{ settings.body_scale | divided_by: 100.0 }};
+
+      --c-bg: {{ settings.color_bg }};
+      --c-surface: {{ settings.color_surface }};
+      --c-ink: {{ settings.color_ink }};
+      --c-muted: {{ settings.color_muted }};
+      --c-line: {{ settings.color_line }};
+      --c-accent: {{ settings.color_accent }};
+      --c-on-accent: {{ settings.color_on_accent }};
+      --c-dark: {{ settings.color_dark }};
+      --c-on-dark: {{ settings.color_on_dark }};
+
+      --page-width: {{ settings.page_width }}px;
+      --section-space: {{ settings.section_spacing }}px;
+      --radius: {{ settings.corner_radius }}px;
+      --radius-sm: {{ settings.corner_radius | divided_by: 2 | at_least: 4 }}px;
+      --radius-lg: {{ settings.corner_radius | times: 1.4 | round }}px;
+      --header-h: 66px;
+    --logo-w: {{ settings.logo_width | default: 130 }}px;
+
+      --shadow-sm: 0 1px 2px rgba(16, 16, 32, .06), 0 2px 8px rgba(16, 16, 32, .04);
+      --shadow-md: 0 8px 24px rgba(16, 16, 32, .08), 0 2px 6px rgba(16, 16, 32, .04);
+      --shadow-lg: 0 24px 64px rgba(16, 16, 32, .14);
+    }
+  {% endstyle %}
+
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+
+  <noscript>
+    <style>
+      :root{--c-bg:#ffffff;--c-surface:#f6f5fb;--c-ink:#12121a;--c-muted:#55555f;
+        --c-line:#e7e5f0;--c-accent:#4f2fd6;--c-on-accent:#ffffff;--c-dark:#12121a;
+        --c-on-dark:#f5f4fa;--radius:18px;--radius-sm:9px;--radius-lg:25px;
+        --page-width:1200px;--section-space:88px;--header-h:66px}
+    </style>
+  </noscript>
+
+
+  <script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
+  {{ content_for_header }}
+  {%- render 'jsonld' -%}
+</head>
+
+<body class="tpl-{{ template.name | handleize }}{%- if template.suffix %} tpl-{{ template.name | handleize }}-{{ template.suffix | handleize }}{% endif %}">
+  <a class="skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+  {% sections 'header-group' %}
+
+  <main id="MainContent" class="main" role="main" tabindex="-1">
+    {{ content_for_layout }}
+  </main>
+
+  {% sections 'footer-group' %}
+
+  {%- if settings.sticky_buy_bar -%}
+    {% section 'sticky-buy-bar' %}
+  {%- endif -%}
+
+  {%- if settings.cart_drawer_enabled -%}
+    {% section 'cart-drawer' %}
+  {%- endif -%}
+
+  <div class="sr-only" aria-live="polite" aria-atomic="true" id="a11y-status"></div>
+
+  <script>
+    window.themeStrings = {
+      moneyFormat: {{ shop.money_format | json }},
+      addToCart: {{ 'products.product.add_to_cart' | t | json }},
+      soldOut: {{ 'products.product.sold_out' | t | json }},
+      added: {{ 'products.product.added' | t | json }},
+      cartError: {{ 'general.accessibility.error' | t | json }},
+      rootUrl: {{ routes.root_url | json }}
+    };
+  </script>
+  <script src="{{ 'theme.js' | asset_url }}" defer></script>
+</body>
+</html>
