@@ -2,9 +2,15 @@
 """
 Package the theme for Shopify upload.
 
-  1. runs tools/verify.py (aborts the build if anything fails)
-  2. zips only the folders Shopify expects, so the archive uploads cleanly
-  3. prints the file size, file count and SHA-256 of the archive
+  1. runs tools/verify.py (static checks) -- aborts the build if anything fails
+  2. runs tools/render_check.py (real headless browser render + screenshots)
+     -- aborts the build if the theme does not visibly render correctly
+  3. zips only the folders Shopify expects, so the archive uploads cleanly
+  4. prints the file size, file count and SHA-256 of the archive
+
+Step 2 exists because a theme once passed every static check and still rendered
+as unstyled Times New Roman in a live store. A file is not shipped until it has
+been seen rendering in a browser.
 
 Usage:  python3 tools/build.py [theme_dir] [output_zip]
 """
@@ -37,6 +43,15 @@ def main():
     result = subprocess.run([sys.executable, os.path.join(theme, "tools/verify.py"), theme])
     if result.returncode != 0:
         raise SystemExit("\nBuild aborted: fix the problems above and re-run.")
+
+    print("\n==", "render".upper(), "=" * 46)
+    render = subprocess.run([sys.executable, os.path.join(theme, "tools/render_check.py")],
+                            env=dict(os.environ, PYTHONPATH=os.environ.get(
+                                "PYTHONPATH", "/home/user/pylibs")))
+    if render.returncode != 0:
+        raise SystemExit("\nBuild aborted: the rendered page did not pass the visual gate.\n"
+                         "Screenshots for inspection: "
+                         + os.environ.get("RENDER_OUT", "/tmp/theme-render") + "/shots")
 
     print("\n==", "package".upper(), "=" * 45)
     files = 0

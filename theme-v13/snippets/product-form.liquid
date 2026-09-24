@@ -6,6 +6,14 @@
   assign pf_section = section_id | default: section.id
   assign current_variant = product.selected_or_first_available_variant
   assign qty_default = show_quantity | default: true
+
+  # Filter precedence: `button_label | default: 'key' | t` applies `t` to the
+  # RESULT of default, so a merchant who sets a button label gets
+  # "Translation missing: en.Enrol now" on the primary CTA. Resolve separately.
+  assign cta_label = button_label
+  if cta_label == blank
+    assign cta_label = 'products.product.add_to_cart' | t
+  endif
 -%}
 <product-form class="product-form" data-cart-type="{% if settings.cart_drawer_enabled %}drawer{% else %}page{% endif %}">
   {%- form 'product', product, id: pf_id, class: 'product-form__inner', novalidate: 'novalidate' -%}
@@ -53,13 +61,13 @@
         type="submit"
         name="add"
         class="btn btn--primary btn--lg btn--block product-form__submit"
-        data-label-add="{{ 'products.product.add_to_cart' | t }}"
+        data-label-add="{{ cta_label }}"
         data-label-sold-out="{{ 'products.product.sold_out' | t }}"
         data-label-adding="{{ 'products.product.adding' | t }}"
         {% unless current_variant.available %}disabled{% endunless %}
       >
         <span data-form-status>
-          {%- if current_variant.available -%}{{ button_label | default: 'products.product.add_to_cart' | t }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+          {%- if current_variant.available -%}{{ cta_label }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
         </span>
       </button>
       {%- if show_dynamic_checkout -%}

@@ -1,10 +1,14 @@
 {%- comment -%} Accepts: id_suffix, placeholder, autofocus {%- endcomment -%}
 {%- assign form_id = 'SearchForm' | append: id_suffix -%}
+{%- assign field_placeholder = placeholder -%}
+{%- if field_placeholder == blank -%}
+  {%- assign field_placeholder = 'general.search.placeholder' | t -%}
+{%- endif -%}
 <form class="search-form" action="{{ routes.search_url }}" method="get" role="search">
   <label class="visually-hidden" for="{{ form_id }}">{{ 'general.search.title' | t }}</label>
   <input type="search" id="{{ form_id }}" name="q" class="search-form__input"
     value="{{ search.terms | escape }}"
-    placeholder="{{ placeholder | default: 'general.search.placeholder' | t }}"
+    placeholder="{{ field_placeholder | escape }}"
     {% if autofocus %}autofocus{% endif %}
     autocomplete="off">
   <input type="hidden" name="options[prefix]" value="last">

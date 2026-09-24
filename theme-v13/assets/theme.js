@@ -135,6 +135,14 @@
       el.classList.add('reveal');
       io.observe(el);
     });
+
+    /* Safety net. The hidden state is only safe while the observer is alive to
+       undo it. If anything stops it firing (a JS error elsewhere, an observer
+       quirk, a stalled paint) whole sections would stay at opacity:0 and the
+       store would look broken. Reveal everything after 3s no matter what. */
+    window.setTimeout(function () {
+      revealTargets.forEach(function (el) { el.classList.add('is-in'); });
+    }, 3000);
   }
 
   /* ------------------------------------------------------- sticky buy bar */

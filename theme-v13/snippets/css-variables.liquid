@@ -5,6 +5,15 @@
   assign body_font = settings.type_body_font
   assign body_font_bold = body_font | font_modify: 'weight', 'bold'
   assign body_font_italic = body_font | font_modify: 'style', 'italic'
+
+  # A custom property that exists but is EMPTY is not "undefined": var() will not
+  # use its fallback, and the declaration becomes invalid at computed-value time.
+  # An empty --font-body therefore silently reverts the whole storefront to the
+  # browser's serif default. Never let these be empty.
+  assign heading_family = heading_font.family | default: 'Assistant'
+  assign heading_fallback = heading_font.fallback_families | default: 'sans-serif'
+  assign body_family = body_font.family | default: 'Assistant'
+  assign body_fallback = body_font.fallback_families | default: 'sans-serif'
 -%}
 {% style %}
   {{ heading_font | font_face: font_display: 'swap' }}
@@ -15,8 +24,8 @@
   {{ body_font_italic | font_face: font_display: 'swap' }}
 
   :root{
-    --font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }};
-    --font-body: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --font-heading: {{ heading_family }}, {{ heading_fallback }};
+    --font-body: {{ body_family }}, {{ body_fallback }};
     --heading-scale: {{ settings.heading_scale | divided_by: 100.0 }};
     --body-scale: {{ settings.body_scale | divided_by: 100.0 }};
 

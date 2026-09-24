@@ -133,8 +133,23 @@ Without a WhatsApp number or support email, contact links fall back to `mailto:s
 | Rendered anchor audit (all sections) | 57 anchors, **0 dead links** |
 | CSS coverage | 419 classes, **0 dead rules** (old theme: 73 dead of 119) |
 | `theme.js` | `node --check` clean |
+| Shopify-only syntax traps | 46 files clean (no literal braces inside `{{ }}`, no parentheses in expressions, no phantom object properties) |
+| **Real browser render, 1280px + 390px** | **11 page types × 2 viewports, 0 problems** |
+| Custom properties on the rendered page | 24 defined, none empty, none undefined |
+| JSON-LD | parses as valid JSON on index + product |
+| Console errors, mobile overflow, hidden dialogs | none |
 
-Run it yourself: `python3 theme-v13/tools/verify.py`.
+Two layers, because the first layer alone is provably not enough:
+
+```bash
+pip install python-liquid                 # required for the parse + link checks
+python3 theme-v13/tools/verify.py         # static: parse, schemas, links, CSS, JS
+python3 theme-v13/tools/render_check.py   # visual: real Chromium render + screenshots
+python3 theme-v13/tools/build.py          # runs both, then packages the zip
+```
+
+The browser layer needs a one-time setup: `bash theme-v13/tools/setup-renderer.sh`
+(see `theme-v13/tools/README-render.md` for why that package is used).
 
 ## 7. What was added after the first build
 
@@ -160,6 +175,45 @@ python3 theme-v13/tools/verify.py    # check only
 python3 theme-v13/tools/build.py     # check, then package the zip
 ```
 
+**A real-browser gate — and the bug that made it mandatory.** The first v13 build passed every static check
+(46/46 files parsed, 0 dead links, 0 dead CSS rules) and still shipped a Liquid syntax error inside
+`snippets/jsonld.liquid`:
+
+```liquid
+{{ request.origin | append: '/search?q={search_term_string}' | json }}
+```
+
+A literal brace inside an output tag is a hard Shopify error, and the generic Liquid engine used for parsing
+accepts it. In a real store it aborted the whole `<head>` chain, so `snippets/css-variables.liquid` never emitted
+its `:root` block, every `var()` in the stylesheet became invalid, and the storefront rendered as Times New Roman
+with transparent buttons and invisible cards.
+
+Three things changed as a result:
+
+1. **The bug is fixed** — the placeholder is built inside the `{% liquid %}` tag and output through a plain
+   variable, so Shopify accepts it and the JSON-LD `SearchAction` still validates.
+2. **`verify.py` now has a Shopify-only syntax check** that rejects literal braces inside output tags,
+   parentheses in Liquid expressions and object properties that do not exist in Shopify — the classes of error a
+   permissive parser lets through.
+3. **`render_check.py` was added and wired into `build.py`.** It renders the theme through Liquid, opens all 11
+   page types in headless Chromium at 1280px and 390px, scrolls each page so reveal animations fire, screenshots
+   it, and fails the build on: Liquid error text on the page, missing or empty custom properties, serif fallback
+   fonts, transparent buttons, invisible cards, a closed `<dialog>` that still renders, content stuck at
+   `opacity:0`, mobile horizontal overflow, console errors, invalid JSON-LD or missing `t`-filter keys.
+
+That gate immediately found three more real defects, all now fixed:
+
+* the closed mobile-menu `<dialog>` was visible on **every** page at every width, because a CSS `display` rule
+  overrides the browser's `dialog:not([open])` hide rule;
+* label-filter precedence — `{{ label | default: 'key' | t }}` applies `t` to the *result* of `default`, so a
+  merchant-set button label rendered as "Translation missing: en.Enrol now";
+* the header CTA wrapped to two lines on phones and turned into a circle; the sticky buy bar and menu already
+  carry that call to action, so the header one now hides below 600px.
+
+Two hardening changes came out of it as well: an empty font setting can no longer emit `--font-body: , ;`
+(which reverts the whole storefront to serif), and reveal-on-scroll content is force-revealed after 3 seconds if
+the observer never fires, so a section can never stay invisible.
+
 **The `setup/` folder** — everything that lives in Shopify admin rather than the theme:
 
 | File | Purpose |
@@ -180,14 +234,20 @@ not actually use.
 
 ```
 theme-v13/
-├── assets/           theme.css (54 KB), theme.js (19 KB)
+├── assets/           theme.css (57 KB), theme.js (28 KB)
 ├── config/           settings_schema.json, settings_data.json
 ├── layout/           theme.liquid, password.liquid, gift_card.liquid
 ├── locales/          en.default.json
 ├── sections/         29 sections + header-group.json + footer-group.json
-├── snippets/         11 snippets (icon, price, product-form, contact-link, jsonld, …)
-└── templates/        19 templates incl. customers/*
+├── snippets/         12 snippets (icon, price, product-form, contact-link, jsonld, …)
+├── templates/        19 templates incl. customers/*
+└── tools/            verify.py, render_check.py, build.py, setup-renderer.sh,
+                      README-render.md
 ```
+
+The `tools/` folder is development-only — it is not included in the zip Shopify
+receives, which contains the seven theme folders (assets, config, layout, locales,
+sections, snippets, templates).
 
 ## 9. Known limits (honest list)
 
@@ -199,3 +259,9 @@ theme-v13/
   Accounts (the hosted version) renders its own UI and ignores these files — both work.
 - The theme is **not** submitted to the Shopify Theme Store, so some of its formal requirements (e.g. per-block
   app-block coverage on every section) are partially implemented rather than fully certified.
+- The browser gate proves the theme renders correctly with **schema defaults** — which is the exact situation that
+  broke. It cannot see your store's live settings, your real images, or an installed app's injected markup.
+- **Content that must be set in your store, not in code:** the course product handle (step 2), your logo and
+  share image, the hero image, instructor photo, testimonial photos and video, and the policies. Until those are
+  added the theme renders placeholders and a callout telling you where to add them — by design, so the page never
+  looks broken while you set it up.

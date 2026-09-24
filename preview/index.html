@@ -74,6 +74,61 @@
 
 
 <section>
+  <h2>Round 3 — the render failure, fixed and made impossible to repeat</h2>
+  <p class="lead">You sent a screencapture of the theme running in your real store: a Liquid error banner and an
+  almost unstyled page. Here is what was wrong, what it is now, and the test that stops it happening again.</p>
+
+  <div class="grid two">
+    <div>
+      <h3>The bug</h3>
+      <p><code>snippets/jsonld.liquid</code> line 55 put a literal <code>{search_term_string}</code>
+      <strong>inside</strong> a Liquid output tag. Shopify rejects that outright:</p>
+      <pre>Liquid syntax error (snippets/jsonld.liquid line 55)
+Variable '{{ request.origin | append: '/search?q={search_term_string}' | json }}'
+was not properly terminated with regexp: /\}\}/</pre>
+      <p>Because the error sat in the <code>&lt;head&gt;</code> render chain,
+      <code>snippets/css-variables.liquid</code> never emitted its <code>:root</code> block. Every
+      <code>var()</code> in <code>theme.css</code> then became invalid, and the whole storefront fell back to
+      Times New Roman with transparent buttons and invisible cards. The stylesheet itself was fine — the link in
+      the chain was not.</p>
+    </div>
+    <div>
+      <h3>Why my earlier checks missed it</h3>
+      <p>The static suite passed 46/46 files, 0 dead links, 0 dead CSS rules. The generic Liquid parser I was
+      using is <em>more permissive</em> than Shopify's, so it accepted the line that Shopify rejects.</p>
+      <p><strong>That is no longer how a file gets delivered.</strong> The theme is now rendered in a real
+      headless browser at 1280px and 390px, screenshotted, and inspected before any zip is produced. The build
+      script refuses to package a theme that fails the visual gate.</p>
+    </div>
+  </div>
+
+  <h3>The browser gate found three more real bugs</h3>
+  <ul class="ticks">
+    <li>The closed mobile-menu <code>&lt;dialog&gt;</code> was <strong>visible on every page at every width</strong>
+      — a CSS <code>display</code> rule overrides the browser's <code>dialog:not([open])</code> hide rule.</li>
+    <li>Label filter precedence: <code>{{ label | default: 'key' | t }}</code> applies <code>t</code> to the
+      <em>result</em> of <code>default</code>, so a merchant-set button label rendered as
+      "Translation missing: en.Enrol now" on the primary call to action.</li>
+    <li>The header CTA wrapped to two lines and became a circle on phones; it now hides below 600px, where the
+      sticky buy bar and menu already carry the action.</li>
+  </ul>
+
+  <h3>Two things made permanently safe</h3>
+  <ul class="ticks">
+    <li><strong>An empty font setting can no longer blank the store.</strong>
+      <code>--font-body: , ;</code> is not "undefined", so <code>var()</code> never uses its fallback — it just
+      silently reverts everything to serif. Both font stacks now have hard fallbacks.</li>
+    <li><strong>Scroll-reveal content can never stay invisible.</strong> If the intersection observer does not
+      fire, everything is force-revealed after 3 seconds.</li>
+  </ul>
+
+  <p><a href="render-proof/before-vs-after.jpg">See the before / after comparison →</a>
+  &nbsp;·&nbsp; full captures: <a href="render-proof/after-index-desktop-full.jpg">desktop</a>,
+  <a href="render-proof/after-index-mobile.jpg">mobile</a>,
+  <a href="render-proof/after-product-desktop.jpg">product page</a></p>
+</section>
+
+<section>
   <h2>Round 2 — the remaining items, done</h2>
   <p class="sub">Everything I listed as outstanding last time: the code-side polish that was still missing,
   plus the store-side setup that could only ever be produced as files.</p>

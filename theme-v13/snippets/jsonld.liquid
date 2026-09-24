@@ -1,3 +1,11 @@
+{%- comment -%}
+  IMPORTANT: `search_url_template` below contains the literal placeholder
+  characters that schema.org requires. They are built inside the liquid tag on
+  purpose. A literal brace placed inside an output tag is a hard Shopify syntax
+  error ("was not properly terminated with regexp") that aborts the entire head
+  render chain -- and with it css-variables.liquid, which leaves the storefront
+  unstyled. Do not inline it back into an output tag. tools/verify.py guards this.
+{%- endcomment -%}
 {%- liquid
   assign course_product = all_products[settings.course_product_handle]
   if request.page_type == 'product' and product != blank
@@ -11,6 +19,7 @@
   assign product_schema_url = course_product.url | prepend: request.origin
   assign org_id = request.origin | append: '/#organization'
   assign site_id = request.origin | append: '/#website'
+  assign search_url_template = request.origin | append: '/search?q={search_term_string}'
   assign availability = 'https://schema.org/SoldOut'
   if course_product.available
     assign availability = 'https://schema.org/InStock'
@@ -52,7 +61,7 @@
       "publisher": { "@id": {{ org_id | json }} },
       "potentialAction": {
         "@type": "SearchAction",
-        "target": { "@type": "EntryPoint", "urlTemplate": {{ request.origin | append: '/search?q={search_term_string}' | json }} },
+        "target": { "@type": "EntryPoint", "urlTemplate": {{ search_url_template | json }} },
         "query-input": "required name=search_term_string"
       }
     }

@@ -159,6 +159,92 @@ def check_parse(theme):
         ok(f"Liquid parse: {len(files)}/{len(files)} files clean")
 
 
+# ------------------------------------------- check 1b: Shopify-only syntax traps
+# python-liquid is deliberately more permissive than Shopify's own parser, so a
+# theme can parse perfectly here and still blow up in a real store with
+# "Liquid syntax error ... was not properly terminated with regexp: /}}/".
+# That exact failure shipped once: a literal { } placeholder inside a {{ }} output
+# tag aborted the whole <head> chain, so snippets/css-variables.liquid never ran
+# and the entire storefront fell back to Times + transparent buttons.
+# These checks close that gap.
+OUTPUT_TAG = re.compile(r"\{\{(.*?)\}\}", re.S)
+TAG_BLOCK = re.compile(r"\{%-?.*?-?%\}", re.S)
+COMMENT_BLOCK = re.compile(r"\{#.*?#\}", re.S)
+STRING_LITERAL = re.compile(r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"")
+
+# Liquid object properties that do not exist in Shopify. Writing to a real store
+# renders nothing (or breaks), so they are listed here as hard failures.
+PHANTOM_PROPERTIES = {
+    "routes.contact_url": "use snippets/contact-link.liquid (falls back to the contact page)",
+}
+
+
+def strip_liquid_comments(src):
+    """Blank out every comment form Liquid supports, preserving offsets so that
+    reported line numbers still match the original file."""
+    def blank(match):
+        return " " * len(match.group(0))
+
+    src = re.sub(r"\{%-?\s*comment\s*-?%\}.*?\{%-?\s*endcomment\s*-?%\}", blank, src, flags=re.S)
+    src = COMMENT_BLOCK.sub(blank, src)
+
+    def blank_hash_lines(match):
+        body = "\n".join(" " * len(line) if line.lstrip().startswith("#") else line
+                         for line in match.group(1).split("\n"))
+        return "{% liquid " + body + " %}"
+
+    src = re.sub(r"\{%-?\s*liquid(.*?)-?%\}", blank_hash_lines, src, flags=re.S)
+    src = re.sub(r"\{%-?\s*#.*?-?%\}", blank, src, flags=re.S)
+    return src
+
+
+def check_shopify_syntax(theme):
+    files = sorted(glob.glob(os.path.join(theme, "**/*.liquid"), recursive=True))
+    found = 0
+
+    for path in files:
+        src = strip_liquid_comments(read(path))
+        rel = os.path.relpath(path, theme)
+
+        # only inspect {{ }} output tags: mask {% %} and {# #} first so that
+        # legitimate braces (assign strings, schema JSON, comments) are ignored.
+        masked = TAG_BLOCK.sub(lambda m: " " * len(m.group(0)), src)
+
+        for match in OUTPUT_TAG.finditer(masked):
+            inner = match.group(1)
+            if inner.count("{") != inner.count("}"):
+                line = masked[: match.start()].count("\n") + 1
+                found += 1
+                fail("shopify-syntax",
+                     f"{rel} line {line}: unbalanced {{ }} inside an output tag -> "
+                     f"Shopify reports 'was not properly terminated with regexp: /\\}}\\}}'. "
+                     f"Build the string with {{% assign %}} first, then output it: "
+                     f"{inner.strip()[:70]}")
+            elif "{" in inner or "}" in inner:
+                line = masked[: match.start()].count("\n") + 1
+                found += 1
+                fail("shopify-syntax",
+                     f"{rel} line {line}: literal brace inside an output tag -> "
+                     f"Shopify syntax error. Move it into an {{% assign %}}: {inner.strip()[:70]}")
+
+            # parentheses are also rejected by Shopify unless they sit in a string
+            code = STRING_LITERAL.sub("''", inner)
+            if "(" in code or ")" in code:
+                line = masked[: match.start()].count("\n") + 1
+                found += 1
+                fail("shopify-syntax",
+                     f"{rel} line {line}: parentheses in a Liquid expression are a "
+                     f"Shopify syntax error; precompute with {{% assign %}}: {inner.strip()[:70]}")
+
+        for prop, hint in PHANTOM_PROPERTIES.items():
+            if prop in src:
+                found += 1
+                fail("shopify-syntax", f"{rel}: '{prop}' is not a real Liquid object property - {hint}")
+
+    if not found:
+        ok(f"Shopify syntax traps: {len(files)} files clean (braces, parens, phantom objects)")
+
+
 # ------------------------------------------- check 2/3/4: schemas + references
 def check_schemas_and_refs(theme):
     section_files = sorted(glob.glob(os.path.join(theme, "sections/*.liquid")))
@@ -440,6 +526,7 @@ def main():
 
     print(f"Verifying {theme}\n")
     check_parse(theme)
+    check_shopify_syntax(theme)
     check_schemas_and_refs(theme)
     check_locales(theme)
     check_links(theme)

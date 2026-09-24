@@ -291,6 +291,10 @@ button,input,select,textarea{font:inherit;color:inherit}
   background:var(--c-bg);color:var(--c-ink);inset:0;position:fixed;
   display:flex;flex-direction:column
 }
+/* A native <dialog> is hidden by the UA stylesheet via dialog:not([open]).
+   Declaring `display` here overrides that UA rule (author styles always win),
+   which left the closed menu visible on every page. Re-hide it explicitly. */
+.mobile-menu:not([open]){display:none}
 .mobile-menu::backdrop{background:rgba(10,10,20,.45)}
 .mobile-menu__head{
   display:flex;align-items:center;justify-content:space-between;
@@ -911,7 +915,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .search-results .section-head{margin-bottom:26px}
 .gallery{display:block}
 .site-header--over-banner{background:color-mix(in srgb,var(--c-bg) 92%,transparent)}
-.header-cta__label{font-weight:700}
+.header-cta__label{font-weight:700;white-space:nowrap}
 .nav-toggle__open{pointer-events:none}
 .collection .product-grid,.blog .product-grid,.search-results .product-grid{margin-top:6px}
 .not-found__inner{display:grid;gap:14px;justify-items:start}
@@ -1033,6 +1037,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 }
 @media (max-width:599px){
   .brand__sub{display:none}
+  .site-header__actions .header-cta{display:none}
   .site-header__actions .icon-btn:not(.cart-link):not(.nav-toggle){display:none}
   .announcement__wa-text{display:none}
   .hero__cta .btn,.pricing__actions .btn,.product-form__buttons .btn{width:100%}
