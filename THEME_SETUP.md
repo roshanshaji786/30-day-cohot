@@ -1,11 +1,12 @@
-# AI × Shopify Business Bootcamp — theme v13
+# AI × Shopify Business Bootcamp — theme v14
 
 Rebuilt from the audit in `THEME_AUDIT.md`. Everything the audit flagged as P0 is fixed, the P1 conversion
 work is built in, and the theme now follows Shopify's current architecture requirements (section groups,
 JSON templates, blocks + presets, locales, structured data).
 
-**Install file:** `ai-shopify-business-bootcamp-v13.zip`
-**Source:** `theme-v13/`
+**Install file:** `ai-shopify-business-bootcamp-v14.zip`  
+*(v14 = the fixed build. v13 and earlier are archived in `old-releases/` — do not install those.)*
+**Source:** `theme-v14/`
 **Design preview:** run a server in `preview/` and open `index.html`
 
 ---
@@ -13,7 +14,7 @@ JSON templates, blocks + presets, locales, structured data).
 ## 1. Install
 
 1. Shopify admin → **Online Store → Themes → Add theme → Upload zip**
-2. Upload `ai-shopify-business-bootcamp-v13.zip`
+2. Upload `ai-shopify-business-bootcamp-v14.zip`
 3. **Customize** to check it, then **Publish** when ready.
 
 The theme is safe to publish immediately. The buy buttons only work after step 2 below.
@@ -143,13 +144,13 @@ Two layers, because the first layer alone is provably not enough:
 
 ```bash
 pip install python-liquid                 # required for the parse + link checks
-python3 theme-v13/tools/verify.py         # static: parse, schemas, links, CSS, JS
-python3 theme-v13/tools/render_check.py   # visual: real Chromium render + screenshots
-python3 theme-v13/tools/build.py          # runs both, then packages the zip
+python3 theme-v14/tools/verify.py         # static: parse, schemas, links, CSS, JS
+python3 theme-v14/tools/render_check.py   # visual: real Chromium render + screenshots
+python3 theme-v14/tools/build.py          # runs both, then packages the zip
 ```
 
-The browser layer needs a one-time setup: `bash theme-v13/tools/setup-renderer.sh`
-(see `theme-v13/tools/README-render.md` for why that package is used).
+The browser layer needs a one-time setup: `bash theme-v14/tools/setup-renderer.sh`
+(see `theme-v14/tools/README-render.md` for why that package is used).
 
 ## 7. What was added after the first build
 
@@ -165,14 +166,14 @@ variant. It posts to `/cart/add`, so it degrades to the cart page without JavaSc
 **Review-app slots.** The testimonials section accepts `@app` blocks, so a reviews app can be placed from the
 editor rather than hard-coded.
 
-**A test suite.** `theme-v13/tools/verify.py` runs eight checks (Liquid parse, schema JSON, template references,
+**A test suite.** `theme-v14/tools/verify.py` runs eight checks (Liquid parse, schema JSON, template references,
 snippet references, locale keys, rendered-link audit, CSS dead-rule detection, JS syntax). `tools/build.py`
 refuses to package a theme that fails them, then zips only the folders Shopify expects and prints the SHA-256.
 
 ```bash
 pip install python-liquid            # required for the parse + link checks
-python3 theme-v13/tools/verify.py    # check only
-python3 theme-v13/tools/build.py     # check, then package the zip
+python3 theme-v14/tools/verify.py    # check only
+python3 theme-v14/tools/build.py     # check, then package the zip
 ```
 
 **A real-browser gate — and the bug that made it mandatory.** The first v13 build passed every static check
@@ -233,7 +234,7 @@ not actually use.
 ## 8. Files
 
 ```
-theme-v13/
+theme-v14/
 ├── assets/           theme.css (57 KB), theme.js (28 KB)
 ├── config/           settings_schema.json, settings_data.json
 ├── layout/           theme.liquid, password.liquid, gift_card.liquid

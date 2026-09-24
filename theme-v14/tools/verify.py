@@ -512,10 +512,10 @@ def check_js(theme):
 
 
 def default_theme():
-    """Use the parent of tools/ when it looks like a theme, else look for theme-v13."""
+    """Use the parent of tools/ when it looks like a theme, else look for theme-v14."""
     here = os.path.dirname(os.path.abspath(__file__))
     for candidate in (os.path.dirname(here),
-                      os.path.join(os.path.dirname(here), "theme-v13")):
+                      os.path.join(os.path.dirname(here), "theme-v14")):
         if os.path.exists(os.path.join(candidate, "config", "settings_schema.json")):
             return candidate
     return "."

@@ -24,7 +24,7 @@ So this tool does what a merchant actually does:
 
 Exit code is non-zero on any failure, and tools/build.py refuses to package a zip.
 
-Run:  PYTHONPATH=/home/user/pylibs python3 theme-v13/tools/render_check.py
+Run:  PYTHONPATH=/home/user/pylibs python3 theme-v14/tools/render_check.py
 """
 
 import glob

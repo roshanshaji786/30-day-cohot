@@ -28,7 +28,7 @@ SKIP_NAMES = {".DS_Store", "Thumbs.db"}
 def theme_root():
     here = os.path.dirname(os.path.abspath(__file__))
     for candidate in (os.path.dirname(here),
-                      os.path.join(os.path.dirname(here), "theme-v13")):
+                      os.path.join(os.path.dirname(here), "theme-v14")):
         if os.path.exists(os.path.join(candidate, "config", "settings_schema.json")):
             return candidate
     raise SystemExit("Could not find the theme folder. Pass it as the first argument.")
@@ -37,7 +37,7 @@ def theme_root():
 def main():
     theme = (sys.argv[1] if len(sys.argv) > 1 else theme_root()).rstrip("/")
     out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(
-        os.path.dirname(theme) or ".", "ai-shopify-business-bootcamp-v13.zip")
+        os.path.dirname(theme) or ".", "ai-shopify-business-bootcamp-v14.zip")
 
     print("==", "verify".upper(), "=" * 46)
     result = subprocess.run([sys.executable, os.path.join(theme, "tools/verify.py"), theme])
