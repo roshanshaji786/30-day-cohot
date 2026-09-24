@@ -1,0 +1,39 @@
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a class="brand" href="{{ routes.root_url }}" aria-label="{{ section.settings.brand_name }}">
+      {% if section.settings.logo != blank %}
+        {{ section.settings.logo | image_url: width: 280 | image_tag: class: 'brand-logo', alt: section.settings.brand_name, loading: 'eager' }}
+      {% else %}
+        <span>{{ section.settings.brand_name }}</span><i>×</i><span>{{ section.settings.brand_subbrand }}</span>
+      {% endif %}
+    </a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      {% if section.settings.link_1_label != blank %}<a href="{{ section.settings.link_1_url }}">{{ section.settings.link_1_label }}</a>{% endif %}
+      {% if section.settings.link_2_label != blank %}<a href="{{ section.settings.link_2_url }}">{{ section.settings.link_2_label }}</a>{% endif %}
+      {% if section.settings.link_3_label != blank %}<a href="{{ section.settings.link_3_url }}">{{ section.settings.link_3_label }}</a>{% endif %}
+      {% if section.settings.link_4_label != blank %}<a href="{{ section.settings.link_4_url }}">{{ section.settings.link_4_label }}</a>{% endif %}
+    </nav>
+    <a class="nav-cta" href="{{ section.settings.cta_url }}">{{ section.settings.cta_label }}</a>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Course header",
+  "settings": [
+    {"type":"image_picker","id":"logo","label":"Logo"},
+    {"type":"text","id":"brand_name","label":"Brand name","default":"ROSHAN SHAJI"},
+    {"type":"text","id":"brand_subbrand","label":"Sub-brand","default":"DARTS AI"},
+    {"type":"text","id":"link_1_label","label":"Nav link 1 label","default":"Program"},
+    {"type":"url","id":"link_1_url","label":"Nav link 1 URL"},
+    {"type":"text","id":"link_2_label","label":"Nav link 2 label","default":"Curriculum"},
+    {"type":"url","id":"link_2_url","label":"Nav link 2 URL"},
+    {"type":"text","id":"link_3_label","label":"Nav link 3 label","default":"Instructor"},
+    {"type":"url","id":"link_3_url","label":"Nav link 3 URL"},
+    {"type":"text","id":"link_4_label","label":"Nav link 4 label","default":"FAQ"},
+    {"type":"url","id":"link_4_url","label":"Nav link 4 URL"},
+    {"type":"text","id":"cta_label","label":"CTA label","default":"Join ₹2,999"},
+    {"type":"url","id":"cta_url","label":"CTA URL"}
+  ]
+}
+{% endschema %}

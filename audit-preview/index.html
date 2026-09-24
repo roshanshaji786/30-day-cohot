@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Theme Audit — AI × Shopify Business Bootcamp</title>
+<style>
+  :root{
+    --bg:#0e0e11; --panel:#16161b; --panel2:#1d1d24; --line:#2a2a33;
+    --txt:#ececf1; --mut:#a0a0ad; --accent:#8b6dff;
+    --bad:#ff5f57; --warn:#ffb020; --ok:#3ddc84;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55}
+  .wrap{width:min(1180px,calc(100% - 32px));margin:auto}
+  header.top{padding:38px 0 22px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:11px;letter-spacing:.14em;color:var(--accent);font-weight:800;text-transform:uppercase}
+  h1{font-size:clamp(28px,4vw,42px);line-height:1.05;letter-spacing:-.03em;margin:8px 0 6px}
+  .sub{color:var(--mut);font-size:15px;max-width:78ch}
+  code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;
+             background:#23232c;padding:1px 5px;border-radius:5px;color:#d9d2ff}
+  section{padding:34px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:22px;letter-spacing:-.02em;margin:0 0 4px}
+  h3{font-size:15px;margin:0 0 10px;color:var(--mut);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+
+  .overall{display:grid;grid-template-columns:220px 1fr;gap:28px;align-items:center}
+  .dial{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;text-align:center}
+  .dial b{display:block;font-size:62px;line-height:1;letter-spacing:-.05em}
+  .dial span{color:var(--mut);font-size:13px}
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .pillar{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .pillar .name{font-weight:800;font-size:14px}
+  .pillar .sc{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:2px 0 8px}
+  .bar{height:7px;border-radius:99px;background:#26262f;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:99px}
+  .pillar small{display:block;color:var(--mut);font-size:12px;margin-top:9px}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--mut);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800}
+  td.score{white-space:nowrap;font-weight:800;font-variant-numeric:tabular-nums;width:96px}
+  td.dim{font-weight:700;width:210px}
+  td.ev{color:var(--mut);font-size:13px}
+  tr.group td{background:var(--panel2);font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+              font-size:11px;color:var(--accent);padding:9px 12px}
+  .s1{color:var(--bad)} .s2{color:var(--warn)} .s3{color:var(--ok)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .card h4{margin:0 0 8px;font-size:15px}
+  .card p{margin:0 0 8px;color:var(--mut);font-size:13.5px}
+  ul{margin:6px 0 0;padding-left:18px} li{margin-bottom:6px;font-size:14px}
+  .tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;padding:3px 7px;
+       border-radius:99px;margin-right:6px;vertical-align:1px}
+  .t-p0{background:#3a1518;color:#ff8f88;border:1px solid #5c2024}
+  .t-p1{background:#33270c;color:#ffcd6b;border:1px solid #5a4314}
+  .t-p2{background:#12291d;color:#7ee7ab;border:1px solid #1d4a31}
+
+  .stage{display:grid;grid-template-columns:400px 1fr;gap:24px;align-items:start}
+  .device{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:12px}
+  .device .lbl{display:flex;justify-content:space-between;align-items:center;
+               font-size:11px;color:var(--mut);letter-spacing:.08em;text-transform:uppercase;
+               font-weight:800;padding:2px 6px 10px}
+  .frame{width:378px;height:760px;border:0;border-radius:14px;background:#fafafa;display:block}
+  .frame-desk{width:1280px;height:820px;border:0;background:#fafafa;display:block;
+              transform:scale(.555);transform-origin:top left}
+  .desk-clip{width:711px;height:456px;overflow:auto;border-radius:14px;background:#fafafa}
+  .note{background:#1a1a21;border-left:3px solid var(--accent);padding:12px 14px;border-radius:0 10px 10px 0;
+        font-size:13px;color:var(--mut);margin-top:14px}
+  .kbd{font-size:12px;color:var(--mut)}
+  @media(max-width:900px){
+    .overall,.grid2,.stage,.pillars{grid-template-columns:1fr}
+    .desk-clip{width:100%} td.dim{width:auto}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <span class="eyebrow">Shopify Theme Audit · 10-Point Scorecard</span>
+  <h1>AI × Shopify Business Bootcamp — theme review</h1>
+  <p class="sub">Repo: <code>roshanshaji786/30-day-cohot</code> · Asset audited:
+     <code>ai-shopify-business-bootcamp-v12-instructor-photo-overlap-fixed.zip</code> ·
+     7 files, 39 KB total (<code>layout/theme.liquid</code>, 3 sections, 1 template, 1 CSS, README).
+     Scoring below is evidence-based: every point cites a file, selector or missing Shopify template.</p>
+</header>
+
+<section>
+  <h2>Overall verdict</h2>
+  <div class="overall">
+    <div class="dial"><b class="s1">3.4</b><span>out of 10<br>launch-readiness</span></div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="name">💰 Sales / Conversion</div>
+        <div class="sc s1">3.0</div>
+        <div class="bar"><i style="width:30%;background:var(--bad)"></i></div>
+        <small>There is no working buy path at all — the theme cannot currently take money.</small>
+      </div>
+      <div class="pillar">
+        <div class="name">🧭 User-Friendly / UX</div>
+        <div class="sc s2">3.7</div>
+        <div class="bar"><i style="width:37%;background:var(--warn)"></i></div>
+        <small>9 of 14 links on the page are dead; navigation vanishes under 900px.</small>
+      </div>
+      <div class="pillar">
+        <div class="name">📱 Mobile Optimisation</div>
+        <div class="sc s2">3.7</div>
+        <div class="bar"><i style="width:37%;background:var(--warn)"></i></div>
+        <small>Mobile is genuinely better than desktop here — desktop layout CSS is orphaned.</small>
+      </div>
+    </div>
+  </div>
+  <div class="note"><b>One-line summary:</b> the copy and structure are decent landing-page material, but this is a
+  <em>partial</em> theme: it has one homepage template and no product, cart, 404, search, page or customer templates —
+  so the primary CTA leads to a page Shopify cannot render. Fix the P0 list and this jumps to roughly 7.5–8/10.</div>
+</section>
+
+<section>
+  <h2>Live render (out-of-the-box default state)</h2>
+  <p class="sub">This is a faithful static render of the theme with <code>templates/index.json</code> settings empty —
+  i.e. exactly what a visitor sees the moment you publish the ZIP before uploading a photo or video.
+  Shopify-injected scripts (<code>content_for_header</code>) are not included.</p>
+  <div class="stage">
+    <div class="device">
+      <div class="lbl"><span>iPhone 390 × 844</span><span>mobile</span></div>
+      <iframe class="frame" src="/page.html" title="Theme rendered at mobile width"></iframe>
+    </div>
+    <div>
+      <div class="device">
+        <div class="lbl"><span>Desktop 1280 (scaled 55%)</span><span>desktop</span></div>
+        <div class="desk-clip"><iframe class="frame-desk" src="/page.html" title="Theme rendered at desktop width"></iframe></div>
+      </div>
+      <div class="note"><b>What to look for:</b>
+        <ul>
+          <li>Desktop: text touches the left/right screen edges and sections have <b>zero vertical padding</b>.</li>
+          <li>Mobile: a huge empty black 9:16 rectangle where the workshop video should be, and an empty square where the instructor photo should be.</li>
+          <li>Both: the small "eyebrow" labels (FOUNDING COHORT, SEE IT IN ACTION…) render as ordinary 16px body text.</li>
+          <li>Both: click any nav or footer link — nothing happens (<code>href=""</code>).</li>
+          <li>Mobile: the nav disappears completely with no hamburger menu.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>The 10 scored dimensions</h2>
+  <table>
+    <thead><tr><th>Dimension</th><th>Score</th><th>Evidence &amp; what's missing</th></tr></thead>
+    <tbody>
+      <tr class="group"><td colspan="3">💰 SALES &amp; CONVERSION — pillar 3.0 / 10</td></tr>
+      <tr><td class="dim">1. Buy path &amp; checkout readiness</td><td class="score s1">1 / 10</td>
+        <td class="ev">No <code>templates/product.*</code>, no <code>templates/cart.*</code>, no <code>{% form 'product' %}</code>,
+        no buy-buttons section, zero <code>&lt;form&gt;</code> or <code>&lt;button&gt;</code> in the whole theme. Both CTAs point to
+        <code>/products/ai-shopify-business-bootcamp</code>, and Shopify needs a matching product template to render it
+        (<code>templates/index.json</code> is the only template). Result: clicking "Join the First Cohort" lands on an
+        unrenderable/empty page. Revenue = 0.</td></tr>
+      <tr><td class="dim">2. Offer &amp; price presentation</td><td class="score s2">5 / 10</td>
+        <td class="ev">Good: anchor price (<s>₹5,000</s> → ₹2,999), cohort framing, what's-included strip, 15-class
+        curriculum, FAQ. Bad: price is a free-text setting (<code>v12_offer_price</code>) not linked to
+        <code>product.price | money</code>, so it silently desyncs from the real product/currency; no EMI/installment or
+        "what you get for ₹2,999" value stacking; no seats-left tied to real inventory; compare-at claim flagged as
+        unverified in your own README.</td></tr>
+      <tr><td class="dim">3. Social proof &amp; persuasion</td><td class="score s2">4 / 10</td>
+        <td class="ev">Credibility assets exist (CET Graduate, M.Tech, DARTS AI Academy, Trivandrum, "Featured in ANI").
+        But there are <b>zero testimonials, zero student/alumni counts, zero screenshots of student stores, zero reviews,
+        zero logos, zero outcome numbers</b> — for a ₹2,999 live course, proof is the main conversion lever and it's absent.
+        "Featured in ANI" is unsubstantiated on-page (no link/clipping), which is also an ad-policy risk.</td></tr>
+      <tr><td class="dim">4. Trust, risk reversal &amp; compliance</td><td class="score s1">2 / 10</td>
+        <td class="ev">No refund policy, terms, privacy policy or contact links in the footer (all 4 footer links are
+        <code>href=""</code>), no guarantee ("join live or get the recording / 7-day refund"), no payment-method or secure
+        checkout badges, no WhatsApp/Instagram/email contact — decisive for an Indian audience. Missing legal pages will
+        block Meta/Google ad approval and payment-gateway KYC.</td></tr>
+
+      <tr class="group"><td colspan="3">🧭 USER-FRIENDLY / UX — pillar 3.7 / 10</td></tr>
+      <tr><td class="dim">5. Navigation &amp; information architecture</td><td class="score s1">2 / 10</td>
+        <td class="ev">9 of 14 links render <code>href=""</code> (4 nav + header CTA + 4 footer) because the schema defines
+        link <em>labels</em> with defaults but no link <em>URL</em> defaults — clicking reloads the page. Nav labels promise
+        Program / Curriculum / Instructor / FAQ but no <code>id</code> anchors exist in the markup, so even when set to
+        <code>#curriculum</code> they'd 404-on-page. Below 900px <code>.desktop-nav{display:none}</code> with <b>no hamburger
+        or any replacement</b>. No cart icon, no search, no breadcrumbs.</td></tr>
+      <tr><td class="dim">6. Readability, content &amp; visual polish</td><td class="score s2">5 / 10</td>
+        <td class="ev">Copy is clean and scannable; single H1, 6 H2s, logical order (hero → video → outcome → academy →
+        curriculum → trainer → includes → price → FAQ). But <code>.eyebrow</code> has <b>no base CSS rule</b> (only a
+        <code>.final-cta .eyebrow</code> descendant and a mobile <code>font-size:11px!important</code>), so all the small
+        uppercase labels render as regular body text. <code>.hero h1 span{color:#7657e8}</code> never applies (no span in the
+        H1). <code>.mini-curriculum</code> is used in markup but never styled. No H3s at all → flat hierarchy.
+        Curriculum/FAQ/includes/credentials are hardcoded in Liquid, not editable by the merchant.</td></tr>
+      <tr><td class="dim">7. Accessibility (WCAG 2.2 AA)</td><td class="score s2">4 / 10</td>
+        <td class="ev">Good: skip link, <code>aria-label</code> on brand + nav, <code>aria-hidden</code> on decorative art,
+        native <code>&lt;details&gt;</code> FAQ, alt text from the instructor-name setting, <code>prefers-reduced-motion</code>
+        block, <code>lang</code> from locale. Bad: no <code>:focus-visible</code> styling anywhere; text as small as
+        <b>9px</b> (<code>.proof-items</code>, <code>.trainer-badge</code> mobile) and 11px badges;
+        <code>.hero-price s{opacity:.55}</code> drops the strike-through price to roughly 3.4:1 contrast (needs 4.5:1);
+        <code>.desktop-nav a</code> at <code>#666</code> is borderline; header CTA tap target ≈30px high (needs 44px);
+        empty <code>.video-placeholder</code>/<code>.trainer-photo</code> boxes have no accessible name or fallback content.</td></tr>
+
+      <tr class="group"><td colspan="3">📱 MOBILE OPTIMISATION — pillar 3.7 / 10</td></tr>
+      <tr><td class="dim">8. Mobile layout correctness</td><td class="score s2">5 / 10</td>
+        <td class="ev">The <code>@media(max-width:749px)</code> block is competent: hero stacks to flex-column, illustration
+        moves to <code>order:2</code>, H1 clamps to <code>clamp(38px,10.7vw,52px)</code>, grids collapse, video caps at
+        <code>min(82vw,340px)</code>, <code>overflow-wrap:anywhere</code> prevents overflow, <code>body{overflow-x:hidden}</code>.
+        But there are <b>5 stacked version layers</b> (V6/V7/V10/V12 + photo-fix) with <b>107 <code>!important</code></b>
+        declarations and three competing breakpoints (900 / 749 / 600) that contradict each other; the "overlap fix" just
+        sets the hero art to <code>opacity:.5</code> on mobile (looks washed-out/faded rather than designed); and the
+        <b>desktop</b> layout is broken — all container padding/max-width lives under <code>.bootcamp-v10</code>
+        (<code>.bootcamp-v10{max-width:1180px}</code>, <code>.bootcamp-v10 section{padding:52px 24px}</code>) while the
+        markup wrapper is <code>&lt;div class="bootcamp-v12"&gt;</code>, so on any screen ≥750px sections are edge-to-edge
+        with no padding.</td></tr>
+      <tr><td class="dim">9. Mobile performance &amp; media weight</td><td class="score s2">4 / 10</td>
+        <td class="ev">Good: zero third-party scripts, zero webfonts, zero JS files at all; <code>aspect-ratio</code>
+        prevents CLS; <code>loading:'lazy'</code> on the instructor image; <code>image_tag</code> auto-emits width/height +
+        srcset; <code>preload:'metadata'</code> and <code>playsinline</code> on video (both already Shopify defaults).
+        Bad: 23.5 KB unminified CSS of which <b>73 of 119 defined classes are dead</b> (hero-card, steps, method-grid,
+        tool-grid, curriculum, class-row, pricing-card, award-grid, final-cta, illustration…) — ~60% of the stylesheet;
+        instructor image requested at <code>width: 800</code> for a 280px box and logo at <code>width: 280</code> for a 34px
+        box, with no <code>sizes</code> attribute so phones download the largest candidate;
+        <code>backdrop-filter:blur(18px)</code> on a sticky header is expensive on low-end Android;
+        autoplay + loop on a full workshop video burns mobile data with no size cap or opt-in.</td></tr>
+      <tr><td class="dim">10. Mobile conversion ergonomics</td><td class="score s1">2 / 10</td>
+        <td class="ev">No sticky bottom buy bar (the single highest-ROI mobile element for a course page), the header CTA
+        is dead, only 2 CTAs across ~8 screens of scrolling, and the empty 9:16 video box (≈600px tall) occupies the entire
+        first screen below the hero before any offer detail. Critically,
+        <code>.video-placeholder{aspect-ratio:9/16}</code> + <code>object-fit:cover</code> will <b>crop a landscape
+        workshop/screen-share recording down to a narrow vertical slice</b> — screen recordings are unreadable. Needs
+        <code>object-fit:contain</code> or an aspect-ratio setting. Tap targets and 9–11px text also fall below the
+        44px / 16px mobile norms.</td></tr>
+
+      <tr class="group"><td colspan="3">⚙️ CROSS-CUTTING (not counted in the 10) — merchant &amp; platform hygiene</td></tr>
+      <tr><td class="dim">Theme-editor experience</td><td class="score">4 / 10</td>
+        <td class="ev">No <code>presets</code> in any section schema → sections can't be added from the editor; no
+        <code>blocks</code> → FAQ/curriculum/testimonials can't be repeated by the merchant; no
+        <code>config/settings_schema.json</code>, <code>config/settings_data.json</code> or <code>locales/en.default.json</code>;
+        <code>instructor_image_position</code> is exposed in the editor but <b>never used</b> in markup and the CSS forces
+        <code>object-position:center center !important</code>, so the setting silently does nothing; header/footer are legacy
+        static <code>{% section %}</code> calls instead of Shopify 2.0 section groups. Also missing:
+        <code>templates/404</code>, <code>search</code>, <code>page</code>, <code>collection</code>, <code>blog</code>,
+        <code>article</code>, <code>gift_card</code>, <code>password</code>, <code>customers/*</code>; no favicon;
+        no <code>&lt;link rel="canonical" href="{{ canonical_url }}"&gt;</code>; the meta description is hardcoded in
+        <code>theme.liquid</code> so every page shares one description instead of <code>{{ page_description }}</code>;
+        no OG/Twitter tags; no JSON-LD (<code>Course</code>, <code>Product/Offer</code>, <code>FAQPage</code>,
+        <code>Person</code>) → zero rich-result eligibility.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>What's genuinely good</h2>
+  <div class="grid2">
+    <div class="card"><h4>Speed &amp; privacy by design</h4>
+      <p>No external fonts, no third-party scripts, no JS bundles, no app bloat. A correctly-completed version of this
+      theme should score 95+ on Lighthouse mobile performance, which is rare and directly helps paid-traffic ROI.</p></div>
+    <div class="card"><h4>Sensible landing-page narrative</h4>
+      <p>Hero → proof → demo video → outcome → academy → curriculum → trainer → inclusions → price → FAQ is the right
+      order for a live-cohort course, and the copy is specific (15 classes, 9 PM, Oct 1, Google Meet).</p></div>
+    <div class="card"><h4>Real accessibility effort</h4>
+      <p>Skip link, landmark elements, <code>aria-label</code>s, <code>aria-hidden</code> on decorative CSS art, native
+      <code>&lt;details&gt;</code> accordions and a <code>prefers-reduced-motion</code> block — better than many paid themes.</p></div>
+    <div class="card"><h4>Honest operations notes</h4>
+      <p>The README flags the compare-at-price, ANI-claim and video-rights risks yourself. That's exactly the right
+      instinct; it just needs to be enforced in the theme (legal links + substantiated claims).</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Prioritised fix list</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4><span class="tag t-p0">P0</span> Blocks all revenue — do before publishing</h4>
+      <ul>
+        <li>Add <code>templates/product.json</code> + a product section with a real <code>{% form 'product' %}</code> /
+          buy-buttons block, plus <code>templates/cart.json</code> and a cart section. Or point CTAs at Shopify's
+          <b>Buy Button</b> checkout.</li>
+        <li>Give every nav/footer/CTA link a working default URL (use <code>all_products['handle'].url</code> instead of a
+          hardcoded string so it survives a handle change).</li>
+        <li>Add <code>id</code> anchors (<code>#program #curriculum #instructor #faq</code>) + <code>scroll-margin-top:90px</code>,
+          or hide nav links that have no URL set.</li>
+        <li>Fix the desktop layout: port <code>.bootcamp-v10</code> container/padding rules to <code>.bootcamp-v12</code>
+          (or rename the wrapper).</li>
+        <li>Add fallback content when no video/photo is uploaded — today the default state shows an empty black box.</li>
+        <li>Add refund/privacy/terms/contact links in the footer (needed for ad + gateway approval).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4><span class="tag t-p1">P1</span> Conversion multipliers</h4>
+      <ul>
+        <li>Sticky mobile buy bar: price + "Join now" fixed to the bottom, appears after the hero.</li>
+        <li>Mobile nav (hamburger or a scrolling chip row of anchors).</li>
+        <li>3–6 testimonials with photos/names + a student-store screenshot wall + an alumni count.</li>
+        <li>Seats-left counter driven by real <code>product.variants.first.inventory_quantity</code> so the "first 25"
+          claim is truthful and ad-safe.</li>
+        <li>Pull price from the product object (<code>product.price | money</code>, <code>compare_at_price</code>) and add
+          a guarantee + payment/EMI reassurance near the CTA.</li>
+        <li>WhatsApp / Instagram / email contact buttons — high-intent for this market.</li>
+        <li>Fix the video: <code>object-fit:contain</code> or an aspect-ratio setting, plus a poster image.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4><span class="tag t-p2">P2</span> Quality, SEO &amp; maintainability</h4>
+      <ul>
+        <li>JSON-LD for <code>Course</code>, <code>Product/Offer</code>, <code>FAQPage</code>, <code>Person</code>.</li>
+        <li>Dynamic <code>{{ page_description }}</code>, <code>{{ canonical_url }}</code>, OG/Twitter tags, favicon,
+          <code>404</code>/<code>search</code>/<code>page</code> templates.</li>
+        <li>Add a base <code>.eyebrow</code> rule; wrap the H1 accent word in <code>&lt;span&gt;</code>; add H3s.</li>
+        <li>Remove the 73 dead CSS classes, dedupe the 5 version layers and 107 <code>!important</code>s, minify
+          (23.5 KB → ~7 KB).</li>
+        <li>Right-size images (instructor 560px + <code>sizes</code>, logo 120px), add <code>:focus-visible</code> styles,
+          raise the minimum font size to 14px and fix the <code>opacity:.55</code> contrast failure.</li>
+        <li>Convert hardcoded content into section <code>blocks</code> + <code>presets</code>; add
+          <code>locales/en.default.json</code> and <code>config/settings_schema.json</code>; move header/footer to
+          section groups; wire up or delete <code>instructor_image_position</code>.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Score after P0 + P1</h4>
+      <ul>
+        <li>Sales / Conversion: 3.0 → <b class="s3">8.0</b></li>
+        <li>User-Friendly / UX: 3.7 → <b class="s3">8.0</b></li>
+        <li>Mobile Optimisation: 3.7 → <b class="s3">8.5</b></li>
+        <li>Overall: 3.4 → <b class="s3">~8.1 / 10</b> — a fast, credible, mobile-first course storefront.</li>
+      </ul>
+      <p class="kbd">Estimate assumes real testimonials, legal pages and a working checkout are added; the performance
+      ceiling stays high because the theme carries no third-party JS.</p>
+    </div>
+  </div>
+</section>
+
+<section style="border-bottom:0">
+  <h3>Audit method</h3>
+  <p class="sub">Static analysis of all 7 theme files: schema JSON validity, markup-vs-CSS class reconciliation
+  (119 defined / 47 used / 73 dead / 1 unstyled), link-href census (9 empty of 14), <code>!important</code> and media-query
+  inventory, Liquid filter usage checked against Shopify's <code>video_tag</code> / <code>external_video_tag</code> /
+  <code>image_tag</code> documentation, and template coverage checked against Shopify's theme-architecture requirement
+  that "you need to have a matching template for any page type that you want to render".
+  The render above was produced by <code>audit-preview/render.py</code>, a minimal Liquid evaluator that applies each
+  section's schema defaults, so it reflects the true out-of-the-box output.</p>
+</section>
+
+</div>
+</body>
+</html>

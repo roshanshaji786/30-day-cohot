@@ -1,0 +1,42 @@
+<footer class="footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="brand footer-brand">
+        {% if section.settings.logo != blank %}
+          {{ section.settings.logo | image_url: width: 260 | image_tag: class: 'brand-logo', alt: section.settings.brand_name }}
+        {% else %}
+          <span>{{ section.settings.brand_name }}</span><i>×</i><span>{{ section.settings.brand_subbrand }}</span>
+        {% endif %}
+      </div>
+      <p>{{ section.settings.description }}</p>
+    </div>
+    <div class="footer-links">
+      {% if section.settings.link_1_label != blank %}<a href="{{ section.settings.link_1_url }}">{{ section.settings.link_1_label }}</a>{% endif %}
+      {% if section.settings.link_2_label != blank %}<a href="{{ section.settings.link_2_url }}">{{ section.settings.link_2_label }}</a>{% endif %}
+      {% if section.settings.link_3_label != blank %}<a href="{{ section.settings.link_3_url }}">{{ section.settings.link_3_label }}</a>{% endif %}
+      {% if section.settings.link_4_label != blank %}<a href="{{ section.settings.link_4_url }}">{{ section.settings.link_4_label }}</a>{% endif %}
+    </div>
+  </div>
+  <div class="container footer-bottom">{{ section.settings.copyright }}</div>
+</footer>
+
+{% schema %}
+{
+  "name":"Course footer",
+  "settings":[
+    {"type":"image_picker","id":"logo","label":"Logo"},
+    {"type":"text","id":"brand_name","label":"Brand name","default":"ROSHAN SHAJI"},
+    {"type":"text","id":"brand_subbrand","label":"Sub-brand","default":"DARTS AI"},
+    {"type":"textarea","id":"description","label":"Footer description","default":"AI × Shopify Business Bootcamp"},
+    {"type":"text","id":"link_1_label","label":"Footer link 1","default":"Program"},
+    {"type":"url","id":"link_1_url","label":"Footer link 1 URL"},
+    {"type":"text","id":"link_2_label","label":"Footer link 2","default":"Curriculum"},
+    {"type":"url","id":"link_2_url","label":"Footer link 2 URL"},
+    {"type":"text","id":"link_3_label","label":"Footer link 3","default":"FAQ"},
+    {"type":"url","id":"link_3_url","label":"Footer link 3 URL"},
+    {"type":"text","id":"link_4_label","label":"Footer link 4","default":"Contact"},
+    {"type":"url","id":"link_4_url","label":"Footer link 4 URL"},
+    {"type":"text","id":"copyright","label":"Copyright text","default":"© 2026 Roshan Shaji × DARTS AI Academy. All rights reserved."}
+  ]
+}
+{% endschema %}

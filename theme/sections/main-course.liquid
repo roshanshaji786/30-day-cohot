@@ -1,0 +1,78 @@
+<div class="bootcamp-v12">
+<header class="hero compact-hero">
+<div class="hero-copy">
+<span class="eyebrow">{{ section.settings.v12_hero_eyebrow | escape }}</span>
+<span class="trainer-badge">{{ section.settings.v12_trainer_badge | escape }}</span>
+<h1>{{ section.settings.v12_hero_heading | escape | newline_to_br }}</h1>
+<p>{{ section.settings.v12_hero_text | escape }}</p>
+<div class="hero-proof"><span>CET Graduate</span><span>M.Tech Computer Science</span><span>Featured in ANI</span></div>
+<div class="hero-meta"><span>15 Live Classes</span><span>Oct 1, 2026</span><span>9 PM</span><span>Google Meet</span></div>
+<div class="hero-price"><s>{{ section.settings.v12_old_price | escape }}</s><strong>{{ section.settings.v12_offer_price | escape }}</strong><small>Offer valid for the first 25 students only</small></div>
+<a class="primary-btn" href="{{ section.settings.v12_hero_cta_link | default: '/products/ai-shopify-business-bootcamp' }}">{{ section.settings.v12_hero_cta | escape }}</a>
+</div>
+<div class="hero-illustration" aria-hidden="true"><div class="illus-window"><span></span><span></span><span></span><div class="illus-chart"></div></div><div class="illus-orb orb-one"></div><div class="illus-orb orb-two"></div><div class="illus-tag">AI</div><div class="illus-tag shopify">SHOP</div></div>
+</header>
+
+<section class="video-section compact-video">
+<div class="section-heading"><span class="eyebrow">SEE IT IN ACTION</span><h2>{{ section.settings.v12_video_title | escape }}</h2></div>
+<div class="video-placeholder">
+{% if section.settings.v12_workshop_video != blank %}
+{% if section.settings.v12_video_autoplay %}
+{{ section.settings.v12_workshop_video | video_tag: autoplay: true, muted: true, loop: section.settings.v12_video_loop, controls: true, playsinline: true, preload: 'metadata' }}
+{% else %}
+{{ section.settings.v12_workshop_video | video_tag: controls: true, loop: section.settings.v12_video_loop, playsinline: true, preload: 'metadata' }}
+{% endif %}
+{% elsif section.settings.v12_workshop_video_url != blank %}
+{{ section.settings.v12_workshop_video_url | external_video_url: autoplay: section.settings.v12_video_autoplay, loop: section.settings.v12_video_loop, muted: true, playsinline: true | external_video_tag: title: section.settings.v12_video_title }}
+{% endif %}
+</div>
+</section>
+
+<section class="illustration-section"><div class="section-heading"><span class="eyebrow">ONE REAL OUTCOME</span><h2>Learn AI. Build your brand. Launch your store.</h2><p>One idea moves from research to a real Shopify business project.</p></div><div class="outcome-illustration"><div class="flow-node"><b>01</b><span>Research</span></div><div class="flow-node"><b>02</b><span>Brand</span></div><div class="flow-node"><b>03</b><span>Shopify</span></div><div class="flow-node"><b>04</b><span>Launch</span></div></div></section>
+
+<section class="academy-strip"><div><span class="eyebrow">DARTS AI ACADEMY</span><h2>Learn · Build · Innovate.</h2><p>AI-focused learning with practical training, workshops and project-based learning for students, professionals and aspiring builders.</p></div><div class="academy-mark"><b>DARTS</b><span>AI ACADEMY</span><small>Trivandrum · Kerala</small></div></section>
+
+<section class="mini-curriculum"><div class="section-heading"><span class="eyebrow">15 LIVE CLASSES</span><h2>A focused path, not a tool overload.</h2></div><div class="curriculum-list"><div><b>01–05</b><span>AI basics · ChatGPT · Research · Business blueprint · Branding</span></div><div><b>06–10</b><span>Shopify · Store build · Product content · Creatives · Video</span></div><div><b>11–15</b><span>SEO · Marketing · Payments · Shipping · Optimization · Demo Day</span></div></div></section>
+
+<section class="trainer-compact"><div class="trainer-photo">{% if section.settings.v12_instructor_image != blank %}{{ section.settings.v12_instructor_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: section.settings.v12_instructor_name }}{% endif %}</div><div><span class="eyebrow">YOUR TRAINER</span><h2>Learn directly from {{ section.settings.v12_instructor_name | escape }}.</h2><p>CET Graduate · M.Tech Computer Science · AI & Digital Business Trainer</p></div></section>
+
+<section class="included-compact"><div>✓ 15 live classes</div><div>✓ Recordings + community</div><div>✓ Your own Shopify project</div><div>✓ Certificate + rewards</div></section>
+
+<section class="pricing-compact"><span class="eyebrow">FOUNDING COHORT</span><h2>Build something real for {{ section.settings.v12_offer_price | escape }}.</h2><p><s>{{ section.settings.v12_old_price | escape }}</s></p><small>Offer valid for the first 25 students only.</small><br><a class="primary-btn" href="{{ section.settings.v12_hero_cta_link | default: '/products/ai-shopify-business-bootcamp' }}">{{ section.settings.v12_hero_cta | escape }}</a></section>
+
+<section class="faq-compact"><details><summary>Who is this for?</summary><p>Beginners, students, job seekers, entrepreneurs and existing businesses.</p></details><details><summary>What will I build?</summary><p>Your own brand and Shopify website using practical AI workflows.</p></details><details><summary>When are the classes?</summary><p>9 PM, every alternate day, starting October 1, 2026.</p></details></section>
+</div>
+{% schema %}
+{
+  "name": "Main course page",
+  "settings": [
+    {"type":"header","content":"Hero"},
+    {"type":"text","id":"v12_hero_eyebrow","label":"Hero eyebrow","default":"FOUNDING COHORT · FIRST 25 STUDENTS"},
+    {"type":"text","id":"v12_trainer_badge","label":"Trainer badge","default":"LIVE TRAINING BY ROSHAN SHAJI"},
+    {"type":"textarea","id":"v12_hero_heading","label":"Hero heading","default":"Don’t Just Learn AI. Build Something Real."},
+    {"type":"textarea","id":"v12_hero_text","label":"Hero description","default":"Learn AI from scratch and use it to research, build, brand, market and launch your own online business through 15 practical live classes."},
+    {"type":"text","id":"v12_old_price","label":"Old price","default":"₹5,000"},
+    {"type":"text","id":"v12_offer_price","label":"Offer price","default":"₹2,999"},
+    {"type":"text","id":"v12_hero_cta","label":"Hero CTA","default":"Join the First Cohort"},
+    {"type":"url","id":"v12_hero_cta_link","label":"Hero CTA link"},
+    {"type":"header","content":"Instructor"},
+    {"type":"image_picker","id":"v12_instructor_image","label":"Instructor photo"},
+    {"type":"text","id":"v12_instructor_name","label":"Instructor name","default":"Roshan Shaji"},
+    {"type":"header","content":"Workshop video"},
+    {"type":"video","id":"v12_workshop_video","label":"Upload workshop video"},
+    {"type":"checkbox","id":"v12_video_autoplay","label":"Autoplay video","default":true},
+    {"type":"checkbox","id":"v12_video_loop","label":"Loop video","default":true},
+    {"type":"video_url","id":"v12_workshop_video_url","label":"External video URL (optional)","accept":["youtube","vimeo"]},
+    {"type":"text","id":"v12_video_title","label":"Video title","default":"UDS workshop by Roshan Shaji"}
+  
+    ,
+    {
+      "type": "text",
+      "id": "instructor_image_position",
+      "label": "Instructor image position",
+      "default": "center center",
+      "info": "Optional CSS object-position, e.g. center center or 50% 35%."
+    }
+]
+}
+{% endschema %}
