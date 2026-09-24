@@ -1,0 +1,71 @@
+{%- comment -%}
+  Real add-to-cart form. Accepts: product, form_id, show_quantity, show_dynamic_checkout, button_label, section_id
+{%- endcomment -%}
+{%- liquid
+  assign pf_id = form_id | default: 'course-buy-form'
+  assign pf_section = section_id | default: section.id
+  assign current_variant = product.selected_or_first_available_variant
+  assign qty_default = show_quantity | default: true
+-%}
+<product-form class="product-form" data-cart-type="{% if settings.cart_drawer_enabled %}drawer{% else %}page{% endif %}">
+  {%- form 'product', product, id: pf_id, class: 'product-form__inner', novalidate: 'novalidate' -%}
+    {%- unless product.has_only_default_variant -%}
+      <variant-selects class="product-form__variants" data-section="{{ pf_section }}">
+        {%- for option in product.options_with_values -%}
+          {%- assign opt_index = forloop.index0 -%}
+          <div class="pf-option">
+            <label class="pf-option__label" for="pf-option-{{ pf_id }}-{{ opt_index }}">{{ 'products.product.variant_label' | t: option: option.name }}</label>
+            <div class="select-wrap">
+              <select id="pf-option-{{ pf_id }}-{{ opt_index }}" class="pf-option__select" data-option-index="{{ opt_index }}" data-option-name="{{ option.name | escape }}">
+                {%- for value in option.values -%}
+                  <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                {%- endfor -%}
+              </select>
+              {%- render 'icon', name: 'chevron-down', size: 16, class: 'icon select-wrap__icon' -%}
+            </div>
+          </div>
+        {%- endfor -%}
+        <script type="application/json" data-variant-data>
+          {{ product.variants | json }}
+        </script>
+        <script type="application/json" data-money-format>{{ shop.money_format | json }}</script>
+      </variant-selects>
+    {%- endunless -%}
+
+    <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id {% if current_variant.available == false %}disabled{% endif %}>
+    <input type="hidden" name="quantity" value="1">
+
+    {%- if qty_default and product.has_only_default_variant -%}
+      <quantity-input class="quantity" data-min="1">
+        <label class="visually-hidden" for="pf-qty-{{ pf_id }}">{{ 'products.product.quantity' | t }}</label>
+        <button type="button" class="quantity__btn" data-qty-action="minus" aria-label="{{ 'products.product.quantity' | t }}: -1" tabindex="-1">
+          {%- render 'icon', name: 'minus', size: 16 -%}
+        </button>
+        <input id="pf-qty-{{ pf_id }}" class="quantity__input" type="number" name="quantity" value="1" min="1" step="1" inputmode="numeric" autocomplete="off">
+        <button type="button" class="quantity__btn" data-qty-action="plus" aria-label="{{ 'products.product.quantity' | t }}: +1" tabindex="-1">
+          {%- render 'icon', name: 'plus', size: 16 -%}
+        </button>
+      </quantity-input>
+    {%- endif -%}
+
+    <div class="product-form__buttons">
+      <button
+        type="submit"
+        name="add"
+        class="btn btn--primary btn--lg btn--block product-form__submit"
+        data-label-add="{{ 'products.product.add_to_cart' | t }}"
+        data-label-sold-out="{{ 'products.product.sold_out' | t }}"
+        data-label-adding="{{ 'products.product.adding' | t }}"
+        {% unless current_variant.available %}disabled{% endunless %}
+      >
+        <span data-form-status>
+          {%- if current_variant.available -%}{{ button_label | default: 'products.product.add_to_cart' | t }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+        </span>
+      </button>
+      {%- if show_dynamic_checkout -%}
+        {{ form | payment_button }}
+      {%- endif -%}
+    </div>
+    <p class="product-form__error" data-form-error role="alert" hidden></p>
+  {%- endform -%}
+</product-form>

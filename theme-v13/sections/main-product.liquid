@@ -1,0 +1,175 @@
+{%- liquid
+  assign form_id = 'course-buy-form'
+  assign variant = product.selected_or_first_available_variant
+  assign seats = variant.inventory_quantity
+  assign show_seats = false
+  if settings.show_seats_left and variant.inventory_management == 'shopify' and seats > 0 and seats <= section.settings.low_stock_threshold
+    assign show_seats = true
+  endif
+-%}
+<section class="section product" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    {%- if section.settings.show_breadcrumbs -%}{% render 'breadcrumbs' %}{%- endif -%}
+    <div class="product__grid">
+      <div class="product__media">
+        <product-gallery class="gallery" data-gallery>
+          <div class="gallery__main" data-gallery-main>
+            {%- if product.featured_media -%}
+              {{ product.featured_media
+                 | image_url: width: 1600
+                 | image_tag:
+                   widths: '500,750,1000,1300,1600',
+                   sizes: '(max-width: 899px) 92vw, 52vw',
+                   loading: 'eager',
+                   fetchpriority: 'high',
+                   class: 'gallery__img',
+                   id: 'GalleryImage-0',
+                   alt: product.featured_media.alt | default: product.title }}
+            {%- else -%}
+              <div class="gallery__placeholder" aria-hidden="true">{% render 'icon', name: 'spark', size: 42 %}</div>
+            {%- endif -%}
+          </div>
+          {%- if product.media.size > 1 -%}
+            <ul class="gallery__thumbs" role="list">
+              {%- for media in product.media limit: 8 -%}
+                <li>
+                  <button type="button" class="gallery__thumb{% if forloop.first %} is-active{% endif %}" data-gallery-thumb
+                    data-full="{{ media | image_url: width: 1600 }}"
+                    data-srcset="{{ media | image_url: width: 500 }} 500w, {{ media | image_url: width: 1000 }} 1000w, {{ media | image_url: width: 1600 }} 1600w"
+                    aria-label="View image {{ forloop.index }} of {{ product.media.size }}">
+                    {{ media | image_url: width: 200 | image_tag: widths: '120,200', sizes: '72px', loading: 'lazy', class: 'gallery__thumb-img', alt: media.alt | default: product.title }}
+                  </button>
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </product-gallery>
+
+        {%- if section.settings.badge_1 != blank or section.settings.badge_2 != blank -%}
+          <ul class="product__badges" role="list">
+            {%- if section.settings.badge_1 != blank -%}<li class="trust-chip">{% render 'icon', name: 'check-circle', size: 16 %}{{ section.settings.badge_1 }}</li>{%- endif -%}
+            {%- if section.settings.badge_2 != blank -%}<li class="trust-chip">{% render 'icon', name: 'check-circle', size: 16 %}{{ section.settings.badge_2 }}</li>{%- endif -%}
+          </ul>
+        {%- endif -%}
+      </div>
+
+      <div class="product__info">
+        {%- if section.settings.show_vendor and product.vendor != blank -%}
+          <p class="eyebrow">{{ product.vendor }}</p>
+        {%- endif -%}
+        <h1 class="product__title">{{ product.title }}</h1>
+
+        <div class="product__price-row">
+          {% render 'price', product: product, size: 'lg', show_badge: true, show_tax_note: true %}
+          {%- if show_seats -%}
+            <span class="product__seats">{% render 'icon', name: 'users', size: 15 %}{{ 'products.product.low_stock' | t: count: seats }}</span>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.rating > 0 -%}
+          <p class="product__rating">{% render 'stars', rating: section.settings.rating, count: section.settings.rating_count %}<span>{{ section.settings.rating_text }}</span></p>
+        {%- endif -%}
+
+        {%- if section.settings.highlights != blank -%}
+          <div class="rte product__highlights">{{ section.settings.highlights }}</div>
+        {%- endif -%}
+
+        <div class="product__form-wrap" id="buy">
+          {%- render 'product-form', product: product, form_id: form_id, show_quantity: true, show_dynamic_checkout: section.settings.show_dynamic_checkout, button_label: section.settings.button_label, section_id: section.id -%}
+        </div>
+
+        <ul class="tick-list tick-list--tight product__assurance" role="list">
+          <li>{% render 'icon', name: 'shield', size: 18 %}<span>{{ section.settings.assurance_1 }}</span></li>
+          <li>{% render 'icon', name: 'mail', size: 18 %}<span>{{ section.settings.assurance_2 }}</span></li>
+          <li>{% render 'icon', name: 'refresh', size: 18 %}<span>{{ section.settings.assurance_3 }}</span></li>
+        </ul>
+
+        <div class="product__pay">
+          <span class="product__pay-label">{{ 'general.footer.payment_methods' | t }}</span>
+          {%- for type in shop.enabled_payment_types -%}
+            {{ type | payment_type_svg_tag: class: 'pay-icon' }}
+          {%- endfor -%}
+        </div>
+
+        {%- if section.blocks.size > 0 -%}
+          <div class="product__accordions">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'accordion' -%}
+                <details class="acc" {{ block.shopify_attributes }} {% if block.settings.open %}open{% endif %}>
+                  <summary class="acc__summary"><span>{{ block.settings.title }}</span><span class="acc__icon" aria-hidden="true">{% render 'icon', name: 'plus', size: 18 %}</span></summary>
+                  <div class="acc__body rte">{{ block.settings.content }}</div>
+                </details>
+              {%- elsif block.type == 'text' -%}
+                <div class="product__block" {{ block.shopify_attributes }}>
+                  {%- if block.settings.title != blank -%}<h2 class="h3">{{ block.settings.title }}</h2>{%- endif -%}
+                  <div class="rte muted">{{ block.settings.content }}</div>
+                </div>
+              {%- elsif block.type == '@app' -%}
+                <div class="product__block" {{ block.shopify_attributes }}>{% render block %}</div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <div class="product__share" data-share>
+          <span class="product__share-label">{{ 'products.product.share' | t }}</span>
+          <button type="button" class="icon-btn icon-btn--round" data-share-btn aria-label="{{ 'products.product.share' | t }}">
+            {% render 'icon', name: 'arrow-right', size: 18 %}
+          </button>
+          <a class="icon-btn icon-btn--round" href="https://wa.me/?text={{ product.title | append: ' ' | append: shop.url | append: product.url | url_encode }}" target="_blank" rel="noopener" aria-label="{{ 'general.social.whatsapp' | t }}">
+            {% render 'icon', name: 'whatsapp', size: 18 %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- if product.description != blank and section.settings.show_description -%}
+  <section class="section section--soft product-description">
+    <div class="page-width page-width--narrow rte">
+      <h2 class="h2">{{ section.settings.description_heading }}</h2>
+      {{ product.description }}
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product information",
+  "settings": [
+    { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true },
+    { "type": "checkbox", "id": "show_vendor", "label": "Show vendor as eyebrow", "default": true },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Enrol now" },
+    { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show express checkout buttons", "default": true },
+    { "type": "number", "id": "low_stock_threshold", "label": "Show seats left under", "default": 10 },
+    { "type": "richtext", "id": "highlights", "label": "Highlights", "default": "<p>Live classes, recordings you keep, and a store you build with your own hands \u2014 start to launch in 30 days.</p>" },
+    { "type": "header", "content": "Rating" },
+    { "type": "range", "id": "rating", "label": "Rating", "min": 0, "max": 5, "step": 0.1, "default": 4.9 },
+    { "type": "number", "id": "rating_count", "label": "Number of reviews", "default": 0 },
+    { "type": "text", "id": "rating_text", "label": "Rating text", "default": "from past workshop attendees" },
+    { "type": "header", "content": "Assurance" },
+    { "type": "text", "id": "assurance_1", "label": "Assurance 1", "default": "7-day refund if it is not for you" },
+    { "type": "text", "id": "assurance_2", "label": "Assurance 2", "default": "Access details emailed within minutes" },
+    { "type": "text", "id": "assurance_3", "label": "Assurance 3", "default": "Lifetime access to recordings and updates" },
+    { "type": "header", "content": "Media" },
+    { "type": "text", "id": "badge_1", "label": "Badge 1", "default": "Small group, personal feedback" },
+    { "type": "text", "id": "badge_2", "label": "Badge 2", "default": "Taught in Malayalam, English & Hindi" },
+    { "type": "header", "content": "Description" },
+    { "type": "checkbox", "id": "show_description", "label": "Show the full product description below", "default": true },
+    { "type": "text", "id": "description_heading", "label": "Description heading", "default": "Full course details" }
+  ],
+  "blocks": [
+    { "type": "@app" },
+    { "type": "accordion", "name": "Accordion row", "settings": [
+      { "type": "text", "id": "title", "label": "Title", "default": "What's included" },
+      { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Fifteen live classes, lifetime recordings, the AI prompt library, the private community and a certificate of completion.</p>" },
+      { "type": "checkbox", "id": "open", "label": "Open by default", "default": false }
+    ] },
+    { "type": "text", "name": "Text block", "settings": [
+      { "type": "text", "id": "title", "label": "Title" },
+      { "type": "richtext", "id": "content", "label": "Content" }
+    ] }
+  ]
+}
+{% endschema %}

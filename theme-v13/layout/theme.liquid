@@ -1,0 +1,64 @@
+<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="{{ settings.color_dark }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {%- if settings.favicon != blank -%}
+    <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+  {%- endif -%}
+
+  <title>
+    {{- page_title -}}
+    {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t }} {{ current_page }}{% endif -%}
+    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+  </title>
+
+  {%- render 'meta-tags' -%}
+
+  {%- render 'css-variables' -%}
+
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+
+  <script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
+  {{ content_for_header }}
+  {%- render 'jsonld' -%}
+</head>
+
+<body class="tpl-{{ template.name | handleize }}{%- if template.suffix %} tpl-{{ template.name | handleize }}-{{ template.suffix | handleize }}{% endif %}">
+  <a class="skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+  {% sections 'header-group' %}
+
+  <main id="MainContent" class="main" role="main" tabindex="-1">
+    {{ content_for_layout }}
+  </main>
+
+  {% sections 'footer-group' %}
+
+  {%- if settings.sticky_buy_bar -%}
+    {% section 'sticky-buy-bar' %}
+  {%- endif -%}
+
+  {%- if settings.cart_drawer_enabled -%}
+    {% section 'cart-drawer' %}
+  {%- endif -%}
+
+  <div class="sr-only" aria-live="polite" aria-atomic="true" id="a11y-status"></div>
+
+  <script>
+    window.themeStrings = {
+      moneyFormat: {{ shop.money_format | json }},
+      addToCart: {{ 'products.product.add_to_cart' | t | json }},
+      soldOut: {{ 'products.product.sold_out' | t | json }},
+      added: {{ 'products.product.added' | t | json }},
+      cartError: {{ 'general.accessibility.error' | t | json }},
+      rootUrl: {{ routes.root_url | json }}
+    };
+  </script>
+  <script src="{{ 'theme.js' | asset_url }}" defer></script>
+</body>
+</html>

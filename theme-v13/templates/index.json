@@ -1,0 +1,103 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "dark": false,
+        "eyebrow": "Founding cohort \u00b7 First 25 students only",
+        "heading": "Learn AI, build a Shopify store,",
+        "heading_accent": "launch in 30 days.",
+        "show_rating": true,
+        "rating": 4.9,
+        "rating_text": "Rated by past workshop attendees",
+        "cta_label": "Enrol now",
+        "show_price_in_cta": true,
+        "secondary_label": "See the curriculum",
+        "meta_1": "Starts Oct 1, 2026 \u00b7 9:00 PM IST",
+        "meta_2": "15 live classes on Google Meet",
+        "stat_1_value": "15",
+        "stat_1_label": "live classes",
+        "stat_2_value": "30",
+        "stat_2_label": "days to launch"
+      },
+      "blocks": {}
+    },
+    "tools": {
+      "type": "tools-strip",
+      "settings": {
+        "heading": "Tools you will master"
+      },
+      "blocks": {}
+    },
+    "stats": {
+      "type": "stats",
+      "settings": {
+        "dark": false
+      },
+      "blocks": {}
+    },
+    "video": {
+      "type": "video",
+      "settings": {
+        "eyebrow": "See it in action",
+        "heading": "Two minutes inside the classroom"
+      },
+      "blocks": {}
+    },
+    "curriculum": {
+      "type": "curriculum",
+      "settings": {},
+      "blocks": {}
+    },
+    "instructor": {
+      "type": "instructor",
+      "settings": {},
+      "blocks": {}
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {},
+      "blocks": {}
+    },
+    "includes": {
+      "type": "includes",
+      "settings": {},
+      "blocks": {}
+    },
+    "promise": {
+      "type": "rich-text",
+      "settings": {
+        "eyebrow": "Our promise",
+        "heading": "Attend the classes and you will finish with a live store",
+        "align": "center"
+      },
+      "blocks": {}
+    },
+    "pricing": {
+      "type": "pricing",
+      "settings": {
+        "dark": true,
+        "show_dynamic_checkout": true
+      },
+      "blocks": {}
+    },
+    "faq": {
+      "type": "faq",
+      "settings": {},
+      "blocks": {}
+    }
+  },
+  "order": [
+    "hero",
+    "tools",
+    "stats",
+    "video",
+    "curriculum",
+    "instructor",
+    "testimonials",
+    "includes",
+    "promise",
+    "pricing",
+    "faq"
+  ]
+}

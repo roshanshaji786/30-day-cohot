@@ -1,0 +1,27 @@
+<article class="section article">
+  <div class="page-width page-width--narrow">
+    {%- if section.settings.show_breadcrumbs -%}{% render 'breadcrumbs' %}{%- endif -%}
+    <header class="article__head">
+      <p class="eyebrow">{{ blog.title }}</p>
+      <h1 class="h2">{{ article.title }}</h1>
+      <p class="article__meta">{{ 'blogs.article.posted_by' | t }} {{ article.author }} · {{ article.published_at | date: '%b %d, %Y' }}</p>
+    </header>
+    {%- if article.image -%}
+      {{ article.image | image_url: width: 1400 | image_tag: widths: '600,900,1400', sizes: '(max-width: 899px) 92vw, 800px', loading: 'eager', class: 'article__img', alt: article.image.alt | default: article.title }}
+    {%- endif -%}
+    <div class="rte article__body">{{ article.content }}</div>
+    <div class="article__share" data-share>
+      <button type="button" class="icon-btn icon-btn--round" data-share-btn aria-label="{{ 'products.product.share' | t }}">{% render 'icon', name: 'arrow-right', size: 18 %}</button>
+    </div>
+    <a class="link-arrow" href="{{ blog.url }}">{% render 'icon', name: 'arrow-right', size: 16, class: 'icon icon--flip' %}{{ 'blogs.article.back' | t }}</a>
+  </div>
+</article>
+
+{% schema %}
+{
+  "name": "Article",
+  "settings": [
+    { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true }
+  ]
+}
+{% endschema %}

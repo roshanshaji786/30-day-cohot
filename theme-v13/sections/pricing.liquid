@@ -1,0 +1,140 @@
+{%- liquid
+  assign product_handle = section.settings.product | default: settings.course_product_handle
+  assign course_product = all_products[product_handle]
+  if course_product == blank
+    assign course_product = product
+  endif
+  assign variant = course_product.selected_or_first_available_variant
+  assign seats = variant.inventory_quantity
+  assign show_seats = false
+  if settings.show_seats_left and course_product != blank and variant.inventory_management == 'shopify' and seats > 0 and seats <= section.settings.low_stock_threshold
+    assign show_seats = true
+  endif
+  assign form_id = 'course-buy-form'
+-%}
+<section class="section pricing{% if section.settings.dark %} section--dark{% endif %}" {% if section.settings.anchor_id != blank %}id="{{ section.settings.anchor_id }}"{% endif %}>
+  <div class="page-width">
+    <header class="section-head section-head--center">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h2 class="h2">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}<div class="rte muted section-head__text">{{ section.settings.text }}</div>{%- endif -%}
+    </header>
+
+    <div class="pricing__card">
+      <div class="pricing__main">
+        <div class="pricing__head">
+          <span class="pricing__plan">{{ section.settings.plan_name }}</span>
+          {%- if course_product != blank -%}
+            {% render 'price', product: course_product, size: 'lg', show_badge: true, show_tax_note: false %}
+          {%- else -%}
+            <p class="pricing__warn">{% render 'icon', name: 'info', size: 18 %}<span>{{ 'onboarding.no_product' | t }}</span></p>
+          {%- endif -%}
+        </div>
+
+        {%- if show_seats -%}
+          <p class="pricing__seats">{% render 'icon', name: 'users', size: 16 %}{{ 'products.product.low_stock' | t: count: seats }}</p>
+        {%- endif -%}
+
+        {%- if section.blocks.size > 0 -%}
+          <ul class="tick-list tick-list--tight" role="list">
+            {%- for block in section.blocks -%}
+              <li {{ block.shopify_attributes }}>{% render 'icon', name: 'check-circle', size: 18 %}<span>{{ block.settings.text }}</span></li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        <div class="pricing__actions">
+          {%- if course_product != blank -%}
+            {%- render 'product-form', product: course_product, form_id: form_id, show_quantity: false, show_dynamic_checkout: section.settings.show_dynamic_checkout, button_label: section.settings.button_label, section_id: section.id -%}
+          {%- else -%}
+            <a class="btn btn--primary btn--lg btn--block" href="{{ routes.all_products_collection_url }}">{{ section.settings.button_label }}</a>
+          {%- endif -%}
+          {%- if section.settings.alt_label != blank -%}
+            {%- assign alt_class = 'btn btn--ghost btn--block' -%}
+            {% render 'contact-link', link: section.settings.alt_link, class: alt_class, label: section.settings.alt_label %}
+          {%- endif -%}
+        </div>
+
+        <ul class="pricing__trust" role="list">
+          {%- if section.settings.trust_1 != blank -%}<li>{% render 'icon', name: 'shield', size: 16 %}{{ section.settings.trust_1 }}</li>{%- endif -%}
+          {%- if section.settings.trust_2 != blank -%}<li>{% render 'icon', name: 'refresh', size: 16 %}{{ section.settings.trust_2 }}</li>{%- endif -%}
+          {%- if section.settings.trust_3 != blank -%}<li>{% render 'icon', name: 'mail', size: 16 %}{{ section.settings.trust_3 }}</li>{%- endif -%}
+        </ul>
+        <div class="pricing__pay">
+          {%- for type in shop.enabled_payment_types -%}
+            {{ type | payment_type_svg_tag: class: 'pay-icon' }}
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <aside class="pricing__aside">
+        {%- if section.settings.side_title != blank -%}<h3 class="pricing__side-title">{{ section.settings.side_title }}</h3>{%- endif -%}
+        {%- if section.settings.side_text != blank -%}<div class="rte muted">{{ section.settings.side_text }}</div>{%- endif -%}
+        {%- if course_product != blank -%}
+          <dl class="fact-list">
+            <div><dt>Starts</dt><dd>{{ section.settings.start_text }}</dd></div>
+            <div><dt>Format</dt><dd>{{ section.settings.format_text }}</dd></div>
+            <div><dt>Language</dt><dd>{{ section.settings.language_text }}</dd></div>
+            <div><dt>Access</dt><dd>{{ section.settings.access_text }}</dd></div>
+          </dl>
+        {%- endif -%}
+        {%- if settings.whatsapp_number != blank -%}
+          <a class="btn btn--ghost btn--block" href="https://wa.me/{{ settings.whatsapp_number }}?text={{ settings.whatsapp_message | url_encode }}" target="_blank" rel="noopener">
+            {% render 'icon', name: 'whatsapp', size: 18 %}<span>{{ section.settings.wa_label }}</span>
+          </a>
+        {%- endif -%}
+        {%- if section.settings.guarantee != blank -%}
+          <p class="pricing__guarantee">{% render 'icon', name: 'shield', size: 18 %}<span>{{ section.settings.guarantee }}</span></p>
+        {%- endif -%}
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Pricing & enrol",
+  "settings": [
+    { "type": "text", "id": "anchor_id", "label": "Anchor id", "default": "pricing" },
+    { "type": "checkbox", "id": "dark", "label": "Dark section", "default": true },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Founding cohort price" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "One payment. Everything included." },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Prices go up after this cohort. Enrol now and keep lifetime access to every recording, template and update.</p>" },
+    { "type": "product", "id": "product", "label": "Course product", "info": "Leave empty to use the default course product from theme settings." },
+    { "type": "text", "id": "plan_name", "label": "Plan name", "default": "AI \u00d7 Shopify Business Bootcamp" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Enrol now" },
+    { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show express checkout buttons", "default": true },
+    { "type": "text", "id": "alt_label", "label": "Secondary button label", "default": "Talk to me first" },
+    { "type": "url", "id": "alt_link", "label": "Secondary button link" },
+    { "type": "number", "id": "low_stock_threshold", "label": "Show seats left under", "default": 10 },
+    { "type": "header", "content": "Trust row" },
+    { "type": "text", "id": "trust_1", "label": "Trust 1", "default": "Secure checkout \u00b7 UPI, cards, netbanking" },
+    { "type": "text", "id": "trust_2", "label": "Trust 2", "default": "7-day refund if it is not for you" },
+    { "type": "text", "id": "trust_3", "label": "Trust 3", "default": "Access details emailed within minutes" },
+    { "type": "header", "content": "Side panel" },
+    { "type": "text", "id": "side_title", "label": "Title", "default": "Cohort details" },
+    { "type": "richtext", "id": "side_text", "label": "Text", "default": "<p>Small group, so we keep it personal and every store gets reviewed.</p>" },
+    { "type": "text", "id": "start_text", "label": "Starts", "default": "Oct 1, 2026 \u00b7 9:00 PM IST" },
+    { "type": "text", "id": "format_text", "label": "Format", "default": "15 live classes on Google Meet" },
+    { "type": "text", "id": "language_text", "label": "Language", "default": "Malayalam, English & Hindi" },
+    { "type": "text", "id": "access_text", "label": "Access", "default": "Lifetime recordings + templates" },
+    { "type": "text", "id": "wa_label", "label": "WhatsApp button label", "default": "Ask a question first" },
+    { "type": "textarea", "id": "guarantee", "label": "Guarantee note", "default": "If the first two classes are not right for you, email us within 7 days for a full refund." }
+  ],
+  "blocks": [
+    { "type": "line", "name": "Included line", "settings": [{ "type": "text", "id": "text", "label": "Text", "default": "Included" }] }
+  ],
+  "presets": [
+    {
+      "name": "Pricing & enrol",
+      "blocks": [
+        { "type": "line", "settings": { "text": "15 live classes with recordings" } },
+        { "type": "line", "settings": { "text": "Complete Shopify store build, step by step" } },
+        { "type": "line", "settings": { "text": "AI prompt library for research, copy and ads" } },
+        { "type": "line", "settings": { "text": "Private community and post-course support" } },
+        { "type": "line", "settings": { "text": "Certificate of completion" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

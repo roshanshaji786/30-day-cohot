@@ -1,0 +1,10 @@
+{%- comment -%} Accepts: rating (e.g. 4.9), count, label {%- endcomment -%}
+{%- liquid
+  assign r = rating | default: 5
+  assign count_value = count | default: 0
+-%}
+<span class="stars" role="img" aria-label="{{ label | default: 'Rated' }} {{ r }} / 5{% if count_value > 0 %} from {{ count_value }} students{% endif %}">
+  {%- for i in (1..5) -%}
+    <svg class="stars__star{% if i > r %} stars__star--empty{% endif %}" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 3.6 2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8L3.5 9.8l5.9-.9L12 3.6Z" fill="currentColor"/></svg>
+  {%- endfor -%}
+</span>

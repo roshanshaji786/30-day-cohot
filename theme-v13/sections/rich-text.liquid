@@ -1,0 +1,40 @@
+<section class="section section--tight rich-text{% if section.settings.dark %} section--dark{% endif %}" {% if section.settings.anchor_id != blank %}id="{{ section.settings.anchor_id }}"{% endif %}>
+  <div class="page-width page-width--narrow rich-text__inner" style="text-align: {{ section.settings.align }}">
+    {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+    {%- if section.settings.heading != blank -%}
+      <{{ section.settings.heading_tag }} class="h2">{{ section.settings.heading }}</{{ section.settings.heading_tag }}>
+    {%- endif -%}
+    {%- if section.settings.text != blank -%}<div class="rte muted">{{ section.settings.text }}</div>{%- endif -%}
+    {%- if section.settings.cta_label != blank -%}
+      <a class="btn btn--{{ section.settings.cta_style }} btn--lg" href="{{ section.settings.cta_link | default: '#pricing' }}">{{ section.settings.cta_label }}{% render 'icon', name: 'arrow-right', size: 18 %}</a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Rich text",
+  "settings": [
+    { "type": "text", "id": "anchor_id", "label": "Anchor id" },
+    { "type": "checkbox", "id": "dark", "label": "Dark section", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "A promise I can stand behind" },
+    { "type": "select", "id": "heading_tag", "label": "Heading size", "options": [
+      { "value": "h2", "label": "Large" },
+      { "value": "h3", "label": "Medium" }
+    ], "default": "h2" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>If you attend the classes and do the work, you will have a live Shopify store by the end of the course. If you get stuck, message me \u2014 I answer personally.</p>" },
+    { "type": "select", "id": "align", "label": "Alignment", "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Centre" }
+    ], "default": "center" },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Enrol now" },
+    { "type": "select", "id": "cta_style", "label": "Button style", "options": [
+      { "value": "primary", "label": "Primary" },
+      { "value": "ghost", "label": "Secondary" }
+    ], "default": "primary" },
+    { "type": "url", "id": "cta_link", "label": "Button link" }
+  ],
+  "presets": [{ "name": "Rich text" }]
+}
+{% endschema %}

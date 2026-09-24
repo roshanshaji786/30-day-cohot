@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en" class="js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI × Shopify Business Bootcamp — new theme design</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  :root{
+    --font-heading:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-body:var(--font-heading);
+    --heading-scale:1; --body-scale:1;
+    --c-bg:#ffffff; --c-surface:#f6f5fb; --c-ink:#12121a; --c-muted:#55555f; --c-line:#e7e5f0;
+    --c-accent:#4f2fd6; --c-on-accent:#ffffff; --c-dark:#12121a; --c-on-dark:#f5f4fa;
+    --page-width:1200px; --section-space:88px; --radius:18px; --radius-sm:9px; --radius-lg:25px;
+    --header-h:66px;
+    --shadow-sm:0 1px 2px rgba(16,16,32,.06),0 2px 8px rgba(16,16,32,.04);
+    --shadow-md:0 8px 24px rgba(16,16,32,.08),0 2px 6px rgba(16,16,32,.04);
+    --shadow-lg:0 24px 64px rgba(16,16,32,.14);
+  }
+  .demo-note{background:#12121a;color:#f5f4fa;font:600 12.5px/1.5 ui-sans-serif,system-ui;padding:10px 16px;text-align:center}
+  .demo-note b{color:#c3b6ff}
+</style>
+</head>
+<body class="tpl-index">
+<div class="demo-note">Static design preview of the new theme — same CSS and markup the Shopify theme outputs. <b>Not</b> a live store.</div>
+
+<div class="announcement">
+  <div class="page-width announcement__inner">
+    <span class="countdown">
+      <span class="countdown__text">Enrolment closes in</span>
+      <span class="countdown__clock"><span class="countdown__unit"><b>12</b><i>d</i></span><span class="countdown__sep">:</span><span class="countdown__unit"><b>06</b><i>h</i></span><span class="countdown__sep">:</span><span class="countdown__unit"><b>41</b><i>m</i></span><span class="countdown__sep">:</span><span class="countdown__unit"><b>09</b><i>s</i></span></span>
+    </span>
+    <div class="announcement__text">Live cohort · 15 classes · First 25 students only</div>
+    <a class="announcement__wa" href="#" onclick="return false">WhatsApp</a>
+  </div>
+</div>
+
+<header class="site-header is-scrolled">
+  <div class="page-width site-header__inner">
+    <a class="brand" href="#" onclick="return false">
+      <span class="brand__mark" aria-hidden="true">R</span>
+      <span class="brand__text"><span class="brand__name">ROSHAN SHAJI</span><span class="brand__sub">DARTS AI ACADEMY</span></span>
+    </a>
+    <nav class="site-nav">
+      <ul class="site-nav__list">
+        <li class="site-nav__item"><a class="site-nav__link" href="#program">Program</a></li>
+        <li class="site-nav__item"><a class="site-nav__link" href="#curriculum">Curriculum</a></li>
+        <li class="site-nav__item"><a class="site-nav__link" href="#instructor">Instructor</a></li>
+        <li class="site-nav__item"><a class="site-nav__link" href="#faq">FAQ</a></li>
+      </ul>
+    </nav>
+    <div class="site-header__actions">
+      <a class="icon-btn" href="#" onclick="return false" aria-label="Search">search icon</a>
+      <a class="icon-btn cart-link" href="#" onclick="return false" aria-label="Cart">cart<span class="cart-count is-empty">0</span></a>
+      <a class="btn btn--primary btn--sm header-cta" href="#pricing"><span class="header-cta__label">Enrol now</span><span class="header-cta__price">₹2,999</span></a>
+      <button class="icon-btn nav-toggle" type="button" aria-label="Menu">≡</button>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+<section class="hero" id="program">
+  <div class="hero__glow"></div>
+  <div class="page-width hero__grid">
+    <div class="hero__copy">
+      <p class="eyebrow">✦ Founding cohort · First 25 students</p>
+      <h1 class="hero__title">Learn AI, build a Shopify store, <span class="hl">launch in 30 days.</span></h1>
+      <div class="hero__sub rte"><p>Fifteen live evening classes where you use AI to research a niche, build a real Shopify store and get it ready to sell — with personal feedback from your instructor and a small group of founders.</p></div>
+      <div class="hero__rating">
+        <span class="stars" aria-hidden="true">★★★★★</span>
+        <span class="hero__rating-text">Rated 4.9 by past workshop attendees</span>
+      </div>
+      <ul class="hero__bullets">
+        <li>✓ Build your store during the course, not after it</li>
+        <li>✓ No coding, no prior experience needed</li>
+        <li>✓ Recordings + templates you keep forever</li>
+      </ul>
+      <div class="hero__cta">
+        <a class="btn btn--primary btn--lg" href="#pricing">Enrol now · ₹2,999</a>
+        <a class="btn btn--ghost btn--lg" href="#curriculum">See the curriculum</a>
+      </div>
+      <ul class="hero__meta">
+        <li class="hero__meta-item hero__meta-item--save">Save ₹2,001 today</li>
+        <li class="hero__meta-item">Only 7 seats left</li>
+        <li class="hero__meta-item">Starts Oct 1, 2026 · 9:00 PM IST</li>
+        <li class="hero__meta-item">15 live classes on Google Meet</li>
+      </ul>
+    </div>
+    <div class="hero__media">
+      <div class="hero__art" aria-hidden="true">
+        <div class="hero__art-card hero__art-card--a"><b>AI</b><span>Prompt to product</span></div>
+        <div class="hero__art-ring"></div>
+        <div class="hero__art-card hero__art-card--b"><b>Shopify</b><span>Store live in 30 days</span></div>
+      </div>
+      <div class="hero__stat hero__stat--one"><b>15</b><span>live classes</span></div>
+      <div class="hero__stat hero__stat--two"><b>30</b><span>days to launch</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight tools-strip">
+  <div class="page-width">
+    <p class="tools-strip__heading">Tools you will master</p>
+    <div class="marquee">
+      <ul class="marquee__track">
+        <li class="marquee__item">Shopify</li><li class="marquee__item">ChatGPT</li><li class="marquee__item">Claude</li>
+        <li class="marquee__item">Midjourney</li><li class="marquee__item">Canva</li><li class="marquee__item">Meta Ads</li>
+        <li class="marquee__item">Google Analytics</li><li class="marquee__item">Klaviyo</li>
+        <li class="marquee__item">Shopify</li><li class="marquee__item">ChatGPT</li><li class="marquee__item">Claude</li>
+        <li class="marquee__item">Midjourney</li><li class="marquee__item">Canva</li><li class="marquee__item">Meta Ads</li>
+        <li class="marquee__item">Google Analytics</li><li class="marquee__item">Klaviyo</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight stats">
+  <div class="page-width">
+    <ul class="stats__grid">
+      <li class="stat"><span class="stat__value">15</span><span class="stat__label">live classes</span></li>
+      <li class="stat"><span class="stat__value">30</span><span class="stat__label">days from idea to launch</span></li>
+      <li class="stat"><span class="stat__value">1</span><span class="stat__label">store you actually own</span></li>
+      <li class="stat"><span class="stat__value">0</span><span class="stat__label">lines of code to write</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section section--soft video-section" id="walkthrough">
+  <div class="page-width video-section__grid">
+    <div class="video-section__copy">
+      <p class="eyebrow">See it in action</p>
+      <h2 class="h2">Two minutes inside the classroom</h2>
+      <div class="rte muted"><p>Every class is a screen-share walkthrough. Here is a short clip of how the workflow actually looks — research, build, then launch.</p></div>
+      <ul class="tick-list">
+        <li>✓ Recorded and yours to rewatch forever</li>
+        <li>✓ Live Q&amp;A at the end of every class</li>
+        <li>✓ Templates, prompts and checklists included</li>
+      </ul>
+      <a class="btn btn--primary btn--lg" href="#pricing">Get the full curriculum →</a>
+    </div>
+    <div class="video-section__media">
+      <div class="media-frame" style="--media-ratio:1.7777">
+        <div class="media-frame__fallback">
+          <span class="media-frame__badge">▶ Add your walkthrough video</span>
+          <ul class="media-frame__list">
+            <li>Niche &amp; product research with AI</li>
+            <li>Store build, theme setup &amp; apps</li>
+            <li>Launch checklist and first-order flow</li>
+          </ul>
+        </div>
+      </div>
+      <p class="video-section__caption">Videos are letterboxed, never cropped — a landscape recording stays readable on mobile.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section curriculum" id="curriculum">
+  <div class="page-width">
+    <header class="section-head">
+      <p class="eyebrow">The curriculum</p>
+      <h2 class="h2">Fifteen classes, three phases, one finished store</h2>
+      <div class="rte muted section-head__text"><p>Each phase ends with something real you can show or sell. Nothing is theoretical.</p></div>
+    </header>
+    <ol class="curriculum__list">
+      <li class="curriculum__item"><details class="curr-card" open>
+        <summary class="curr-card__summary">
+          <span class="curr-card__num">01</span>
+          <span class="curr-card__head"><span class="curr-card__title">Phase 1 — Find a niche that actually sells</span>
+            <span class="curr-card__meta"><span class="chip">4 classes</span><span class="chip">Research + validation</span></span></span>
+          <span class="curr-card__toggle">⌄</span>
+        </summary>
+        <div class="curr-card__body">
+          <div class="rte"><p>You will leave this phase with one validated niche and a product shortlist, not a folder of ideas.</p></div>
+          <ul class="lesson-list">
+            <li>✓ Using AI to map trending niches and buyer intent</li>
+            <li>✓ Validating demand before you spend a rupee</li>
+            <li>✓ Choosing products with healthy margins</li>
+            <li>✓ Designing a brand angle that stands out</li>
+          </ul>
+          <p class="curr-card__outcome">✦ <span><b>Outcome:</b> A validated niche and product shortlist.</span></p>
+        </div>
+      </details></li>
+      <li class="curriculum__item"><details class="curr-card">
+        <summary class="curr-card__summary">
+          <span class="curr-card__num">02</span>
+          <span class="curr-card__head"><span class="curr-card__title">Phase 2 — Build the store with AI</span>
+            <span class="curr-card__meta"><span class="chip">7 classes</span><span class="chip">Shopify + AI workflow</span></span></span>
+          <span class="curr-card__toggle">⌄</span>
+        </summary>
+        <div class="curr-card__body">
+          <div class="rte"><p>Every class is a screen-share build. You copy the workflow on your own store while we go.</p></div>
+          <ul class="lesson-list">
+            <li>✓ Shopify setup, domains and payments</li>
+            <li>✓ Theme structure, sections and mobile layout</li>
+            <li>✓ Writing product pages, copy and descriptions with AI</li>
+            <li>✓ Product photography and image generation</li>
+            <li>✓ Apps, email capture and abandoned-cart flows</li>
+            <li>✓ SEO basics so Google can find the store</li>
+            <li>✓ Speed, trust and legal pages</li>
+          </ul>
+          <p class="curr-card__outcome">✦ <span><b>Outcome:</b> A live, mobile-ready Shopify store.</span></p>
+        </div>
+      </details></li>
+      <li class="curriculum__item"><details class="curr-card">
+        <summary class="curr-card__summary">
+          <span class="curr-card__num">03</span>
+          <span class="curr-card__head"><span class="curr-card__title">Phase 3 — Launch, traffic and first orders</span>
+            <span class="curr-card__meta"><span class="chip">4 classes</span><span class="chip">Go-to-market</span></span></span>
+          <span class="curr-card__toggle">⌄</span>
+        </summary>
+        <div class="curr-card__body">
+          <div class="rte"><p>Launch is a checklist, not a leap of faith. You will finish with your first campaign ready to run.</p></div>
+          <ul class="lesson-list">
+            <li>✓ Meta and Google ad foundations</li>
+            <li>✓ UGC and creative testing with AI tools</li>
+            <li>✓ Organic content playbook for Instagram</li>
+            <li>✓ Reading analytics and fixing leaks</li>
+            <li>✓ Scaling what works, cutting what doesn't</li>
+          </ul>
+          <p class="curr-card__outcome">✦ <span><b>Outcome:</b> A launch checklist and your first campaign live.</span></p>
+        </div>
+      </details></li>
+    </ol>
+    <div class="curriculum__foot">
+      <p>Every class is recorded. Miss one, watch it later.</p>
+      <a class="btn btn--primary btn--lg" href="#pricing">Reserve my seat →</a>
+    </div>
+  </div>
+</section>
+
+<section class="section instructor" id="instructor">
+  <div class="page-width instructor__grid">
+    <div class="instructor__media">
+      <div class="instructor__frame">
+        <div class="instructor__placeholder"><span class="instructor__monogram">R</span><span class="instructor__placeholder-text">Add your photo in the theme editor</span></div>
+      </div>
+      <p class="instructor__badge">✓ 15+ years building online businesses</p>
+    </div>
+    <div class="instructor__copy">
+      <p class="eyebrow">Your instructor</p>
+      <h2 class="h2">Roshan Shaji</h2>
+      <p class="instructor__role">Founder, DARTS AI Academy · Trivandrum, Kerala</p>
+      <div class="rte muted"><p>I build and launch Shopify stores with AI every week, and I teach the exact workflow I use. You get my full process — the prompts, the tools, the mistakes to skip — explained live, on your own store.</p></div>
+      <ul class="tick-list tick-list--tight">
+        <li>✓ M.Tech in Computer Science</li>
+        <li>✓ Builds and ships AI-powered Shopify stores</li>
+        <li>✓ Teaches in Malayalam, English and Hindi</li>
+      </ul>
+      <a class="btn btn--primary btn--lg" href="#pricing">Learn with me →</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--soft testimonials" id="testimonials">
+  <div class="page-width">
+    <header class="section-head section-head--center">
+      <p class="eyebrow">Student results</p>
+      <h2 class="h2">People who started exactly where you are</h2>
+      <div class="rte muted section-head__text"><p>Real feedback from live workshops and cohort classes.</p></div>
+    </header>
+    <ul class="t-grid">
+      <li class="t-card"><blockquote class="t-card__quote">I joined with zero experience and published my store in the third week. The AI research part alone saved me months.</blockquote>
+        <div class="t-card__foot"><span class="t-card__avatar t-card__avatar--initial">A</span><span class="t-card__who"><b>Student name</b><span>Kochi · First cohort</span></span></div></li>
+      <li class="t-card"><blockquote class="t-card__quote">The classes were practical. We built in real time and I could ask questions about my own product, not a demo product.</blockquote>
+        <div class="t-card__foot"><span class="t-card__avatar t-card__avatar--initial">S</span><span class="t-card__who"><b>Student name</b><span>Trivandrum · Live cohort</span></span></div></li>
+      <li class="t-card"><blockquote class="t-card__quote">I had a store sitting half-finished for a year. Two sessions in, it was live and taking orders.</blockquote>
+        <div class="t-card__foot"><span class="t-card__avatar t-card__avatar--initial">N</span><span class="t-card__who"><b>Student name</b><span>Calicut · Live cohort</span></span></div></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section includes" id="included">
+  <div class="page-width">
+    <header class="section-head">
+      <p class="eyebrow">Everything included</p>
+      <h2 class="h2">What you get for the fee</h2>
+      <div class="rte muted section-head__text"><p>No upsells inside the course. Everything below is included from day one.</p></div>
+    </header>
+    <ul class="bento">
+      <li class="bento__card bento__card--wide"><span class="bento__icon">▶</span><h3 class="bento__title">15 live classes</h3><p class="bento__text">Three weeks of guided, screen-share sessions on Google Meet at 9:00 PM IST.</p><span class="bento__value">Worth ₹22,500</span></li>
+      <li class="bento__card"><span class="bento__icon">↻</span><h3 class="bento__title">Lifetime recordings</h3><p class="bento__text">Every class recorded and posted within 24 hours. Rewatch forever.</p></li>
+      <li class="bento__card bento__card--highlight"><span class="bento__icon">✦</span><h3 class="bento__title">AI prompt library</h3><p class="bento__text">The exact prompts I use for niche research, copy, product pages and ads.</p></li>
+      <li class="bento__card"><span class="bento__icon">👥</span><h3 class="bento__title">Personal feedback</h3><p class="bento__text">Small cohort, so your store gets reviewed live instead of just watching demos.</p></li>
+      <li class="bento__card"><span class="bento__icon">✓</span><h3 class="bento__title">Launch checklist</h3><p class="bento__text">A step-by-step pre-launch and first-orders checklist you can tick off.</p></li>
+      <li class="bento__card"><span class="bento__icon">🛡</span><h3 class="bento__title">Community access</h3><p class="bento__text">Private group for questions, wins and accountability after the course ends.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section section--dark pricing" id="pricing">
+  <div class="page-width">
+    <header class="section-head section-head--center">
+      <p class="eyebrow">Founding cohort price</p>
+      <h2 class="h2">One payment. Everything included.</h2>
+      <div class="rte muted section-head__text"><p>Prices go up after this cohort. Enrol now and keep lifetime access to every recording, template and update.</p></div>
+    </header>
+    <div class="pricing__card">
+      <div class="pricing__main">
+        <div class="pricing__head">
+          <span class="pricing__plan">AI × Shopify Business Bootcamp</span>
+          <span class="price price--lg price--sale"><span class="price__now">₹2,999</span><s class="price__was">₹5,000</s><span class="price__badge">Save ₹2,001</span></span>
+        </div>
+        <p class="pricing__seats">Only 7 seats left</p>
+        <ul class="tick-list tick-list--tight">
+          <li>✓ 15 live classes with recordings</li>
+          <li>✓ Complete Shopify store build, step by step</li>
+          <li>✓ AI prompt library for research, copy and ads</li>
+          <li>✓ Private community and post-course support</li>
+          <li>✓ Certificate of completion</li>
+        </ul>
+        <div class="pricing__actions">
+          <button class="btn btn--primary btn--lg btn--block">Add to cart</button>
+          <button class="btn btn--ghost btn--block">Buy it now</button>
+          <a class="btn btn--ghost btn--block" href="#" onclick="return false">Talk to me first</a>
+        </div>
+        <ul class="pricing__trust">
+          <li>🛡 Secure checkout · UPI, cards, netbanking</li>
+          <li>↻ 7-day refund if it is not for you</li>
+          <li>✉ Access details emailed within minutes</li>
+        </ul>
+      </div>
+      <aside class="pricing__aside">
+        <h3 class="pricing__side-title">Cohort details</h3>
+        <div class="rte muted"><p>Small group, so we keep it personal and every store gets reviewed.</p></div>
+        <dl class="fact-list">
+          <div><dt>Starts</dt><dd>Oct 1, 2026 · 9:00 PM IST</dd></div>
+          <div><dt>Format</dt><dd>15 live classes on Google Meet</dd></div>
+          <div><dt>Language</dt><dd>Malayalam, English &amp; Hindi</dd></div>
+          <div><dt>Access</dt><dd>Lifetime recordings + templates</dd></div>
+        </dl>
+        <a class="btn btn--ghost btn--block" href="#" onclick="return false">Ask a question first</a>
+        <p class="pricing__guarantee">🛡 <span>If the first two classes are not right for you, email us within 7 days for a full refund.</span></p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="section faq" id="faq">
+  <div class="page-width faq__grid">
+    <div class="faq__intro">
+      <p class="eyebrow">Questions</p>
+      <h2 class="h2">Before you enrol</h2>
+      <div class="rte muted"><p>Still unsure? Message me on WhatsApp and I will answer personally.</p></div>
+      <a class="btn btn--ghost btn--lg" href="#" onclick="return false">Ask on WhatsApp</a>
+    </div>
+    <div class="faq__list">
+      <details class="faq__item" open><summary class="faq__q"><span>Do I need any experience or coding skills?</span><span class="faq__icon">＋</span></summary><div class="faq__a rte"><p>None at all. We start from zero and every class is a guided screen-share.</p></div></details>
+      <details class="faq__item"><summary class="faq__q"><span>What if I miss a class?</span><span class="faq__icon">＋</span></summary><div class="faq__a rte"><p>Every session is recorded and posted within 24 hours.</p></div></details>
+      <details class="faq__item"><summary class="faq__q"><span>How much extra will I need to spend?</span><span class="faq__icon">＋</span></summary><div class="faq__a rte"><p>You can start with only a domain.</p></div></details>
+      <details class="faq__item"><summary class="faq__q"><span>Will I really have a store by the end?</span><span class="faq__icon">＋</span></summary><div class="faq__a rte"><p>Yes. Building is not homework here — we build during class.</p></div></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="page-width">
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <span class="brand__mark" aria-hidden="true">R</span>
+        <p class="site-footer__tagline">Learn AI, build a Shopify store, launch it with confidence.</p>
+        <ul class="social-row"><li><span class="icon-btn icon-btn--round">ig</span></li><li><span class="icon-btn icon-btn--round">wa</span></li><li><span class="icon-btn icon-btn--round">@</span></li></ul>
+      </div>
+      <nav class="site-footer__col"><h2 class="site-footer__title">Course</h2>
+        <ul><li><a href="#program">Program overview</a></li><li><a href="#curriculum">Curriculum</a></li><li><a href="#instructor">Instructor</a></li><li><a href="#faq">FAQ</a></li><li><a href="#pricing">Pricing &amp; enrolment</a></li></ul></nav>
+      <nav class="site-footer__col"><h2 class="site-footer__title">Support</h2>
+        <ul><li><a href="#" onclick="return false">WhatsApp us</a></li><li><a href="#" onclick="return false">hello@dartsai.academy</a></li><li><a href="#" onclick="return false">Search</a></li></ul></nav>
+      <nav class="site-footer__col"><h2 class="site-footer__title">Legal</h2>
+        <ul><li><a href="#" onclick="return false">Refund policy</a></li><li><a href="#" onclick="return false">Privacy policy</a></li><li><a href="#" onclick="return false">Terms of service</a></li><li><a href="#" onclick="return false">Contact</a></li></ul></nav>
+    </div>
+    <div class="site-footer__trust">
+      <span class="trust-chip">✓ Live classes on Google Meet</span>
+      <span class="trust-chip">✓ Lifetime access to recordings</span>
+      <span class="trust-chip">✓ Certificate on completion</span>
+      <span class="trust-chip">✓ Support in Malayalam, English &amp; Hindi</span>
+    </div>
+    <div class="site-footer__bottom">
+      <p class="site-footer__copy">© 2026 DARTS AI Academy. All rights reserved.</p>
+      <div class="site-footer__pay"><span class="trust-chip trust-chip--sm">🛡 Secure checkout</span></div>
+    </div>
+  </div>
+</footer>
+
+<div class="buy-bar is-visible">
+  <div class="buy-bar__inner page-width">
+    <div class="buy-bar__info">
+      <span class="buy-bar__title">AI × Shopify Business Bootcamp</span>
+      <span class="buy-bar__meta"><span class="price price--sm"><span class="price__now">₹2,999</span><s class="price__was">₹5,000</s></span><span class="buy-bar__seats">Only 7 seats left</span></span>
+    </div>
+    <button class="btn btn--primary buy-bar__btn">Enrol now</button>
+  </div>
+</div>
+
+<script src="theme.js" defer></script>
+</body>
+</html>

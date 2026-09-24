@@ -1,0 +1,33 @@
+{%- comment -%}
+  Always-working contact link.
+  Shopify has no routes.contact_url, so this resolves a destination that is
+  guaranteed to exist: explicit link -> WhatsApp -> support email -> shop email.
+  Accepts: link, label, class, wa_text (optional custom WhatsApp message)
+{%- endcomment -%}
+{%- liquid
+  assign wa_number = settings.whatsapp_number | default: ''
+  assign wa_message = wa_text | default: settings.whatsapp_message
+  assign email_address = settings.support_email | default: shop.email | default: ''
+
+  assign wa_href = ''
+  if wa_number != ''
+    assign wa_href = 'https://wa.me/' | append: wa_number
+    if wa_message != blank
+      assign wa_href = wa_href | append: '?text=' | append: wa_message | url_encode
+    endif
+  endif
+
+  assign email_href = ''
+  if email_address != ''
+    assign email_href = 'mailto:' | append: email_address
+  endif
+
+  assign href = link | default: wa_href | default: email_href | default: routes.root_url
+  assign is_external = false
+  if href contains 'wa.me'
+    assign is_external = true
+  endif
+  assign link_class = class | default: 'link-arrow'
+  assign link_label = label | default: 'Contact us'
+-%}
+<a class="{{ link_class }}" href="{{ href }}"{% if is_external %} target="_blank" rel="noopener"{% endif %}>{{ link_label }}{% if icon_arrow %}{% render 'icon', name: 'arrow-right', size: 16 %}{% endif %}</a>

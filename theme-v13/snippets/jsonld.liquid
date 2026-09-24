@@ -1,0 +1,122 @@
+{%- liquid
+  assign course_product = all_products[settings.course_product_handle]
+  if request.page_type == 'product' and product != blank
+    assign course_product = product
+  endif
+  assign org_logo = settings.logo | default: settings.share_image
+  assign org_logo_url = ''
+  if org_logo != blank
+    assign org_logo_url = org_logo | image_url: width: 512 | prepend: 'https:'
+  endif
+  assign product_schema_url = course_product.url | prepend: request.origin
+  assign org_id = request.origin | append: '/#organization'
+  assign site_id = request.origin | append: '/#website'
+  assign availability = 'https://schema.org/SoldOut'
+  if course_product.available
+    assign availability = 'https://schema.org/InStock'
+  endif
+-%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": {{ org_id | json }},
+      "name": {{ settings.seo_org_name | default: shop.name | json }},
+      "url": {{ request.origin | json }},
+      {%- if org_logo_url != blank -%}
+      "logo": {{ org_logo_url | json }},
+      {%- endif -%}
+      {%- if settings.social_instagram != blank or settings.social_linkedin != blank or settings.social_youtube != blank or settings.seo_same_as != blank -%}
+      "sameAs": [
+        {%- assign first_profile = true -%}
+        {%- if settings.social_instagram != blank -%}{{ settings.social_instagram | json }}{%- assign first_profile = false -%}{%- endif -%}
+        {%- if settings.social_linkedin != blank -%}{% unless first_profile %},{% endunless %}{{ settings.social_linkedin | json }}{%- assign first_profile = false -%}{%- endif -%}
+        {%- if settings.social_youtube != blank -%}{% unless first_profile %},{% endunless %}{{ settings.social_youtube | json }}{%- assign first_profile = false -%}{%- endif -%}
+        {%- if settings.seo_same_as != blank -%}{% unless first_profile %},{% endunless %}{{ settings.seo_same_as | json }}{%- endif -%}
+      ],
+      {%- endif -%}
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": {{ settings.support_email | default: shop.email | json }},
+        "availableLanguage": ["en", "ml", "hi"]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": {{ site_id | json }},
+      "url": {{ request.origin | json }},
+      "name": {{ shop.name | json }},
+      "publisher": { "@id": {{ org_id | json }} },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": {{ request.origin | append: '/search?q={search_term_string}' | json }} },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    {%- if course_product != blank and course_product.title != blank -%},
+    {
+      "@type": "Product",
+      "@id": {{ product_schema_url | append: '#product' | json }},
+      "name": {{ course_product.title | json }},
+      "description": {{ course_product.description | strip_html | truncatewords: 60 | json }},
+      {%- if course_product.featured_image != blank -%}
+      "image": [{{ course_product.featured_image | image_url: width: 1200 | prepend: 'https:' | json }}],
+      {%- endif -%}
+      "brand": { "@type": "Brand", "name": {{ settings.seo_org_name | default: shop.name | json }} },
+      "url": {{ product_schema_url | json }},
+      "offers": {
+        "@type": "Offer",
+        "url": {{ product_schema_url | json }},
+        "priceCurrency": {{ cart.currency.iso_code | json }},
+        "price": {{ course_product.price | divided_by: 100.0 }},
+        {%- if course_product.compare_at_price > course_product.price -%}
+        "priceSpecification": {
+          "@type": "PriceSpecification",
+          "price": {{ course_product.price | divided_by: 100.0 }},
+          "priceCurrency": {{ cart.currency.iso_code | json }},
+          "valueAddedTaxIncluded": true
+        },
+        {%- endif -%}
+        "availability": {{ availability | json }},
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": { "@id": {{ org_id | json }} }
+      }
+    },
+    {
+      "@type": "Course",
+      "name": {{ course_product.title | default: shop.name | json }},
+      "description": {{ course_product.description | strip_html | truncatewords: 60 | default: shop.description | json }},
+      "url": {{ product_schema_url | json }},
+      "provider": { "@id": {{ org_id | json }} },
+      "inLanguage": {{ request.locale.iso_code | json }},
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "online",
+        "courseWorkload": "PT15H",
+        {%- if settings.cohort_start_date != blank -%}
+        "startDate": {{ settings.cohort_start_date | json }},
+        {%- endif -%}
+        "location": { "@type": "VirtualLocation", "url": {{ product_schema_url | json }} },
+        "instructor": {
+          "@type": "Person",
+          "name": "Roshan Shaji",
+          "jobTitle": "Founder, DARTS AI Academy",
+          "knowsAbout": ["Shopify", "Artificial Intelligence", "Dropshipping", "Ecommerce"]
+        }
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": {{ course_product.price | divided_by: 100.0 }},
+        "priceCurrency": {{ cart.currency.iso_code | json }},
+        "category": "Paid",
+        "availability": {{ availability | json }},
+        "url": {{ product_schema_url | json }}
+      }
+    }
+    {%- endif -%}
+  ]
+}
+</script>

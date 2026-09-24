@@ -1,0 +1,35 @@
+{%- comment -%}
+  Renders a live price from a product object.
+  Accepts: product (required), size ('sm'|'md'|'lg'), show_badge (bool), show_tax_note (bool)
+{%- endcomment -%}
+{%- liquid
+  assign price_product = product
+  assign on_sale = false
+  assign save_amount = 0
+  assign money_now = price_product.price | money
+  if price_product.compare_at_price > price_product.price
+    assign on_sale = true
+    assign save_amount = price_product.compare_at_price | minus: price_product.price
+    assign save_money = save_amount | money
+  endif
+  assign price_size = size | default: 'md'
+  if price_product == blank
+    assign placeholder = 299900 | money
+    assign money_now = placeholder
+  endif
+-%}
+<span class="price price--{{ price_size }}{% if on_sale %} price--sale{% endif %}">
+  <span class="price__now">{{ money_now }}</span>
+  {%- if on_sale -%}
+    <s class="price__was">
+      <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+      {{ price_product.compare_at_price | money }}
+    </s>
+    {%- if show_badge -%}
+      <span class="price__badge">{{ 'products.product.on_sale' | t: amount: save_money }}</span>
+    {%- endif -%}
+  {%- endif -%}
+  {%- if show_tax_note -%}
+    <span class="price__note">{{ 'products.product.including_taxes' | t }}</span>
+  {%- endif -%}
+</span>

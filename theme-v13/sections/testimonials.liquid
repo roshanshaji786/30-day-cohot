@@ -1,0 +1,117 @@
+<section class="section section--soft testimonials" {% if section.settings.anchor_id != blank %}id="{{ section.settings.anchor_id }}"{% endif %}>
+  <div class="page-width">
+    <header class="section-head section-head--center">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h2 class="h2">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}<div class="rte muted section-head__text">{{ section.settings.text }}</div>{%- endif -%}
+    </header>
+
+    {%- if section.settings.show_aggregate and section.settings.aggregate_rating != blank -%}
+      <p class="testimonials__aggregate">
+        {% render 'stars', rating: section.settings.aggregate_rating, count: section.settings.aggregate_count %}
+        <span>{{ section.settings.aggregate_text }}</span>
+      </p>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="t-grid" role="list">
+        {%- for block in section.blocks -%}
+          <li class="t-card" {{ block.shopify_attributes }}>
+            {%- if block.settings.rating > 0 -%}
+              <span class="t-card__stars">{% render 'stars', rating: block.settings.rating, count: 0, label: block.settings.author %}</span>
+            {%- endif -%}
+            <blockquote class="t-card__quote">{{ block.settings.quote }}</blockquote>
+            <div class="t-card__foot">
+              {%- if block.settings.image != blank -%}
+                {{ block.settings.image | image_url: width: 120 | image_tag: widths: '60,120', sizes: '44px', loading: 'lazy', class: 't-card__avatar', alt: block.settings.author }}
+              {%- else -%}
+                <span class="t-card__avatar t-card__avatar--initial" aria-hidden="true">{{ block.settings.author | slice: 0, 1 }}</span>
+              {%- endif -%}
+              <span class="t-card__who">
+                <b>{{ block.settings.author }}</b>
+                <span>{{ block.settings.role }}</span>
+              </span>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <div class="empty-state">
+        <p class="empty-state__title">Add your first testimonial</p>
+        <p class="empty-state__text">Open the theme editor, click this section, then <b>Add testimonial</b>. Real student quotes with a name, role and photo convert far better than any badge.</p>
+        <ul class="empty-state__list" role="list">
+          <li>Ask one question: what changed after the course?</li>
+          <li>Ask for the store link or a screenshot</li>
+          <li>Get permission to use their full name</li>
+        </ul>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.results_label != blank -%}
+      <p class="testimonials__results-label">{{ section.settings.results_label }}</p>
+      <ul class="results-row" role="list">
+        {%- for i in (1..4) -%}
+          {%- assign key = 'result_' | append: i -%}
+          {%- assign img = section.settings[key] -%}
+          {%- if img != blank -%}
+            <li class="results-row__item">
+              {{ img | image_url: width: 700 | image_tag: widths: '300,500,700', sizes: '(max-width: 749px) 70vw, 280px', loading: 'lazy', class: 'results-row__img', alt: img.alt | default: 'Student store' }}
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    { "type": "text", "id": "anchor_id", "label": "Anchor id", "default": "testimonials" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Student results" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "People who started exactly where you are" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Real feedback from live workshops and cohort classes.</p>" },
+    { "type": "header", "content": "Aggregate rating" },
+    { "type": "checkbox", "id": "show_aggregate", "label": "Show overall rating", "default": false },
+    { "type": "range", "id": "aggregate_rating", "label": "Average rating", "min": 1, "max": 5, "step": 0.1, "default": 4.9 },
+    { "type": "number", "id": "aggregate_count", "label": "Number of reviews", "default": 0 },
+    { "type": "text", "id": "aggregate_text", "label": "Aggregate text", "default": "average rating from verified students" },
+    { "type": "header", "content": "Student stores" },
+    { "type": "text", "id": "results_label", "label": "Screenshot row label", "default": "Stores built by students" },
+    { "type": "image_picker", "id": "result_1", "label": "Screenshot 1" },
+    { "type": "image_picker", "id": "result_2", "label": "Screenshot 2" },
+    { "type": "image_picker", "id": "result_3", "label": "Screenshot 3" },
+    { "type": "image_picker", "id": "result_4", "label": "Screenshot 4" }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "I joined with zero experience and published my store in the third week. The AI research part alone saved me months." },
+        { "type": "text", "id": "author", "label": "Name", "default": "Student name" },
+        { "type": "text", "id": "role", "label": "Role or city", "default": "Kochi \u00b7 First cohort" },
+        { "type": "image_picker", "id": "image", "label": "Photo" },
+        { "type": "range", "id": "rating", "label": "Rating", "min": 0, "max": 5, "step": 0.5, "default": 5 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        { "type": "testimonial" },
+        { "type": "testimonial", "settings": {
+          "quote": "The classes were practical. We built in real time and I could ask questions about my own product, not a demo product.",
+          "author": "Student name",
+          "role": "Trivandrum \u00b7 Live cohort" } },
+        { "type": "testimonial", "settings": {
+          "quote": "I had a store sitting half-finished for a year. Two sessions in, it was live and taking orders.",
+          "author": "Student name",
+          "role": "Calicut \u00b7 Live cohort" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,42 @@
+{%- liquid
+  assign og_title = page_title | default: shop.name
+  assign og_url = canonical_url | default: request.origin
+  assign og_type = 'website'
+  assign og_description = page_description | default: shop.description | default: shop.name
+
+  if request.page_type == 'product' and product != blank
+    assign og_type = 'product'
+    assign og_description = product.description | strip_html | truncatewords: 40
+  elsif request.page_type == 'article' and article != blank
+    assign og_type = 'article'
+    assign og_description = article.excerpt_or_content | strip_html | truncatewords: 40
+  endif
+
+  assign og_image = settings.share_image
+  if page_image != blank
+    assign og_image = page_image
+  endif
+-%}
+<meta name="description" content="{{ og_description | escape }}">
+<meta property="og:site_name" content="{{ shop.name | escape }}">
+<meta property="og:url" content="{{ og_url }}">
+<meta property="og:title" content="{{ og_title | escape }}">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:description" content="{{ og_description | escape }}">
+{%- if og_image != blank -%}
+  <meta property="og:image" content="http:{{ og_image | image_url: width: 1200 }}">
+  <meta property="og:image:secure_url" content="https:{{ og_image | image_url: width: 1200 }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ og_image.alt | default: og_title | escape }}">
+{%- endif -%}
+{%- if request.page_type == 'product' and product != blank -%}
+  <meta property="product:price:amount" content="{{ product.price | divided_by: 100.0 }}">
+  <meta property="product:price:currency" content="{{ cart.currency.iso_code }}">
+{%- endif -%}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ og_title | escape }}">
+<meta name="twitter:description" content="{{ og_description | escape }}">
+{%- if og_image != blank -%}
+  <meta name="twitter:image" content="https:{{ og_image | image_url: width: 1200 }}">
+{%- endif -%}

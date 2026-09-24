@@ -1,0 +1,41 @@
+<section class="section section--tight tools-strip" {% if section.settings.anchor_id != blank %}id="{{ section.settings.anchor_id }}"{% endif %}>
+  <div class="page-width">
+    {%- if section.settings.heading != blank -%}<p class="tools-strip__heading">{{ section.settings.heading }}</p>{%- endif -%}
+    <div class="marquee" data-marquee>
+      <ul class="marquee__track" role="list">
+        {%- for block in section.blocks -%}
+          <li class="marquee__item" {{ block.shopify_attributes }}>{{ block.settings.text }}</li>
+        {%- endfor -%}
+        {%- comment -%} duplicate for a seamless loop; hidden from assistive tech {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          <li class="marquee__item" aria-hidden="true">{{ block.settings.text }}</li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Tools strip",
+  "settings": [
+    { "type": "text", "id": "anchor_id", "label": "Anchor id" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Tools you will master" }
+  ],
+  "blocks": [
+    { "type": "tool", "name": "Tool", "settings": [{ "type": "text", "id": "text", "label": "Text", "default": "Shopify" }] }
+  ],
+  "presets": [
+    { "name": "Tools strip", "blocks": [
+      { "type": "tool", "settings": { "text": "Shopify" } },
+      { "type": "tool", "settings": { "text": "ChatGPT" } },
+      { "type": "tool", "settings": { "text": "Claude" } },
+      { "type": "tool", "settings": { "text": "Midjourney" } },
+      { "type": "tool", "settings": { "text": "Canva" } },
+      { "type": "tool", "settings": { "text": "Meta Ads" } },
+      { "type": "tool", "settings": { "text": "Google Analytics" } },
+      { "type": "tool", "settings": { "text": "Klaviyo" } }
+    ] }
+  ]
+}
+{% endschema %}

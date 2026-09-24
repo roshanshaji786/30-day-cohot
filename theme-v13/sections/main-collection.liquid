@@ -1,0 +1,57 @@
+<section class="section collection">
+  <div class="page-width">
+    {%- if section.settings.show_breadcrumbs -%}{% render 'breadcrumbs' %}{%- endif -%}
+    <header class="section-head">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h1 class="h2">{{ collection.title }}</h1>
+      {%- if collection.description != blank -%}<div class="rte muted section-head__text">{{ collection.description }}</div>{%- endif -%}
+    </header>
+
+    {%- paginate collection.products by section.settings.per_page -%}
+      {%- if collection.products.size > 0 -%}
+        <ul class="product-grid" role="list">
+          {%- for product in collection.products -%}
+            <li class="product-card">
+              <a class="product-card__media" href="{{ product.url }}" aria-hidden="true" tabindex="-1">
+                {%- if product.featured_media -%}
+                  {{ product.featured_media | image_url: width: 900 | image_tag: widths: '300,500,700,900', sizes: '(max-width: 749px) 92vw, (max-width: 1099px) 45vw, 30vw', loading: 'lazy', class: 'product-card__img', alt: product.featured_media.alt | default: product.title }}
+                {%- else -%}
+                  <span class="product-card__placeholder">{% render 'icon', name: 'spark', size: 30 %}</span>
+                {%- endif -%}
+                {%- if product.compare_at_price > product.price -%}<span class="product-card__tag">{{ 'products.product.sale' | t }}</span>{%- endif -%}
+              </a>
+              <div class="product-card__body">
+                <h2 class="product-card__title"><a href="{{ product.url }}">{{ product.title }}</a></h2>
+                {%- if section.settings.show_description and product.description != blank -%}
+                  <p class="product-card__text">{{ product.description | strip_html | truncatewords: 18 }}</p>
+                {%- endif -%}
+                <div class="product-card__foot">
+                  {% render 'price', product: product, size: 'md' %}
+                  <a class="btn btn--primary btn--sm" href="{{ product.url }}">{{ 'products.product.view_details' | t }}</a>
+                </div>
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+        {%- render 'pagination', paginate: paginate -%}
+      {%- else -%}
+        <div class="empty-state">
+          <p class="empty-state__title">{{ 'collections.general.empty' | t }}</p>
+          <a class="btn btn--primary btn--lg" href="{{ routes.root_url }}">{{ 'general.404.cta' | t }}</a>
+        </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection",
+  "settings": [
+    { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true },
+    { "type": "checkbox", "id": "show_description", "label": "Show product summaries", "default": true },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our store" },
+    { "type": "range", "id": "per_page", "label": "Products per page", "min": 4, "max": 24, "step": 4, "default": 12 }
+  ]
+}
+{% endschema %}

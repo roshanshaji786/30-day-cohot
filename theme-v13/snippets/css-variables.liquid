@@ -1,0 +1,44 @@
+{%- liquid
+  assign heading_font = settings.type_heading_font
+  assign heading_font_bold = heading_font | font_modify: 'weight', 'bold'
+  assign heading_font_black = heading_font | font_modify: 'weight', 'bolder'
+  assign body_font = settings.type_body_font
+  assign body_font_bold = body_font | font_modify: 'weight', 'bold'
+  assign body_font_italic = body_font | font_modify: 'style', 'italic'
+-%}
+{% style %}
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ heading_font_bold | font_face: font_display: 'swap' }}
+  {{ heading_font_black | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+  {{ body_font_bold | font_face: font_display: 'swap' }}
+  {{ body_font_italic | font_face: font_display: 'swap' }}
+
+  :root{
+    --font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --font-body: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --heading-scale: {{ settings.heading_scale | divided_by: 100.0 }};
+    --body-scale: {{ settings.body_scale | divided_by: 100.0 }};
+
+    --c-bg: {{ settings.color_bg }};
+    --c-surface: {{ settings.color_surface }};
+    --c-ink: {{ settings.color_ink }};
+    --c-muted: {{ settings.color_muted }};
+    --c-line: {{ settings.color_line }};
+    --c-accent: {{ settings.color_accent }};
+    --c-on-accent: {{ settings.color_on_accent }};
+    --c-dark: {{ settings.color_dark }};
+    --c-on-dark: {{ settings.color_on_dark }};
+
+    --page-width: {{ settings.page_width }}px;
+    --section-space: {{ settings.section_spacing }}px;
+    --radius: {{ settings.corner_radius }}px;
+    --radius-sm: {{ settings.corner_radius | divided_by: 2 | at_least: 4 }}px;
+    --radius-lg: {{ settings.corner_radius | times: 1.4 | round }}px;
+    --header-h: 66px;
+
+    --shadow-sm: 0 1px 2px rgba(16, 16, 32, .06), 0 2px 8px rgba(16, 16, 32, .04);
+    --shadow-md: 0 8px 24px rgba(16, 16, 32, .08), 0 2px 6px rgba(16, 16, 32, .04);
+    --shadow-lg: 0 24px 64px rgba(16, 16, 32, .14);
+  }
+{% endstyle %}

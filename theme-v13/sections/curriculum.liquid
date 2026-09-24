@@ -1,0 +1,112 @@
+<section class="section curriculum" {% if section.settings.anchor_id != blank %}id="{{ section.settings.anchor_id }}"{% endif %}>
+  <div class="page-width">
+    <header class="section-head">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h2 class="h2">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}<div class="rte muted section-head__text">{{ section.settings.text }}</div>{%- endif -%}
+    </header>
+
+    <ol class="curriculum__list" role="list">
+      {%- for block in section.blocks -%}
+        <li class="curriculum__item" {{ block.shopify_attributes }}>
+          <details class="curr-card" {% if forloop.first %}open{% endif %}>
+            <summary class="curr-card__summary">
+              <span class="curr-card__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+              <span class="curr-card__head">
+                <span class="curr-card__title">{{ block.settings.title }}</span>
+                <span class="curr-card__meta">
+                  {%- if block.settings.duration != blank -%}<span class="chip">{% render 'icon', name: 'clock', size: 13 %}{{ block.settings.duration }}</span>{%- endif -%}
+                  {%- if block.settings.count != blank -%}<span class="chip">{% render 'icon', name: 'spark', size: 13 %}{{ block.settings.count }}</span>{%- endif -%}
+                </span>
+              </span>
+              <span class="curr-card__toggle" aria-hidden="true">{% render 'icon', name: 'chevron-down', size: 20 %}</span>
+            </summary>
+            <div class="curr-card__body">
+              {%- if block.settings.text != blank -%}<div class="rte">{{ block.settings.text }}</div>{%- endif -%}
+              {%- assign lessons = block.settings.lessons | newline_to_br | split: '<br />' -%}
+              {%- if block.settings.lessons != blank -%}
+                <ul class="lesson-list" role="list">
+                  {%- for lesson in lessons -%}
+                    {%- assign clean = lesson | strip -%}
+                    {%- if clean != blank -%}
+                      <li>{% render 'icon', name: 'check', size: 15 %}<span>{{ clean }}</span></li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+              {%- if block.settings.outcome != blank -%}
+                <p class="curr-card__outcome">{% render 'icon', name: 'spark', size: 15 %}<span><b>Outcome:</b> {{ block.settings.outcome }}</span></p>
+              {%- endif -%}
+            </div>
+          </details>
+        </li>
+      {%- endfor -%}
+    </ol>
+
+    {%- if section.settings.footer_text != blank or section.settings.cta_label != blank -%}
+      <div class="curriculum__foot">
+        {%- if section.settings.footer_text != blank -%}<p>{{ section.settings.footer_text }}</p>{%- endif -%}
+        {%- if section.settings.cta_label != blank -%}
+          <a class="btn btn--primary btn--lg" href="{{ section.settings.cta_link | default: '#pricing' }}">{{ section.settings.cta_label }}{% render 'icon', name: 'arrow-right', size: 18 %}</a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Curriculum",
+  "settings": [
+    { "type": "text", "id": "anchor_id", "label": "Anchor id", "default": "curriculum" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "The curriculum" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Fifteen classes, three phases, one finished store" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Each phase ends with something real you can show or sell. Nothing is theoretical.</p>" },
+    { "type": "text", "id": "footer_text", "label": "Footer text", "default": "Every class is recorded. Miss one, watch it later." },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Reserve my seat" },
+    { "type": "url", "id": "cta_link", "label": "Button link" }
+  ],
+  "blocks": [
+    {
+      "type": "module",
+      "name": "Phase",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Phase title" },
+        { "type": "text", "id": "duration", "label": "Duration chip", "default": "5 classes" },
+        { "type": "text", "id": "count", "label": "Detail chip", "default": "Live on Google Meet" },
+        { "type": "textarea", "id": "lessons", "label": "Class list (one per line)", "default": "Class 1\nClass 2\nClass 3" },
+        { "type": "richtext", "id": "text", "label": "Description" },
+        { "type": "text", "id": "outcome", "label": "Outcome line" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Curriculum",
+      "blocks": [
+        { "type": "module", "settings": {
+          "title": "Phase 1 — Find a niche that actually sells",
+          "duration": "4 classes",
+          "count": "Research + validation",
+          "lessons": "Using AI to map trending niches and buyer intent\nValidating demand before you spend a rupee\nChoosing products with healthy margins\nDesigning a brand angle that stands out",
+          "text": "<p>You will leave this phase with one validated niche and a product shortlist, not a folder of ideas.</p>",
+          "outcome": "A validated niche and product shortlist." } },
+        { "type": "module", "settings": {
+          "title": "Phase 2 — Build the store with AI",
+          "duration": "7 classes",
+          "count": "Shopify + AI workflow",
+          "lessons": "Shopify setup, domains and payments\nTheme structure, sections and mobile layout\nWriting product pages, copy and descriptions with AI\nProduct photography and image generation\nApps, email capture and abandoned-cart flows\nSEO basics so Google can find the store\nSpeed, trust and legal pages",
+          "text": "<p>Every class is a screen-share build. You copy the workflow on your own store while we go.</p>",
+          "outcome": "A live, mobile-ready Shopify store." } },
+        { "type": "module", "settings": {
+          "title": "Phase 3 — Launch, traffic and first orders",
+          "duration": "4 classes",
+          "count": "Go-to-market",
+          "lessons": "Meta and Google ad foundations\nUGC and creative testing with AI tools\nOrganic content playbook for Instagram\nReading analytics and fixing leaks\nScaling what works, cutting what doesn't",
+          "text": "<p>Launch is a checklist, not a leap of faith. You will finish with your first campaign ready to run.</p>",
+          "outcome": "A launch checklist and your first campaign live." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

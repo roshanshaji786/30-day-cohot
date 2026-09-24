@@ -1,0 +1,38 @@
+<section class="section collections-list">
+  <div class="page-width">
+    <header class="section-head">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h1 class="h2">{{ section.settings.heading }}</h1>
+    </header>
+    {%- paginate collections by 12 -%}
+      <ul class="product-grid" role="list">
+        {%- for collection in collections -%}
+          <li class="product-card">
+            <a class="product-card__media" href="{{ collection.url }}" aria-hidden="true" tabindex="-1">
+              {%- if collection.featured_image -%}
+                {{ collection.featured_image | image_url: width: 900 | image_tag: widths: '300,500,700,900', sizes: '(max-width: 749px) 92vw, 30vw', loading: 'lazy', class: 'product-card__img', alt: collection.featured_image.alt | default: collection.title }}
+              {%- else -%}
+                <span class="product-card__placeholder">{% render 'icon', name: 'cart', size: 28 %}</span>
+              {%- endif -%}
+            </a>
+            <div class="product-card__body">
+              <h2 class="product-card__title"><a href="{{ collection.url }}">{{ collection.title }}</a></h2>
+              <p class="product-card__text">{{ 'collections.general.products_count' | t: count: collection.all_products_count }}</p>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+      {%- render 'pagination', paginate: paginate -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collections list",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Browse" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Collections" }
+  ]
+}
+{% endschema %}

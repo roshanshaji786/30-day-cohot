@@ -1,0 +1,21 @@
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="{{ routes.root_url }}">{{ 'general.nav.home' | t }}</a></li>
+    {%- case request.page_type -%}
+      {%- when 'product' -%}
+        {%- if collection -%}<li><a href="{{ collection.url }}">{{ collection.title }}</a></li>{%- endif -%}
+        <li aria-current="page">{{ product.title }}</li>
+      {%- when 'collection' -%}
+        <li aria-current="page">{{ collection.title }}</li>
+      {%- when 'page' -%}
+        <li aria-current="page">{{ page.title }}</li>
+      {%- when 'article' -%}
+        <li><a href="{{ blog.url }}">{{ blog.title }}</a></li>
+        <li aria-current="page">{{ article.title }}</li>
+      {%- when 'blog' -%}
+        <li aria-current="page">{{ blog.title }}</li>
+      {%- else -%}
+        <li aria-current="page">{{ page_title }}</li>
+    {%- endcase -%}
+  </ol>
+</nav>

@@ -1,0 +1,94 @@
+{%- liquid
+  case section.settings.image_position
+    when 'top'
+      assign obj_pos = 'center top'
+    when 'bottom'
+      assign obj_pos = 'center bottom'
+    else
+          assign obj_pos = 'center center'
+  endcase
+  assign img_style = 'object-position: ' | append: obj_pos
+-%}
+<section class="section instructor{% if section.settings.dark %} section--dark{% endif %}" {% if section.settings.anchor_id != blank %}id="{{ section.settings.anchor_id }}"{% endif %}>
+  <div class="page-width instructor__grid">
+    <div class="instructor__media">
+      <div class="instructor__frame">
+        {%- if section.settings.image != blank -%}
+          {{ section.settings.image
+             | image_url: width: 1000
+             | image_tag:
+               widths: '320,480,720,1000',
+               sizes: '(max-width: 899px) 70vw, 380px',
+               loading: 'lazy',
+               class: 'instructor__img',
+               style: img_style,
+               alt: section.settings.image.alt | default: section.settings.name }}
+        {%- else -%}
+          <div class="instructor__placeholder" aria-hidden="true">
+            <span class="instructor__monogram">{{ section.settings.name | slice: 0, 1 }}</span>
+            <span class="instructor__placeholder-text">Add your photo in the theme editor</span>
+          </div>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.badge != blank -%}
+        <p class="instructor__badge">{% render 'icon', name: 'check-circle', size: 16 %}{{ section.settings.badge }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="instructor__copy">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h2 class="h2">{{ section.settings.heading }}</h2>
+      {%- if section.settings.role != blank -%}<p class="instructor__role">{{ section.settings.role }}</p>{%- endif -%}
+      {%- if section.settings.bio != blank -%}<div class="rte muted">{{ section.settings.bio }}</div>{%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <ul class="tick-list tick-list--tight" role="list">
+          {%- for block in section.blocks -%}
+            <li {{ block.shopify_attributes }}>{% render 'icon', name: 'check-circle', size: 18 %}<span>{{ block.settings.text }}</span></li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {%- if section.settings.cta_label != blank -%}
+        <a class="btn btn--primary btn--lg" href="{{ section.settings.cta_link | default: '#pricing' }}">{{ section.settings.cta_label }}{% render 'icon', name: 'arrow-right', size: 18 %}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Instructor",
+  "settings": [
+    { "type": "text", "id": "anchor_id", "label": "Anchor id", "default": "instructor" },
+    { "type": "checkbox", "id": "dark", "label": "Dark section", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Your instructor" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Roshan Shaji" },
+    { "type": "text", "id": "role", "label": "Role line", "default": "Founder, DARTS AI Academy \u00b7 Trivandrum, Kerala" },
+    { "type": "richtext", "id": "bio", "label": "Bio", "default": "<p>I build and launch Shopify stores with AI every week, and I teach the exact workflow I use. You get my full process \u2014 the prompts, the tools, the mistakes to skip \u2014 explained live, on your own store.</p>" },
+    { "type": "header", "content": "Photo" },
+    { "type": "image_picker", "id": "image", "label": "Photo", "info": "Portrait, at least 800 \u00d7 1000px." },
+    { "type": "select", "id": "image_position", "label": "Photo crop", "options": [
+      { "value": "center", "label": "Centre" },
+      { "value": "top", "label": "Top" },
+      { "value": "bottom", "label": "Bottom" }
+    ], "default": "center" },
+    { "type": "text", "id": "badge", "label": "Badge", "default": "15+ years building online businesses" },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Learn with me" },
+    { "type": "url", "id": "cta_link", "label": "Button link" }
+  ],
+  "blocks": [
+    { "type": "credential", "name": "Credential", "settings": [{ "type": "text", "id": "text", "label": "Text", "default": "Credential" }] }
+  ],
+  "presets": [
+    {
+      "name": "Instructor",
+      "blocks": [
+        { "type": "credential", "settings": { "text": "M.Tech in Computer Science" } },
+        { "type": "credential", "settings": { "text": "Builds and ships AI-powered Shopify stores" } },
+        { "type": "credential", "settings": { "text": "Teaches in Malayalam, English and Hindi" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

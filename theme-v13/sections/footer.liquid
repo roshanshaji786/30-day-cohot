@@ -1,0 +1,143 @@
+{%- liquid
+  assign course_product = all_products[settings.course_product_handle]
+-%}
+<footer class="site-footer" data-footer>
+  <div class="page-width">
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        {%- if settings.logo != blank -%}
+          {{ settings.logo | image_url: width: 320 | image_tag: widths: '120,200,320', sizes: '150px', loading: 'lazy', class: 'site-footer__logo', alt: shop.name }}
+        {%- else -%}
+          <span class="brand__mark" aria-hidden="true">{{ settings.brand_name | slice: 0, 1 }}</span>
+        {%- endif -%}
+        <p class="site-footer__tagline">{{ section.settings.tagline }}</p>
+        <ul class="social-row" role="list">
+          {%- if settings.social_instagram != blank -%}
+            <li><a class="icon-btn icon-btn--round" href="{{ settings.social_instagram }}" target="_blank" rel="noopener" aria-label="{{ 'general.social.instagram' | t }}">{% render 'icon', name: 'instagram', size: 19 %}</a></li>
+          {%- endif -%}
+          {%- if settings.social_youtube != blank -%}
+            <li><a class="icon-btn icon-btn--round" href="{{ settings.social_youtube }}" target="_blank" rel="noopener" aria-label="{{ 'general.social.youtube' | t }}">{% render 'icon', name: 'youtube', size: 19 %}</a></li>
+          {%- endif -%}
+          {%- if settings.social_linkedin != blank -%}
+            <li><a class="icon-btn icon-btn--round" href="{{ settings.social_linkedin }}" target="_blank" rel="noopener" aria-label="{{ 'general.social.linkedin' | t }}">{% render 'icon', name: 'linkedin', size: 19 %}</a></li>
+          {%- endif -%}
+          {%- if settings.whatsapp_number != blank -%}
+            <li><a class="icon-btn icon-btn--round" href="https://wa.me/{{ settings.whatsapp_number }}?text={{ settings.whatsapp_message | url_encode }}" target="_blank" rel="noopener" aria-label="{{ 'general.social.whatsapp' | t }}">{% render 'icon', name: 'whatsapp', size: 19 %}</a></li>
+          {%- endif -%}
+          {%- if settings.support_email != blank -%}
+            <li><a class="icon-btn icon-btn--round" href="mailto:{{ settings.support_email }}" aria-label="{{ settings.support_email }}">{% render 'icon', name: 'mail', size: 19 %}</a></li>
+          {%- endif -%}
+        </ul>
+      </div>
+
+      <nav class="site-footer__col" aria-labelledby="footer-nav-title">
+        <h2 class="site-footer__title" id="footer-nav-title">{{ section.settings.menu_title }}</h2>
+        <ul role="list">
+          {%- assign footer_menu_count = section.settings.menu.links.size | default: 0 -%}
+          {%- if section.settings.menu != blank and footer_menu_count > 0 -%}
+            {%- for link in section.settings.menu.links -%}
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+            {%- endfor -%}
+          {%- else -%}
+            <li><a href="{{ routes.root_url }}#program">Program overview</a></li>
+            <li><a href="{{ routes.root_url }}#curriculum">Curriculum</a></li>
+            <li><a href="{{ routes.root_url }}#instructor">Instructor</a></li>
+            <li><a href="{{ routes.root_url }}#testimonials">Student results</a></li>
+            <li><a href="{{ routes.root_url }}#faq">FAQ</a></li>
+            <li><a href="{{ routes.root_url }}#pricing">Pricing &amp; enrolment</a></li>
+          {%- endif -%}
+        </ul>
+      </nav>
+
+      <nav class="site-footer__col" aria-labelledby="footer-help-title">
+        <h2 class="site-footer__title" id="footer-help-title">{{ section.settings.help_title }}</h2>
+        <ul role="list">
+          {%- if settings.whatsapp_number != blank -%}
+            <li><a href="https://wa.me/{{ settings.whatsapp_number }}?text={{ settings.whatsapp_message | url_encode }}" target="_blank" rel="noopener">WhatsApp us</a></li>
+          {%- endif -%}
+          {%- if settings.support_email != blank -%}
+            <li><a href="mailto:{{ settings.support_email }}">{{ settings.support_email }}</a></li>
+          {%- endif -%}
+          <li><a href="{{ routes.search_url }}">Search</a></li>
+          {%- if shop.customer_accounts_enabled -%}
+            <li><a href="{{ routes.account_url }}">{{ 'general.nav.account' | t }}</a></li>
+          {%- endif -%}
+          <li><a href="{{ routes.cart_url }}">{{ 'general.nav.cart' | t }}</a></li>
+        </ul>
+      </nav>
+
+      <nav class="site-footer__col" aria-labelledby="footer-legal-title">
+        <h2 class="site-footer__title" id="footer-legal-title">{{ section.settings.legal_title }}</h2>
+        <ul role="list">
+          {%- assign refund_url = shop.refund_policy.url | default: '' -%}
+          {%- if refund_url != '' -%}<li><a href="{{ refund_url }}">{{ shop.refund_policy.title | default: 'Refund policy' }}</a></li>{%- endif -%}
+          {%- assign privacy_url = shop.privacy_policy.url | default: '' -%}
+          {%- if privacy_url != '' -%}<li><a href="{{ privacy_url }}">{{ shop.privacy_policy.title | default: 'Privacy policy' }}</a></li>{%- endif -%}
+          {%- assign terms_url = shop.terms_of_service.url | default: '' -%}
+          {%- if terms_url != '' -%}<li><a href="{{ terms_url }}">{{ shop.terms_of_service.title | default: 'Terms of service' }}</a></li>{%- endif -%}
+          {%- assign shipping_url = shop.shipping_policy.url | default: '' -%}
+          {%- if shipping_url != '' -%}<li><a href="{{ shipping_url }}">{{ shop.shipping_policy.title | default: 'Shipping policy' }}</a></li>{%- endif -%}
+          {%- assign subscription_url = shop.subscription_policy.url | default: '' -%}
+          {%- if subscription_url != '' -%}<li><a href="{{ subscription_url }}">{{ shop.subscription_policy.title | default: 'Subscription policy' }}</a></li>{%- endif -%}
+          <li>{% render 'contact-link', link: section.settings.contact_link, label: 'Contact' %}</li>
+          {%- if shop.refund_policy == blank and shop.privacy_policy == blank and shop.terms_of_service == blank -%}
+            {%- if refund_url == '' and privacy_url == '' and terms_url == '' -%}
+              <li>{% render 'contact-link', link: section.settings.contact_link, label: 'Ask for our policies' %}</li>
+            {%- endif -%}
+          {%- endif -%}
+        </ul>
+      </nav>
+    </div>
+
+    {%- if section.settings.show_trust_row -%}
+      <div class="site-footer__trust">
+        {%- for i in (1..4) -%}
+          {%- assign key = 'trust_' | append: i -%}
+          {%- assign val = section.settings[key] -%}
+          {%- if val != blank -%}
+            <span class="trust-chip">{% render 'icon', name: 'check-circle', size: 16 %}{{ val }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="site-footer__bottom">
+      <p class="site-footer__copy">
+        &copy; {{ 'now' | date: '%Y' }} {{ settings.seo_org_name | default: shop.name }}. All rights reserved.
+        {%- if section.settings.extra_legal != blank %} {{ section.settings.extra_legal }}{% endif -%}
+      </p>
+      <div class="site-footer__pay" aria-label="{{ 'general.footer.payment_methods' | t }}">
+        {%- for type in shop.enabled_payment_types -%}
+          {{ type | payment_type_svg_tag: class: 'pay-icon' }}
+        {%- endfor -%}
+        <span class="trust-chip trust-chip--sm">{% render 'icon', name: 'shield', size: 15 %}Secure checkout</span>
+      </div>
+    </div>
+    {%- if course_product != blank -%}
+      <p class="site-footer__cta-line">
+        <a class="link-arrow" href="{{ course_product.url }}">{{ 'products.product.add_to_cart' | t }} — {{ course_product.title }} {% render 'icon', name: 'arrow-right', size: 16 %}</a>
+      </p>
+    {%- endif -%}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    { "type": "paragraph", "content": "Legal links appear automatically once the policies are published in Shopify admin \u2192 Settings \u2192 Policies." },
+    { "type": "text", "id": "tagline", "label": "Tagline", "default": "Learn AI, build a Shopify store, launch it with confidence." },
+    { "type": "text", "id": "menu_title", "label": "Menu title", "default": "Course" },
+    { "type": "link_list", "id": "menu", "label": "Menu", "info": "Leave empty to use the built-in course links." },
+    { "type": "text", "id": "help_title", "label": "Support title", "default": "Support" },
+    { "type": "text", "id": "legal_title", "label": "Legal title", "default": "Legal" },
+    { "type": "checkbox", "id": "show_trust_row", "label": "Show trust row", "default": true },
+    { "type": "text", "id": "trust_1", "label": "Trust item 1", "default": "Live classes on Google Meet" },
+    { "type": "text", "id": "trust_2", "label": "Trust item 2", "default": "Lifetime access to recordings" },
+    { "type": "text", "id": "trust_3", "label": "Trust item 3", "default": "Certificate on completion" },
+    { "type": "text", "id": "trust_4", "label": "Trust item 4", "default": "Support in Malayalam, English & Hindi" },
+    { "type": "text", "id": "extra_legal", "label": "Extra legal note" },
+    { "type": "url", "id": "contact_link", "label": "Contact page", "info": "Optional. If empty, the footer links to WhatsApp or your support email." }
+  ]
+}
+{% endschema %}

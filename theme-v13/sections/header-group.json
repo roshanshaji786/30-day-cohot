@@ -1,0 +1,27 @@
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "settings": {
+        "text": "Live cohort \u00b7 15 classes \u00b7 First 25 students only",
+        "show_countdown": true,
+        "show_whatsapp": true
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "show_cta": true,
+        "cta_label": "Enrol now",
+        "show_price": true,
+        "sticky": true
+      }
+    }
+  },
+  "order": [
+    "announcement_bar",
+    "header"
+  ]
+}

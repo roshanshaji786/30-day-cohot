@@ -1,0 +1,150 @@
+{%- liquid
+  assign has_hosted = false
+  assign has_external = false
+  if section.settings.video != blank
+    assign has_hosted = true
+  endif
+  if section.settings.video_url != blank
+    assign has_external = true
+  endif
+
+  if section.settings.aspect == 'auto' and has_hosted
+    assign ratio = section.settings.video.aspect_ratio
+    if ratio == blank or ratio == 0
+      assign ratio = 1.7777
+    endif
+  else
+    case section.settings.aspect
+      when '9-16'
+        assign ratio = 0.5625
+      when '1-1'
+        assign ratio = 1
+      when '4-3'
+        assign ratio = 1.3333
+      else
+        assign ratio = 1.7777
+    endcase
+  endif
+
+  assign external_href = ''
+  if has_external
+    case section.settings.video_url.type
+      when 'youtube'
+        assign external_href = 'https://www.youtube.com/watch?v=' | append: section.settings.video_url.id
+      when 'vimeo'
+        assign external_href = 'https://vimeo.com/' | append: section.settings.video_url.id
+    endcase
+  endif
+
+  if section.settings.video_url.type == 'youtube'
+    assign embed_src = section.settings.video_url | external_video_url: autoplay: '1', mute: '1', playsinline: '1', rel: '0', loop: '1', playlist: section.settings.video_url.id
+  else
+    assign embed_src = section.settings.video_url | external_video_url: autoplay: '1', muted: '1', playsinline: '1', loop: '1'
+  endif
+-%}
+<section class="section section--soft video-section{% if section.settings.dark %} section--dark{% endif %}" {% if section.settings.anchor_id != blank %}id="{{ section.settings.anchor_id }}"{% endif %}>
+  <div class="page-width video-section__grid">
+    <div class="video-section__copy">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2 class="h2">{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.text != blank -%}<div class="rte muted">{{ section.settings.text }}</div>{%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <ul class="tick-list" role="list">
+          {%- for block in section.blocks -%}
+            <li {{ block.shopify_attributes }}>{% render 'icon', name: 'check-circle', size: 18 %}<span>{{ block.settings.text }}</span></li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {%- if section.settings.cta_label != blank -%}
+        <a class="btn btn--primary btn--lg" href="{{ section.settings.cta_link | default: '#pricing' }}">{{ section.settings.cta_label }}{% render 'icon', name: 'arrow-right', size: 18 %}</a>
+      {%- endif -%}
+    </div>
+
+    <div class="video-section__media">
+      <div class="media-frame" style="--media-ratio: {{ ratio }}">
+        {%- if has_hosted -%}
+          {{ section.settings.video
+             | video_tag:
+                 image_size: '1400x',
+                 controls: true,
+                 autoplay: section.settings.autoplay,
+                 muted: section.settings.autoplay,
+                 loop: section.settings.loop,
+                 playsinline: true,
+                 preload: 'metadata',
+                 class: 'media-frame__el media-frame__el--fit' }}
+        {%- elsif has_external -%}
+          <div class="video-embed" data-video-embed data-embed-src="{{ embed_src | escape }}">
+            {%- if section.settings.poster != blank -%}
+              {{ section.settings.poster | image_url: width: 1400 | image_tag: widths: '600,900,1400', sizes: '(max-width: 899px) 92vw, 55vw', loading: 'lazy', class: 'media-frame__poster', alt: section.settings.poster.alt | default: section.settings.heading }}
+            {%- else -%}
+              <div class="media-frame__fallback" aria-hidden="true"><span class="media-frame__badge">{% render 'icon', name: 'spark', size: 18 %}</span></div>
+            {%- endif -%}
+            <a class="media-frame__play" href="{{ external_href }}" target="_blank" rel="noopener" data-video-play>
+              <span class="media-frame__play-btn">{% render 'icon', name: 'play', size: 22 %}</span>
+              <span class="media-frame__play-text">{{ section.settings.play_label | default: 'Watch: what we build in class' }}</span>
+            </a>
+          </div>
+        {%- elsif section.settings.poster != blank -%}
+          {{ section.settings.poster | image_url: width: 1400 | image_tag: widths: '600,900,1400', sizes: '(max-width: 899px) 92vw, 55vw', loading: 'lazy', class: 'media-frame__el', alt: section.settings.poster.alt | default: section.settings.heading }}
+        {%- else -%}
+          <div class="media-frame__fallback">
+            <span class="media-frame__badge">{% render 'icon', name: 'play', size: 20 %}{{ section.settings.play_label | default: 'Add your walkthrough video' }}</span>
+            <ul class="media-frame__list" role="list">
+              <li>Niche &amp; product research with AI</li>
+              <li>Store build, theme setup &amp; apps</li>
+              <li>Launch checklist and first-order flow</li>
+            </ul>
+          </div>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.caption != blank -%}<p class="video-section__caption">{{ section.settings.caption }}</p>{%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Video / walkthrough",
+  "settings": [
+    { "type": "text", "id": "anchor_id", "label": "Anchor id", "default": "walkthrough" },
+    { "type": "checkbox", "id": "dark", "label": "Dark section", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "See it in action" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Two minutes inside the classroom" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Every class is a screen-share walkthrough. Here is a short clip of how the workflow actually looks \u2014 research, build, then launch.</p>" },
+    { "type": "header", "content": "Media" },
+    { "type": "video", "id": "video", "label": "Shopify-hosted video", "info": "Best option \u2014 built-in poster and correct aspect ratio." },
+    { "type": "video_url", "id": "video_url", "label": "YouTube or Vimeo URL", "accept": ["youtube", "vimeo"], "info": "Loads only when the visitor taps play, so it costs no data up front." },
+    { "type": "image_picker", "id": "poster", "label": "Poster image" },
+    { "type": "text", "id": "play_label", "label": "Play button label", "default": "Watch: what we build in class" },
+    { "type": "select", "id": "aspect", "label": "Video shape", "options": [
+      { "value": "auto", "label": "Match the video (recommended)" },
+      { "value": "16-9", "label": "Landscape 16:9" },
+      { "value": "4-3", "label": "Landscape 4:3" },
+      { "value": "1-1", "label": "Square" },
+      { "value": "9-16", "label": "Vertical 9:16 (Reels)" }
+    ], "default": "auto", "info": "Videos are never cropped \u2014 they are letterboxed inside this shape." },
+    { "type": "checkbox", "id": "autoplay", "label": "Autoplay muted (not recommended on mobile)", "default": false },
+    { "type": "checkbox", "id": "loop", "label": "Loop", "default": false },
+    { "type": "text", "id": "caption", "label": "Caption" },
+    { "type": "header", "content": "Call to action" },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Get the full curriculum" },
+    { "type": "url", "id": "cta_link", "label": "Button link" }
+  ],
+  "blocks": [
+    { "type": "point", "name": "Point", "settings": [{ "type": "text", "id": "text", "label": "Text", "default": "Recorded and yours to rewatch" }] }
+  ],
+  "presets": [
+    {
+      "name": "Video / walkthrough",
+      "blocks": [
+        { "type": "point", "settings": { "text": "Recorded and yours to rewatch forever" } },
+        { "type": "point", "settings": { "text": "Live Q&A at the end of every class" } },
+        { "type": "point", "settings": { "text": "Templates, prompts and checklists included" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

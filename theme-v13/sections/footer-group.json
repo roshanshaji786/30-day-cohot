@@ -1,0 +1,16 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "tagline": "Learn AI, build a Shopify store, launch it with confidence. Live cohort with DARTS AI Academy.",
+        "show_trust_row": true
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

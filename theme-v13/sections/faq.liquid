@@ -1,0 +1,94 @@
+<section class="section faq" {% if section.settings.anchor_id != blank %}id="{{ section.settings.anchor_id }}"{% endif %}>
+  <div class="page-width faq__grid">
+    <div class="faq__intro">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
+      <h2 class="h2">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}<div class="rte muted">{{ section.settings.text }}</div>{%- endif -%}
+      {%- if settings.whatsapp_number != blank -%}
+        <a class="btn btn--ghost btn--lg" href="https://wa.me/{{ settings.whatsapp_number }}?text={{ settings.whatsapp_message | url_encode }}" target="_blank" rel="noopener">
+          {% render 'icon', name: 'whatsapp', size: 18 %}<span>{{ section.settings.cta_label }}</span>
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="faq__list">
+      {%- for block in section.blocks -%}
+        <details class="faq__item" {{ block.shopify_attributes }} {% if block.settings.open %}open{% endif %}>
+          <summary class="faq__q">
+            <span>{{ block.settings.question }}</span>
+            <span class="faq__icon" aria-hidden="true">{% render 'icon', name: 'plus', size: 18 %}</span>
+          </summary>
+          <div class="faq__a rte">{{ block.settings.answer }}</div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{%- if section.blocks.size > 0 -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {%- for block in section.blocks -%}
+        {
+          "@type": "Question",
+          "name": {{ block.settings.question | json }},
+          "acceptedAnswer": { "@type": "Answer", "text": {{ block.settings.answer | strip_html | json }} }
+        }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  }
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "FAQ",
+  "settings": [
+    { "type": "text", "id": "anchor_id", "label": "Anchor id", "default": "faq" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Questions" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Before you enrol" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Still unsure? Message me on WhatsApp and I will answer personally.</p>" },
+    { "type": "text", "id": "cta_label", "label": "WhatsApp button label", "default": "Ask on WhatsApp" }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "Do I need any experience?" },
+        { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>No. We start from the basics and every class is a guided screen-share, so you follow along step by step.</p>" },
+        { "type": "checkbox", "id": "open", "label": "Open by default", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        { "type": "question", "settings": {
+          "question": "Do I need any experience or coding skills?",
+          "answer": "<p>None at all. We start from zero and every class is a guided screen-share. If you can use Gmail and WhatsApp, you can follow this course.</p>",
+          "open": true } },
+        { "type": "question", "settings": {
+          "question": "What if I miss a class?",
+          "answer": "<p>Every session is recorded and posted within 24 hours. You keep lifetime access to all recordings, templates and prompts.</p>" } },
+        { "type": "question", "settings": {
+          "question": "How much extra will I need to spend?",
+          "answer": "<p>You can start with only a domain. Shopify's trial covers the first period, and I show you free ways to source products and create content before you spend on ads.</p>" } },
+        { "type": "question", "settings": {
+          "question": "Is this live or recorded?",
+          "answer": "<p>It is fully live on Google Meet at 9:00 PM IST, with Q&amp;A in every session \u2014 plus recordings you can rewatch.</p>" } },
+        { "type": "question", "settings": {
+          "question": "Will I really have a store by the end?",
+          "answer": "<p>Yes. Building is not homework here \u2014 we build during class. You finish with a live, mobile-ready store and a launch checklist.</p>" } },
+        { "type": "question", "settings": {
+          "question": "What language is the course taught in?",
+          "answer": "<p>English and Malayalam, with Hindi support in the Q&amp;A. Ask in whichever language you are comfortable with.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

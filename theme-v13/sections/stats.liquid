@@ -1,0 +1,40 @@
+<section class="section section--tight stats{% if section.settings.dark %} section--dark{% endif %}" {% if section.settings.anchor_id != blank %}id="{{ section.settings.anchor_id }}"{% endif %}>
+  <div class="page-width">
+    {%- if section.settings.heading != blank -%}<h2 class="stats__heading">{{ section.settings.heading }}</h2>{%- endif -%}
+    <ul class="stats__grid" role="list">
+      {%- for block in section.blocks -%}
+        <li class="stat" {{ block.shopify_attributes }}>
+          <span class="stat__value">{{ block.settings.value }}</span>
+          <span class="stat__label">{{ block.settings.label }}</span>
+        </li>
+      {%- endfor -%}
+    </ul>
+    {%- if section.settings.footnote != blank -%}<p class="stats__footnote">{{ section.settings.footnote }}</p>{%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Stat band",
+  "settings": [
+    { "type": "text", "id": "anchor_id", "label": "Anchor id" },
+    { "type": "checkbox", "id": "dark", "label": "Dark section", "default": false },
+    { "type": "text", "id": "heading", "label": "Heading", "info": "Optional." },
+    { "type": "text", "id": "footnote", "label": "Footnote" }
+  ],
+  "blocks": [
+    { "type": "stat", "name": "Stat", "settings": [
+      { "type": "text", "id": "value", "label": "Value", "default": "15" },
+      { "type": "text", "id": "label", "label": "Label", "default": "live classes" }
+    ] }
+  ],
+  "presets": [
+    { "name": "Stat band", "blocks": [
+      { "type": "stat", "settings": { "value": "15", "label": "live classes" } },
+      { "type": "stat", "settings": { "value": "30", "label": "days from idea to launch" } },
+      { "type": "stat", "settings": { "value": "1", "label": "store you actually own" } },
+      { "type": "stat", "settings": { "value": "0", "label": "lines of code to write" } }
+    ] }
+  ]
+}
+{% endschema %}

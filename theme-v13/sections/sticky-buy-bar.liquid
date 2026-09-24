@@ -1,0 +1,40 @@
+{%- liquid
+  assign bar_product = all_products[settings.course_product_handle]
+  assign seats = bar_product.selected_or_first_available_variant.inventory_quantity
+  assign show_seats = false
+  if settings.show_seats_left and bar_product.selected_or_first_available_variant.inventory_management == 'shopify' and seats > 0 and seats <= section.settings.low_stock_threshold
+    assign show_seats = true
+  endif
+-%}
+{%- if bar_product != blank -%}
+  <div class="buy-bar" data-buy-bar role="region" aria-label="{{ 'products.product.add_to_cart' | t }}">
+    <div class="buy-bar__inner page-width">
+      <div class="buy-bar__info">
+        <span class="buy-bar__title">{{ bar_product.title | truncate: 40 }}</span>
+        <span class="buy-bar__meta">
+          {%- render 'price', product: bar_product, size: 'sm', show_badge: false -%}
+          {%- if show_seats -%}
+            <span class="buy-bar__seats">{% render 'icon', name: 'users', size: 14 %}{{ 'products.product.low_stock' | t: count: seats }}</span>
+          {%- endif -%}
+        </span>
+      </div>
+      {%- if template.name == 'product' and template.suffix != 'quick' -%}
+        <button type="submit" form="course-buy-form" class="btn btn--primary buy-bar__btn" {% unless bar_product.available %}disabled{% endunless %}>
+          {{ section.settings.button_label }}
+        </button>
+      {%- else -%}
+        <a class="btn btn--primary buy-bar__btn" href="{{ bar_product.url }}">{{ section.settings.button_label }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Sticky buy bar",
+  "settings": [
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Enrol now" },
+    { "type": "number", "id": "low_stock_threshold", "label": "Show seats left under", "default": 10 }
+  ]
+}
+{% endschema %}

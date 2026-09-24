@@ -1,0 +1,87 @@
+<section class="section cart-page">
+  <div class="page-width">
+    <h1 class="cart-page__title">{{ 'sections.cart.title' | t }}</h1>
+
+    {%- if cart.item_count > 0 -%}
+      <form action="{{ routes.cart_url }}" method="post" novalidate class="cart-page__form">
+        <div class="cart-page__grid">
+          <div class="cart-page__lines">
+            <div class="cart-page__head" aria-hidden="true">
+              <span>{{ 'sections.cart.quantity' | t }}</span>
+              <span>{{ 'sections.cart.subtotal' | t }}</span>
+            </div>
+            <ul role="list">
+              {%- for item in cart.items -%}
+                <li class="cart-line" data-cart-line>
+                  <a class="cart-line__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                    {%- if item.image -%}
+                      {{ item.image | image_url: width: 240 | image_tag: widths: '120,240', sizes: '96px', loading: 'lazy', class: 'cart-line__img', alt: item.image.alt | default: item.product.title }}
+                    {%- else -%}
+                      <span class="cart-line__placeholder">{% render 'icon', name: 'spark', size: 24 %}</span>
+                    {%- endif -%}
+                  </a>
+                  <div class="cart-line__body">
+                    <a class="cart-line__title" href="{{ item.url }}">{{ item.product.title }}</a>
+                    {%- unless item.product.has_only_default_variant -%}<p class="cart-line__variant">{{ item.variant.title }}</p>{%- endunless -%}
+                    <p class="cart-line__variant">{{ item.final_price | money }}</p>
+                  </div>
+                  <div class="cart-line__qty">
+                    <quantity-input class="quantity" data-min="0">
+                      <label class="visually-hidden" for="CartQty-{{ forloop.index }}">{{ 'sections.cart.quantity' | t }}</label>
+                      <button type="button" class="quantity__btn" data-qty-action="minus" tabindex="-1" aria-label="-1">{% render 'icon', name: 'minus', size: 15 %}</button>
+                      <input id="CartQty-{{ forloop.index }}" class="quantity__input" type="number" name="updates[]" value="{{ item.quantity }}" min="0" step="1" inputmode="numeric" aria-label="{{ 'sections.cart.quantity' | t }}: {{ item.product.title }}">
+                      <button type="button" class="quantity__btn" data-qty-action="plus" tabindex="-1" aria-label="+1">{% render 'icon', name: 'plus', size: 15 %}</button>
+                    </quantity-input>
+                    <a class="cart-line__remove" href="{{ item.url_to_remove }}">{{ 'sections.cart.remove' | t }}</a>
+                  </div>
+                  <div class="cart-line__total">{{ item.final_line_price | money }}</div>
+                </li>
+              {%- endfor -%}
+            </ul>
+            <button type="submit" name="update" class="btn btn--ghost">{{ 'sections.cart.update' | t }}</button>
+          </div>
+
+          <aside class="cart-page__summary">
+            {%- if section.settings.show_note -%}
+              <label class="cart-page__note-label" for="CartNote">{{ 'sections.cart.note' | t }}</label>
+              <textarea id="CartNote" name="note" rows="3">{{ cart.note }}</textarea>
+            {%- endif -%}
+            <div class="cart-page__row">
+              <span>{{ 'sections.cart.subtotal' | t }}</span>
+              <b>{{ cart.total_price | money }}</b>
+            </div>
+            <p class="cart-page__tax">{{ 'sections.cart.taxes_shipping' | t }}</p>
+            <button type="submit" name="checkout" class="btn btn--primary btn--lg btn--block">
+              {% render 'icon', name: 'shield', size: 18 %}<span>{{ 'sections.cart.checkout' | t }}</span>
+            </button>
+            <ul class="tick-list tick-list--tight" role="list">
+              <li>{% render 'icon', name: 'shield', size: 17 %}<span>{{ section.settings.assurance_1 }}</span></li>
+              <li>{% render 'icon', name: 'mail', size: 17 %}<span>{{ section.settings.assurance_2 }}</span></li>
+            </ul>
+            <div class="pricing__pay">
+              {%- for type in shop.enabled_payment_types -%}{{ type | payment_type_svg_tag: class: 'pay-icon' }}{%- endfor -%}
+            </div>
+            <a class="link-arrow" href="{{ routes.all_products_collection_url }}">{{ 'sections.cart.empty_cta' | t }}</a>
+          </aside>
+        </div>
+      </form>
+    {%- else -%}
+      <div class="empty-state empty-state--center">
+        <span class="empty-state__icon">{% render 'icon', name: 'cart', size: 34 %}</span>
+        <p class="empty-state__title">{{ 'sections.cart.empty' | t }}</p>
+        <a class="btn btn--primary btn--lg" href="{{ routes.all_products_collection_url }}">{{ 'sections.cart.empty_cta' | t }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Cart",
+  "settings": [
+    { "type": "checkbox", "id": "show_note", "label": "Allow order notes", "default": true },
+    { "type": "text", "id": "assurance_1", "label": "Assurance 1", "default": "Secure checkout with UPI, cards and netbanking" },
+    { "type": "text", "id": "assurance_2", "label": "Assurance 2", "default": "Course access emailed within minutes of payment" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,55 @@
+<section class="section search-results">
+  <div class="page-width">
+    <header class="section-head">
+      <h1 class="h2">
+        {%- if search.performed and search.terms != blank -%}
+          {{ 'sections.search.results_for' | t: terms: search.terms }}
+        {%- else -%}
+          {{ 'general.search.title' | t }}
+        {%- endif -%}
+      </h1>
+      <div class="search-results__form">{% render 'search-form', id_suffix: '-page', autofocus: true %}</div>
+    </header>
+
+    {%- if search.performed -%}
+      {%- if search.results.size > 0 -%}
+        <p class="search-results__count">{{ 'general.search.results_with_count' | t: count: search.results_count }}</p>
+        <ul class="product-grid" role="list">
+          {%- for item in search.results -%}
+            <li class="product-card">
+              <a class="product-card__media" href="{{ item.url }}" aria-hidden="true" tabindex="-1">
+                {%- if item.featured_media -%}
+                  {{ item.featured_media | image_url: width: 700 | image_tag: widths: '300,500,700', sizes: '(max-width: 749px) 92vw, 30vw', loading: 'lazy', class: 'product-card__img', alt: item.featured_media.alt | default: item.title }}
+                {%- elsif item.image -%}
+                  {{ item.image | image_url: width: 700 | image_tag: widths: '300,500,700', sizes: '(max-width: 749px) 92vw, 30vw', loading: 'lazy', class: 'product-card__img', alt: item.image.alt | default: item.title }}
+                {%- else -%}
+                  <span class="product-card__placeholder">{% render 'icon', name: 'search', size: 28 %}</span>
+                {%- endif -%}
+              </a>
+              <div class="product-card__body">
+                <p class="product-card__kicker">{{ item.object_type }}</p>
+                <h2 class="product-card__title"><a href="{{ item.url }}">{{ item.title }}</a></h2>
+                {%- if item.object_type == 'product' -%}
+                  <div class="product-card__foot">{% render 'price', product: item, size: 'md' %}<a class="btn btn--primary btn--sm" href="{{ item.url }}">{{ 'products.product.view_details' | t }}</a></div>
+                {%- endif -%}
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+        {%- render 'pagination', paginate: paginate -%}
+      {%- else -%}
+        <div class="empty-state">
+          <p class="empty-state__title">{{ 'general.search.no_results' | t: terms: search.terms }}</p>
+          <a class="btn btn--primary btn--lg" href="{{ routes.root_url }}">{{ 'general.404.cta' | t }}</a>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Search results",
+  "settings": []
+}
+{% endschema %}

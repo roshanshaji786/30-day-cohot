@@ -1,0 +1,159 @@
+{%- liquid
+  assign menu = section.settings.menu
+  assign menu_count = menu.links.size | default: 0
+  assign has_menu = false
+  if menu != blank and menu_count > 0
+    assign has_menu = true
+  endif
+  assign course_product = all_products[settings.course_product_handle]
+  assign cta_url = section.settings.cta_link | default: course_product.url | default: routes.all_products_collection_url
+  assign cta_is_product = false
+  if section.settings.cta_link == blank and course_product != blank
+    assign cta_is_product = true
+  endif
+-%}
+<header class="site-header{% if section.settings.transparent_banner %} site-header--over-banner{% endif %}{% unless section.settings.sticky %} site-header--static{% endunless %}" data-header>
+  <div class="page-width site-header__inner">
+    <a class="brand" href="{{ routes.root_url }}" aria-label="{{ shop.name }} — {{ 'general.nav.home' | t }}">
+      {%- if settings.logo != blank -%}
+        {{ settings.logo | image_url: width: 400 | image_tag:
+             widths: '120,180,240,320,400',
+             sizes: '(max-width: 749px) 110px, 160px',
+             loading: 'eager',
+             fetchpriority: 'high',
+             class: 'brand__logo',
+             alt: shop.name }}
+      {%- else -%}
+        <span class="brand__mark" aria-hidden="true">{{ settings.brand_name | slice: 0, 1 }}</span>
+        <span class="brand__text">
+          <span class="brand__name">{{ settings.brand_name | default: shop.name }}</span>
+          <span class="brand__sub">{{ settings.brand_subbrand | default: 'AI ACADEMY' }}</span>
+        </span>
+      {%- endif -%}
+    </a>
+
+    <nav class="site-nav" aria-label="{{ 'general.nav.menu' | t }}" data-nav>
+      {%- if has_menu -%}
+        <ul class="site-nav__list">
+          {%- for link in menu.links -%}
+            <li class="site-nav__item{% if link.links.size > 0 %} site-nav__item--has-children{% endif %}">
+              {%- if link.links.size > 0 -%}
+                <button type="button" class="site-nav__link site-nav__link--toggle" aria-expanded="false" aria-haspopup="true">
+                  {{ link.title }}{% render 'icon', name: 'chevron-down', size: 14 %}
+                </button>
+                <ul class="site-nav__sub">
+                  {%- for child in link.links -%}
+                    <li><a class="site-nav__sublink" href="{{ child.url }}">{{ child.title }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              {%- else -%}
+                <a class="site-nav__link{% if link.active or link.child_active %} is-active{% endif %}" href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- else -%}
+        <ul class="site-nav__list">
+          {%- assign anchor_items = 'Program|#program,Curriculum|#curriculum,Instructor|#instructor,FAQ|#faq' | split: ',' -%}
+          {%- for item in anchor_items -%}
+            {%- assign parts = item | split: '|' -%}
+            <li class="site-nav__item"><a class="site-nav__link" href="{{ routes.root_url }}{{ parts[1] }}">{{ parts[0] }}</a></li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </nav>
+
+    <div class="site-header__actions">
+      <a class="icon-btn" href="{{ routes.search_url }}" aria-label="{{ 'general.nav.search' | t }}">
+        {% render 'icon', name: 'search', size: 20 %}
+      </a>
+      {%- if shop.customer_accounts_enabled -%}
+        <a class="icon-btn icon-btn--hide-sm" href="{{ routes.account_url }}" aria-label="{{ 'general.nav.account' | t }}">
+          {% render 'icon', name: 'users', size: 20 %}
+        </a>
+      {%- endif -%}
+      <a class="icon-btn cart-link" href="{{ routes.cart_url }}" data-cart-link aria-label="{{ 'general.nav.cart' | t }}{% if cart.item_count > 0 %}: {{ cart.item_count }}{% endif %}">
+        {% render 'icon', name: 'cart', size: 20 %}
+        <span class="cart-count{% if cart.item_count == 0 %} is-empty{% endif %}" data-cart-count aria-hidden="true">{{ cart.item_count }}</span>
+      </a>
+      {%- if section.settings.show_cta -%}
+        <a class="btn btn--primary btn--sm header-cta" href="{{ cta_url }}"{% if cta_is_product %} data-cart-target="product"{% endif %}>
+          <span class="header-cta__label">{{ section.settings.cta_label | default: 'Enrol now' }}</span>
+          {%- if course_product != blank and section.settings.show_price -%}
+            <span class="header-cta__price">{{ course_product.price | money }}</span>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+      <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="MobileMenu" data-nav-toggle>
+        {% render 'icon', name: 'menu', size: 22, class: 'icon nav-toggle__open' %}
+        <span class="visually-hidden">{{ 'general.nav.menu' | t }}</span>
+      </button>
+    </div>
+  </div>
+
+  <dialog class="mobile-menu" id="MobileMenu" aria-label="{{ 'general.nav.menu' | t }}" data-mobile-menu>
+    <div class="mobile-menu__head">
+      <span class="mobile-menu__title">{{ 'general.nav.menu' | t }}</span>
+      <button type="button" class="icon-btn" data-nav-close aria-label="{{ 'general.accessibility.close' | t }}">
+        {% render 'icon', name: 'close', size: 22 %}
+      </button>
+    </div>
+    <nav class="mobile-menu__nav" aria-label="{{ 'general.nav.menu' | t }}">
+      <ul>
+        {%- if has_menu -%}
+          {%- for link in menu.links -%}
+            <li>
+              <a class="mobile-menu__link" href="{{ link.url }}">{{ link.title }}</a>
+              {%- if link.links.size > 0 -%}
+                <ul class="mobile-menu__sub">
+                  {%- for child in link.links -%}
+                    <li><a class="mobile-menu__sublink" href="{{ child.url }}">{{ child.title }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        {%- else -%}
+          <li><a class="mobile-menu__link" href="{{ routes.root_url }}#program">Program</a></li>
+          <li><a class="mobile-menu__link" href="{{ routes.root_url }}#curriculum">Curriculum</a></li>
+          <li><a class="mobile-menu__link" href="{{ routes.root_url }}#instructor">Instructor</a></li>
+          <li><a class="mobile-menu__link" href="{{ routes.root_url }}#faq">FAQ</a></li>
+          <li><a class="mobile-menu__link" href="{{ routes.root_url }}#pricing">Enrol</a></li>
+        {%- endif -%}
+        <li><a class="mobile-menu__link" href="{{ routes.search_url }}">{{ 'general.nav.search' | t }}</a></li>
+        {%- if shop.customer_accounts_enabled -%}
+          <li><a class="mobile-menu__link" href="{{ routes.account_url }}">{{ 'general.nav.account' | t }}</a></li>
+        {%- endif -%}
+      </ul>
+    </nav>
+    <div class="mobile-menu__foot">
+      {%- if course_product != blank -%}
+        <a class="btn btn--primary btn--lg btn--block" href="{{ course_product.url }}">{{ 'products.product.add_to_cart' | t }} · {{ course_product.price | money }}</a>
+      {%- else -%}
+        <a class="btn btn--primary btn--lg btn--block" href="{{ routes.root_url }}#pricing">{{ 'products.product.add_to_cart' | t }}</a>
+      {%- endif -%}
+      {%- if settings.whatsapp_number != blank -%}
+        <a class="btn btn--ghost btn--block" href="https://wa.me/{{ settings.whatsapp_number }}?text={{ settings.whatsapp_message | url_encode }}" target="_blank" rel="noopener">
+          {% render 'icon', name: 'whatsapp', size: 18 %}<span>{{ 'general.social.whatsapp' | t }}</span>
+        </a>
+      {%- endif -%}
+    </div>
+  </dialog>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu", "info": "Leave empty to use the built-in anchors (Program, Curriculum, Instructor, FAQ)." },
+    { "type": "checkbox", "id": "transparent_banner", "label": "Overlap the announcement bar", "default": false },
+    { "type": "header", "content": "Call to action" },
+    { "type": "checkbox", "id": "show_cta", "label": "Show enrol button", "default": true },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Enrol now" },
+    { "type": "url", "id": "cta_link", "label": "Button link", "info": "Leave empty to link to the course product." },
+    { "type": "checkbox", "id": "show_price", "label": "Show live price inside the button", "default": true },
+    { "type": "checkbox", "id": "sticky", "label": "Sticky header", "default": true }
+  ]
+}
+{% endschema %}

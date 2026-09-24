@@ -1,0 +1,26 @@
+<div class="gift-card">
+  <div class="gift-card__inner">
+    <h1 class="h2">{{ shop.name }} gift card</h1>
+    <div class="gift-card__value">{{ gift_card.initial_value | money }}</div>
+    {%- if gift_card.enabled == false or gift_card.expired -%}
+      <p class="gift-card__status">This gift card has expired.</p>
+    {%- elsif gift_card.balance != gift_card.initial_value -%}
+      <p class="gift-card__status">Remaining balance: <b>{{ gift_card.balance | money }}</b></p>
+    {%- endif -%}
+    <div class="gift-card__code">
+      <span class="gift-card__code-label">Gift card code</span>
+      <span class="gift-card__code-value" data-gift-code>{{ gift_card.code | format_code }}</span>
+    </div>
+    <div class="gift-card__actions">
+      <button type="button" class="btn btn--primary btn--lg" data-copy-gift>Copy code</button>
+      <a class="btn btn--ghost btn--lg" href="{{ shop.url }}">{{ 'general.404.cta' | t }}</a>
+    </div>
+    {%- if gift_card.qr_identifier -%}
+      <div class="gift-card__qr" data-qr-code data-identifier="{{ gift_card.qr_identifier }}" aria-label="Gift card QR code"></div>
+    {%- endif -%}
+    <p class="gift-card__note">Use this code at checkout. It can be used across multiple orders until the balance runs out.</p>
+    {%- if gift_card.expires_on -%}
+      <p class="gift-card__note">Expires {{ gift_card.expires_on | date: '%b %d, %Y' }}</p>
+    {%- endif -%}
+  </div>
+</div>

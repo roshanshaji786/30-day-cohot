@@ -1,0 +1,50 @@
+{
+  "current": {
+    "course_product_handle": "ai-shopify-business-bootcamp",
+    "show_seats_left": true,
+    "cohort_start_date": "2026-10-01T21:00:00+05:30",
+    "logo_width": 130,
+    "brand_name": "ROSHAN SHAJI",
+    "brand_subbrand": "DARTS AI ACADEMY",
+    "color_bg": "#ffffff",
+    "color_surface": "#f6f5fb",
+    "color_ink": "#12121a",
+    "color_muted": "#55555f",
+    "color_line": "#e7e5f0",
+    "color_accent": "#4f2fd6",
+    "color_on_accent": "#ffffff",
+    "color_dark": "#12121a",
+    "color_on_dark": "#f5f4fa",
+    "type_heading_font": "assistant_n4",
+    "type_body_font": "assistant_n4",
+    "heading_scale": 100,
+    "body_scale": 100,
+    "page_width": 1200,
+    "section_spacing": 88,
+    "corner_radius": 18,
+    "reveal_on_scroll": true,
+    "whatsapp_message": "Hi! I have a question about the AI × Shopify Business Bootcamp.",
+    "support_email": "hello@dartsai.academy",
+    "seo_org_name": "DARTS AI Academy",
+    "preload_hero_image": true,
+    "sticky_buy_bar": true,
+    "cart_drawer_enabled": true
+  },
+  "presets": {
+    "Default": {
+      "color_accent": "#4f2fd6",
+      "color_bg": "#ffffff",
+      "color_ink": "#12121a"
+    },
+    "Midnight": {
+      "color_accent": "#8b6dff",
+      "color_bg": "#0f0f15",
+      "color_surface": "#16161f",
+      "color_ink": "#f5f4fa",
+      "color_muted": "#b6b4c6",
+      "color_line": "#2a2a38",
+      "color_dark": "#08080c",
+      "color_on_dark": "#f5f4fa"
+    }
+  }
+}
