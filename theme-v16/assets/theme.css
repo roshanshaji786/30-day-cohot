@@ -1052,3 +1052,175 @@ button,input,select,textarea{font:inherit;color:inherit}
   .site-header,.buy-bar,.cart-drawer,.announcement,.mobile-menu{display:none!important}
   body{color:#000;background:#fff}
 }
+
+/* ============================================================ 21. Depth & 3D
+   Perspective, layered Z and pointer-driven tilt. Everything here degrades to
+   a flat layout: the transforms are additive (nothing is positioned BY them),
+   and prefers-reduced-motion switches the whole block off. */
+
+:root{
+  --persp:1100px;
+  --tilt-max:7deg;
+  --lift:14px;
+  --glare:rgba(255,255,255,.55);
+}
+
+/* --- animated aurora behind the hero, on a real 3D plane ---------------- */
+.scene{position:relative;perspective:var(--persp, 1100px);perspective-origin:50% 30%}
+.scene__aurora{
+  position:absolute;inset:-25% -15% auto;height:150%;z-index:0;pointer-events:none;
+  transform:translateZ(-160px) scale(1.15);transform-style:preserve-3d;
+  filter:blur(46px);opacity:.85
+}
+.scene__aurora span{
+  position:absolute;display:block;border-radius:50%;
+  mix-blend-mode:multiply;
+  animation:aurora 22s ease-in-out infinite alternate
+}
+.scene__aurora span:nth-child(1){width:46%;aspect-ratio:1;left:2%;top:6%;
+  background:radial-gradient(circle at 40% 40%,color-mix(in srgb,var(--c-accent, #4f2fd6) 42%,transparent),transparent 68%)}
+.scene__aurora span:nth-child(2){width:38%;aspect-ratio:1;right:6%;top:0;
+  background:radial-gradient(circle at 60% 40%,color-mix(in srgb,#ff7ac6 34%,transparent),transparent 70%);
+  animation-delay:-7s}
+.scene__aurora span:nth-child(3){width:42%;aspect-ratio:1;left:32%;bottom:-6%;
+  background:radial-gradient(circle at 50% 50%,color-mix(in srgb,#39d0ff 30%,transparent),transparent 70%);
+  animation-delay:-13s}
+@keyframes aurora{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(4%,-3%,0) scale(1.12)}
+  100%{transform:translate3d(-3%,4%,0) scale(1.04)}
+}
+
+/* --- generic 3D tilt surface ------------------------------------------- */
+[data-tilt]{
+  position:relative;transform-style:preserve-3d;
+  transition:transform .5s cubic-bezier(.22,.61,.36,1),box-shadow .5s ease;
+  will-change:transform
+}
+[data-tilt].is-live{
+  transition:transform .12s ease-out,box-shadow .3s ease;
+  transform:perspective(var(--persp, 1100px))
+            rotateX(calc(var(--ty,0) * -1deg))
+            rotateY(calc(var(--tx,0) * 1deg))
+            translateZ(0)
+}
+.tilt__glare{
+  position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  background:radial-gradient(38% 34% at var(--mx,50%) var(--my,50%),var(--glare, rgba(255,255,255,.55)),transparent 62%);
+  transition:opacity .3s ease;mix-blend-mode:overlay;transform:translateZ(40px)
+}
+[data-tilt].is-live .tilt__glare{opacity:.9}
+
+/* --- hero gets its own depth stack ------------------------------------- */
+.hero__grid{transform-style:preserve-3d}
+.hero__copy{transform:translateZ(0)}
+.hero__media{
+  transform-style:preserve-3d;
+  transform:perspective(var(--persp, 1100px)) rotateY(-6deg) rotateX(2deg);
+  transition:transform .8s cubic-bezier(.22,.61,.36,1)
+}
+.hero__art{
+  transform:translateZ(0);
+  box-shadow:0 40px 90px -30px rgba(28,16,80,.42),0 4px 12px rgba(28,16,80,.10)
+}
+.hero__art-card{
+  box-shadow:0 26px 50px -22px rgba(28,16,80,.34);
+  transform:translateZ(70px)
+}
+.hero__art-card--a{animation:float-a 7s ease-in-out infinite}
+.hero__art-card--b{animation:float-b 8.5s ease-in-out infinite}
+.hero__art-ring{transform:translateZ(30px)}
+.hero__stat{transform:translateZ(96px);box-shadow:0 22px 44px -20px rgba(28,16,80,.36)}
+.hero__stat--one{animation:float-b 9s ease-in-out infinite}
+.hero__stat--two{animation:float-a 7.5s ease-in-out infinite}
+@keyframes float-a{0%,100%{transform:translate3d(0,0,70px)}50%{transform:translate3d(0,-12px,84px)}}
+@keyframes float-b{0%,100%{transform:translate3d(0,0,70px)}50%{transform:translate3d(0,10px,58px)}}
+.hero__stat--one,.hero__stat--two{animation-name:float-stat}
+@keyframes float-stat{0%,100%{transform:translate3d(0,0,96px)}50%{transform:translate3d(0,-9px,108px)}}
+.hero .scene__aurora{opacity:.7}
+
+/* --- video: a real screen in perspective -------------------------------- */
+.media-frame--3d{
+  position:relative;transform-style:preserve-3d;overflow:hidden;
+  border-radius:var(--radius-lg,25px);
+  border:1px solid color-mix(in srgb,var(--c-line, #e7e5f0) 70%,transparent);
+  box-shadow:
+    0 60px 110px -40px rgba(20,12,60,.55),
+    0 18px 40px -20px rgba(20,12,60,.35),
+    inset 0 1px 0 rgba(255,255,255,.35);
+  background:linear-gradient(150deg,#171326,#0d0b16)
+}
+.media-frame--3d::after{                 /* bezel highlight */
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(160deg,rgba(255,255,255,.16),transparent 42%)
+}
+.media-frame__glare{
+  position:absolute;inset:-40% -60%;pointer-events:none;z-index:3;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.16) 48%,transparent 58%);
+  transform:translateX(-30%);animation:sweep 7.5s ease-in-out infinite
+}
+@keyframes sweep{0%,65%{transform:translateX(-40%)}85%{transform:translateX(40%)}100%{transform:translateX(40%)}}
+.media-frame__ring{
+  position:absolute;left:50%;top:50%;width:118px;aspect-ratio:1;margin:-59px 0 0 -59px;
+  border-radius:50%;border:1px solid color-mix(in srgb,var(--c-accent, #4f2fd6) 55%,transparent);
+  animation:pulse-ring 2.8s ease-out infinite
+}
+@keyframes pulse-ring{0%{transform:scale(.7);opacity:.9}70%{transform:scale(1.5);opacity:0}100%{opacity:0}}
+.media-frame__hint{
+  position:relative;z-index:2;margin:14px auto 0;max-width:34ch;
+  font-size:.8rem;line-height:1.5;color:color-mix(in srgb,var(--c-on-dark, #f5f4fa) 68%,transparent)
+}
+.media-frame__hint strong{color:var(--c-on-dark, #f5f4fa);font-weight:700}
+
+/* --- cards, sections and stats rise out of the page on scroll ----------- */
+.depth-in{
+  opacity:0;
+  transform:perspective(var(--persp, 1100px)) translate3d(0,26px,-70px) rotateX(7deg);
+  transition:opacity .7s ease,transform .9s cubic-bezier(.22,.61,.36,1)
+}
+.depth-in.is-in{opacity:1;transform:perspective(var(--persp, 1100px)) translate3d(0,0,0) rotateX(0)}
+
+/* --- 3D pressable buttons ---------------------------------------------- */
+.btn{transform-style:preserve-3d;transition:transform .18s cubic-bezier(.22,.61,.36,1),box-shadow .25s ease,background .25s ease}
+.btn:hover{transform:translate3d(0,-2px,0)}
+.btn:active{transform:translate3d(0,1px,0) scale(.99)}
+.btn--primary{
+  box-shadow:0 10px 24px -10px color-mix(in srgb,var(--c-accent, #4f2fd6) 85%,transparent),
+             0 2px 6px rgba(20,12,60,.16),
+             inset 0 1px 0 rgba(255,255,255,.28)
+}
+.btn--primary:hover{
+  box-shadow:0 22px 44px -14px color-mix(in srgb,var(--c-accent, #4f2fd6) 78%,transparent),
+             0 4px 10px rgba(20,12,60,.18),
+             inset 0 1px 0 rgba(255,255,255,.32)
+}
+
+/* --- floating marquee in perspective ----------------------------------- */
+.marquee{perspective:600px}
+.marquee__track{transform:rotateX(11deg);transform-style:preserve-3d}
+.marquee__item{
+  box-shadow:0 10px 22px -12px rgba(28,16,80,.35);
+  transition:transform .3s ease,box-shadow .3s ease
+}
+.marquee__item:hover{transform:translateZ(26px) scale(1.05);box-shadow:0 20px 34px -14px rgba(28,16,80,.4)}
+
+/* --- glass surfaces for stats / includes / testimonials ---------------- */
+.stats__grid,.bento__card,.results-row__item,.bento{
+  backdrop-filter:blur(9px);
+  box-shadow:0 26px 60px -34px rgba(28,16,80,.34),inset 0 1px 0 rgba(255,255,255,.5)
+}
+
+@media (max-width:899px){
+  :root{--persp:800px;--tilt-max:4deg}
+  .hero__media{transform:none}
+  .marquee__track{transform:rotateX(7deg)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .scene__aurora span,.media-frame__glare,.media-frame__ring,
+  .hero__art-card,.hero__stat{animation:none!important}
+  .hero__media{transform:none}
+  [data-tilt],[data-tilt].is-live,.btn:hover,.btn:active{transform:none}
+  .depth-in{opacity:1;transform:none}
+  .marquee__track{transform:none}
+}

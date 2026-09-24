@@ -145,6 +145,81 @@
     }, 3000);
   }
 
+  /* ------------------------------------------------------- depth & 3D engine
+     Pointer-driven tilt on [data-tilt] cards plus a scroll-in depth reveal.
+     Guarded three ways -- no motion preference, no hover, no pointer events --
+     because a landing page that makes people motion-sick is not a landing page. */
+  var motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  if (motionOK && canHover) {
+    $$('[data-tilt]').forEach(function (card) {
+      var max = parseFloat(card.getAttribute('data-tilt')) || 7;
+      var raf = null, next = null;
+
+      function apply() {
+        raf = null;
+        if (!next) { return; }
+        card.style.setProperty('--tx', next.x.toFixed(2));
+        card.style.setProperty('--ty', next.y.toFixed(2));
+        card.style.setProperty('--mx', next.px + '%');
+        card.style.setProperty('--my', next.py + '%');
+      }
+
+      card.addEventListener('pointermove', function (event) {
+        var r = card.getBoundingClientRect();
+        var px = (event.clientX - r.left) / r.width;      // 0..1
+        var py = (event.clientY - r.top) / r.height;
+        next = {
+          x: (px - 0.5) * 2 * max,
+          y: (py - 0.5) * 2 * max,
+          px: Math.round(px * 100),
+          py: Math.round(py * 100)
+        };
+        if (!raf) { raf = window.requestAnimationFrame(apply); }
+      });
+
+      card.addEventListener('pointerenter', function () { card.classList.add('is-live'); });
+      card.addEventListener('pointerleave', function () {
+        card.classList.remove('is-live');
+        card.style.removeProperty('--tx');
+        card.style.removeProperty('--ty');
+      });
+    });
+  }
+
+  /* depth reveal: sections rise out of the page as they scroll in */
+  var depthTargets = $$('.section > .page-width, .pricing__card, .bento__card, .results-row__item, .stats__grid');
+  if (depthTargets.length && motionOK && 'IntersectionObserver' in window) {
+    var depthIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-in');
+          depthIO.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
+    depthTargets.forEach(function (el) {
+      el.classList.add('depth-in');
+      depthIO.observe(el);
+    });
+    /* same safety net as the reveal: never leave content invisible */
+    window.setTimeout(function () {
+      depthTargets.forEach(function (el) { el.classList.add('is-in'); });
+    }, 3000);
+  }
+
+  /* decorate the tilt surfaces that the markup does not already carry */
+  $$('.pricing__card, .bento__card, .results-row__item, .stats__grid').forEach(function (card) {
+    if (!card.hasAttribute('data-tilt')) { card.setAttribute('data-tilt', '5'); }
+    if (!$('.tilt__glare', card)) {
+      var glare = document.createElement('span');
+      glare.className = 'tilt__glare';
+      glare.setAttribute('aria-hidden', 'true');
+      card.appendChild(glare);
+    }
+  });
+
   /* ------------------------------------------------------- sticky buy bar */
   var buyBar = $('[data-buy-bar]');
   if (buyBar) {
@@ -165,23 +240,51 @@
   }
 
   /* ---------------------------------------------------- click-to-load video */
+  function mountEmbed(wrap) {
+    var src = wrap.getAttribute('data-embed-src');
+    if (!src || $('iframe', wrap)) { return; }
+    var trigger = $('[data-video-play]', wrap);
+    var iframe = document.createElement('iframe');
+    iframe.setAttribute('src', src);
+    iframe.setAttribute('title', (trigger && trigger.textContent.trim()) || 'Video');
+    iframe.setAttribute('loading', 'lazy');
+    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.setAttribute('frameborder', '0');
+    // keep the frame's own aspect box so nothing jumps when it loads
+    wrap.classList.add('is-playing');
+    wrap.innerHTML = '';
+    wrap.appendChild(iframe);
+  }
+
   $$('[data-video-embed]').forEach(function (wrap) {
     var trigger = $('[data-video-play]', wrap);
     var src = wrap.getAttribute('data-embed-src');
-    if (!trigger || !src) { return; }
+    if (!src) { return; }
+
+    // Autoplay: the embed has to mount immediately, not wait for a click --
+    // a hand-rolled lazy loader silently disables autoplay.
+    if (wrap.getAttribute('data-autoplay') === 'true') {
+      mountEmbed(wrap);
+      return;
+    }
+    if (!trigger) { return; }
     trigger.addEventListener('click', function (event) {
       event.preventDefault();
-      var iframe = document.createElement('iframe');
-      iframe.setAttribute('src', src);
-      iframe.setAttribute('title', trigger.textContent.trim() || 'Video');
-      iframe.setAttribute('loading', 'lazy');
-      iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-      iframe.setAttribute('allowfullscreen', '');
-      wrap.innerHTML = '';
-      wrap.appendChild(iframe);
+      mountEmbed(wrap);
       announce('Video loading');
     });
   });
+
+  /* hero aurora: a real 3D plane behind the copy */
+  var hero = $('.hero');
+  if (hero && motionOK && !$('.scene__aurora', hero)) {
+    var aurora = document.createElement('div');
+    aurora.className = 'scene__aurora';
+    aurora.setAttribute('aria-hidden', 'true');
+    aurora.innerHTML = '<span></span><span></span><span></span>';
+    hero.insertBefore(aurora, hero.firstChild);
+  }
 
   /* --------------------------------------------------------------- share */
   $$('[data-share]').forEach(function (wrap) {

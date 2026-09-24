@@ -24,7 +24,7 @@ So this tool does what a merchant actually does:
 
 Exit code is non-zero on any failure, and tools/build.py refuses to package a zip.
 
-Run:  PYTHONPATH=/home/user/pylibs python3 theme-v15/tools/render_check.py
+Run:  PYTHONPATH=/home/user/pylibs python3 theme-v16/tools/render_check.py
 """
 
 import glob
@@ -395,8 +395,10 @@ def render_template(env, template_name, settings, dropped):
             block_defaults.update(block.get("settings") or {})
             blocks.append({"id": block.get("id") or f"b{index}", "type": block_type,
                            "settings": block_defaults, "shopify_attributes": ""})
-        if not blocks:
-            blocks = preset_blocks(schema)
+        # NOTE: no preset fallback here, deliberately. Shopify only applies presets
+        # when a merchant adds a section through the editor; a JSON template that
+        # omits `blocks` renders with none. Substituting presets here once hid a
+        # live-site bug where half the homepage was empty.
         section = section_ctx(section_id, name, defaults, blocks)
 
         body = render_source(read(path))
@@ -614,6 +616,22 @@ const cfg = JSON.parse(process.argv[2]);
             strayDialogs.push((d.id || d.className) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height));
           }
         }
+        // A section that renders its blocks but received none shows up as a big
+        // blank band. Catch it structurally: any element that declares a
+        // block-rendering hook must contain content.
+        const emptySections = [];
+        for (const sec of Array.from(document.querySelectorAll('main > .shopify-section'))) {
+          const cls = sec.className;
+          if (!/curriculum|faq|includes|stats|pricing|testimonials|tools|video|instructor/.test(cls)) continue;
+          const r = sec.getBoundingClientRect();
+          const txt = (sec.innerText || '').trim();
+          const media = sec.querySelectorAll('img, svg, video, iframe').length;
+          const listItems = sec.querySelectorAll('li, article, details').length;
+          if (r.height > 120 && txt.length < 40 && media < 2 && listItems < 2) {
+            emptySections.push(cls.replace('shopify-section shopify-section--', '').trim()
+                               + ' (' + Math.round(r.height) + 'px tall, ' + txt.length + ' chars)');
+          }
+        }
         const text = document.body.innerText || '';
         const h1 = document.querySelector('h1');
         return {
@@ -626,6 +644,7 @@ const cfg = JSON.parse(process.argv[2]);
           fontBody: (rootCS.getPropertyValue('--font-body') || '').trim().slice(0, 70) || null,
           emptyVars: emptyVars.slice(0, 12),
           strayDialogs,
+          emptySections,
           buttonCount: buttons.length,
           opaqueButtons: opaque.length,
           invisibleBoxes: Array.from(new Set(invisible)),
@@ -809,6 +828,9 @@ def main():
         if p.get("stillHidden"):
             fail(f"{tag}: scroll-reveal content never became visible "
                  f"({len(p['stillHidden'])} element(s)): {p['stillHidden'][:3]}")
+        if p["emptySections"]:
+            fail(f"{tag}: section rendered with no content -- its blocks were probably "
+                 f"never written into the JSON template: {p['emptySections']}")
         if p["strayDialogs"]:
             fail(f"{tag}: closed <dialog> is still rendered (missing a "
                  f":not([open]){{display:none}} guard): {p['strayDialogs']}")

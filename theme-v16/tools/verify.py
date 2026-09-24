@@ -308,7 +308,11 @@ def check_theme_tokens(theme):
     all_layout_tokens = set()
     for name in layouts:
         all_layout_tokens |= layouts[name]
-    undefined = used - all_layout_tokens - locally_defined - inline_defined
+    # tokens the 3D engine assigns at runtime from pointer position
+    js_path = os.path.join(theme, "assets/theme.js")
+    runtime = set(re.findall(r"setProperty\('(--[a-z0-9-]+)'", read(js_path))) \
+        if os.path.exists(js_path) else set()
+    undefined = used - all_layout_tokens - locally_defined - inline_defined - runtime
     if undefined:
         fail("tokens", f"var() fallbacks reference tokens nothing defines: {sorted(undefined)[:8]}")
 
@@ -580,10 +584,10 @@ def check_js(theme):
 
 
 def default_theme():
-    """Use the parent of tools/ when it looks like a theme, else look for theme-v15."""
+    """Use the parent of tools/ when it looks like a theme, else look for theme-v16."""
     here = os.path.dirname(os.path.abspath(__file__))
     for candidate in (os.path.dirname(here),
-                      os.path.join(os.path.dirname(here), "theme-v15")):
+                      os.path.join(os.path.dirname(here), "theme-v16")):
         if os.path.exists(os.path.join(candidate, "config", "settings_schema.json")):
             return candidate
     return "."

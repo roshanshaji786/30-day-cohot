@@ -1,0 +1,490 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "dark": false,
+        "eyebrow": "Founding cohort · First 25 students only",
+        "heading": "Learn AI, build a Shopify store,",
+        "heading_accent": "launch in 30 days.",
+        "show_rating": true,
+        "rating": 4.9,
+        "rating_text": "Rated by past workshop attendees",
+        "cta_label": "Enrol now",
+        "show_price_in_cta": true,
+        "secondary_label": "See the curriculum",
+        "meta_1": "Starts Oct 1, 2026 · 9:00 PM IST",
+        "meta_2": "15 live classes on Google Meet",
+        "stat_1_value": "15",
+        "stat_1_label": "live classes",
+        "stat_2_value": "30",
+        "stat_2_label": "days to launch"
+      },
+      "blocks": {}
+    },
+    "tools": {
+      "type": "tools-strip",
+      "settings": {
+        "heading": "Tools you will master"
+      },
+      "blocks": {
+        "tool-1": {
+          "type": "tool",
+          "settings": {
+            "text": "Shopify"
+          }
+        },
+        "tool-2": {
+          "type": "tool",
+          "settings": {
+            "text": "ChatGPT"
+          }
+        },
+        "tool-3": {
+          "type": "tool",
+          "settings": {
+            "text": "Claude"
+          }
+        },
+        "tool-4": {
+          "type": "tool",
+          "settings": {
+            "text": "Midjourney"
+          }
+        },
+        "tool-5": {
+          "type": "tool",
+          "settings": {
+            "text": "Canva"
+          }
+        },
+        "tool-6": {
+          "type": "tool",
+          "settings": {
+            "text": "Meta Ads"
+          }
+        },
+        "tool-7": {
+          "type": "tool",
+          "settings": {
+            "text": "Google Analytics"
+          }
+        },
+        "tool-8": {
+          "type": "tool",
+          "settings": {
+            "text": "Klaviyo"
+          }
+        }
+      },
+      "block_order": [
+        "tool-1",
+        "tool-2",
+        "tool-3",
+        "tool-4",
+        "tool-5",
+        "tool-6",
+        "tool-7",
+        "tool-8"
+      ]
+    },
+    "stats": {
+      "type": "stats",
+      "settings": {
+        "dark": false
+      },
+      "blocks": {
+        "stat-1": {
+          "type": "stat",
+          "settings": {
+            "value": "15",
+            "label": "live classes"
+          }
+        },
+        "stat-2": {
+          "type": "stat",
+          "settings": {
+            "value": "30",
+            "label": "days from idea to launch"
+          }
+        },
+        "stat-3": {
+          "type": "stat",
+          "settings": {
+            "value": "1",
+            "label": "store you actually own"
+          }
+        },
+        "stat-4": {
+          "type": "stat",
+          "settings": {
+            "value": "0",
+            "label": "lines of code to write"
+          }
+        }
+      },
+      "block_order": [
+        "stat-1",
+        "stat-2",
+        "stat-3",
+        "stat-4"
+      ]
+    },
+    "video": {
+      "type": "video",
+      "settings": {
+        "eyebrow": "See it in action",
+        "heading": "Two minutes inside the classroom"
+      },
+      "blocks": {
+        "point-1": {
+          "type": "point",
+          "settings": {
+            "text": "Recorded and yours to rewatch forever"
+          }
+        },
+        "point-2": {
+          "type": "point",
+          "settings": {
+            "text": "Live Q&A at the end of every class"
+          }
+        },
+        "point-3": {
+          "type": "point",
+          "settings": {
+            "text": "Templates, prompts and checklists included"
+          }
+        }
+      },
+      "block_order": [
+        "point-1",
+        "point-2",
+        "point-3"
+      ]
+    },
+    "curriculum": {
+      "type": "curriculum",
+      "settings": {},
+      "blocks": {
+        "module-1": {
+          "type": "module",
+          "settings": {
+            "title": "Phase 1 — Find a niche that actually sells",
+            "duration": "4 classes",
+            "count": "Research + validation",
+            "lessons": "Using AI to map trending niches and buyer intent\nValidating demand before you spend a rupee\nChoosing products with healthy margins\nDesigning a brand angle that stands out",
+            "text": "<p>You will leave this phase with one validated niche and a product shortlist, not a folder of ideas.</p>",
+            "outcome": "A validated niche and product shortlist."
+          }
+        },
+        "module-2": {
+          "type": "module",
+          "settings": {
+            "title": "Phase 2 — Build the store with AI",
+            "duration": "7 classes",
+            "count": "Shopify + AI workflow",
+            "lessons": "Shopify setup, domains and payments\nTheme structure, sections and mobile layout\nWriting product pages, copy and descriptions with AI\nProduct photography and image generation\nApps, email capture and abandoned-cart flows\nSEO basics so Google can find the store\nSpeed, trust and legal pages",
+            "text": "<p>Every class is a screen-share build. You copy the workflow on your own store while we go.</p>",
+            "outcome": "A live, mobile-ready Shopify store."
+          }
+        },
+        "module-3": {
+          "type": "module",
+          "settings": {
+            "title": "Phase 3 — Launch, traffic and first orders",
+            "duration": "4 classes",
+            "count": "Go-to-market",
+            "lessons": "Meta and Google ad foundations\nUGC and creative testing with AI tools\nOrganic content playbook for Instagram\nReading analytics and fixing leaks\nScaling what works, cutting what doesn't",
+            "text": "<p>Launch is a checklist, not a leap of faith. You will finish with your first campaign ready to run.</p>",
+            "outcome": "A launch checklist and your first campaign live."
+          }
+        }
+      },
+      "block_order": [
+        "module-1",
+        "module-2",
+        "module-3"
+      ]
+    },
+    "instructor": {
+      "type": "instructor",
+      "settings": {},
+      "blocks": {
+        "credential-1": {
+          "type": "credential",
+          "settings": {
+            "text": "M.Tech in Computer Science"
+          }
+        },
+        "credential-2": {
+          "type": "credential",
+          "settings": {
+            "text": "Builds and ships AI-powered Shopify stores"
+          }
+        },
+        "credential-3": {
+          "type": "credential",
+          "settings": {
+            "text": "Teaches in Malayalam, English and Hindi"
+          }
+        }
+      },
+      "block_order": [
+        "credential-1",
+        "credential-2",
+        "credential-3"
+      ]
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {},
+      "blocks": {
+        "testimonial-1": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "I joined with zero experience and published my store in the third week. The AI research part alone saved me months.",
+            "author": "Student name",
+            "role": "Kochi · First cohort",
+            "image": "",
+            "rating": 5
+          }
+        },
+        "testimonial-2": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "The classes were practical. We built in real time and I could ask questions about my own product, not a demo product.",
+            "author": "Student name",
+            "role": "Trivandrum · Live cohort",
+            "image": "",
+            "rating": 5
+          }
+        },
+        "testimonial-3": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "I had a store sitting half-finished for a year. Two sessions in, it was live and taking orders.",
+            "author": "Student name",
+            "role": "Calicut · Live cohort",
+            "image": "",
+            "rating": 5
+          }
+        }
+      },
+      "block_order": [
+        "testimonial-1",
+        "testimonial-2",
+        "testimonial-3"
+      ]
+    },
+    "includes": {
+      "type": "includes",
+      "settings": {},
+      "blocks": {
+        "item-1": {
+          "type": "item",
+          "settings": {
+            "icon": "play",
+            "title": "15 live classes",
+            "text": "Three weeks of guided, screen-share sessions on Google Meet at 9:00 PM IST.",
+            "value": "Worth ₹22,500",
+            "wide": false,
+            "highlight": false
+          }
+        },
+        "item-2": {
+          "type": "item",
+          "settings": {
+            "icon": "refresh",
+            "title": "Lifetime recordings",
+            "text": "Every class recorded and posted within 24 hours. Rewatch forever.",
+            "value": "",
+            "wide": false,
+            "highlight": false
+          }
+        },
+        "item-3": {
+          "type": "item",
+          "settings": {
+            "icon": "spark",
+            "title": "AI prompt library",
+            "text": "The exact prompts I use for niche research, copy, product pages and ads.",
+            "value": "",
+            "wide": false,
+            "highlight": true
+          }
+        },
+        "item-4": {
+          "type": "item",
+          "settings": {
+            "icon": "users",
+            "title": "Personal feedback",
+            "text": "Small cohort, so your store gets reviewed live instead of just watching demos.",
+            "value": "",
+            "wide": false,
+            "highlight": false
+          }
+        },
+        "item-5": {
+          "type": "item",
+          "settings": {
+            "icon": "check-circle",
+            "title": "Launch checklist",
+            "text": "A step-by-step pre-launch and first-orders checklist you can tick off.",
+            "value": "",
+            "wide": false,
+            "highlight": false
+          }
+        },
+        "item-6": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "title": "Community access",
+            "text": "Private group for questions, wins and accountability after the course ends.",
+            "value": "",
+            "wide": false,
+            "highlight": false
+          }
+        }
+      },
+      "block_order": [
+        "item-1",
+        "item-2",
+        "item-3",
+        "item-4",
+        "item-5",
+        "item-6"
+      ]
+    },
+    "promise": {
+      "type": "rich-text",
+      "settings": {
+        "eyebrow": "Our promise",
+        "heading": "Attend the classes and you will finish with a live store",
+        "align": "center"
+      },
+      "blocks": {}
+    },
+    "pricing": {
+      "type": "pricing",
+      "settings": {
+        "dark": true,
+        "show_dynamic_checkout": true
+      },
+      "blocks": {
+        "line-1": {
+          "type": "line",
+          "settings": {
+            "text": "15 live classes with recordings"
+          }
+        },
+        "line-2": {
+          "type": "line",
+          "settings": {
+            "text": "Complete Shopify store build, step by step"
+          }
+        },
+        "line-3": {
+          "type": "line",
+          "settings": {
+            "text": "AI prompt library for research, copy and ads"
+          }
+        },
+        "line-4": {
+          "type": "line",
+          "settings": {
+            "text": "Private community and post-course support"
+          }
+        },
+        "line-5": {
+          "type": "line",
+          "settings": {
+            "text": "Certificate of completion"
+          }
+        }
+      },
+      "block_order": [
+        "line-1",
+        "line-2",
+        "line-3",
+        "line-4",
+        "line-5"
+      ]
+    },
+    "faq": {
+      "type": "faq",
+      "settings": {},
+      "blocks": {
+        "question-1": {
+          "type": "question",
+          "settings": {
+            "question": "Do I need any experience or coding skills?",
+            "answer": "<p>None at all. We start from zero and every class is a guided screen-share. If you can use Gmail and WhatsApp, you can follow this course.</p>",
+            "open": true
+          }
+        },
+        "question-2": {
+          "type": "question",
+          "settings": {
+            "question": "What if I miss a class?",
+            "answer": "<p>Every session is recorded and posted within 24 hours. You keep lifetime access to all recordings, templates and prompts.</p>",
+            "open": false
+          }
+        },
+        "question-3": {
+          "type": "question",
+          "settings": {
+            "question": "How much extra will I need to spend?",
+            "answer": "<p>You can start with only a domain. Shopify's trial covers the first period, and I show you free ways to source products and create content before you spend on ads.</p>",
+            "open": false
+          }
+        },
+        "question-4": {
+          "type": "question",
+          "settings": {
+            "question": "Is this live or recorded?",
+            "answer": "<p>It is fully live on Google Meet at 9:00 PM IST, with Q&amp;A in every session — plus recordings you can rewatch.</p>",
+            "open": false
+          }
+        },
+        "question-5": {
+          "type": "question",
+          "settings": {
+            "question": "Will I really have a store by the end?",
+            "answer": "<p>Yes. Building is not homework here — we build during class. You finish with a live, mobile-ready store and a launch checklist.</p>",
+            "open": false
+          }
+        },
+        "question-6": {
+          "type": "question",
+          "settings": {
+            "question": "What language is the course taught in?",
+            "answer": "<p>English and Malayalam, with Hindi support in the Q&amp;A. Ask in whichever language you are comfortable with.</p>",
+            "open": false
+          }
+        }
+      },
+      "block_order": [
+        "question-1",
+        "question-2",
+        "question-3",
+        "question-4",
+        "question-5",
+        "question-6"
+      ]
+    }
+  },
+  "order": [
+    "hero",
+    "video",
+    "tools",
+    "stats",
+    "curriculum",
+    "instructor",
+    "testimonials",
+    "includes",
+    "promise",
+    "pricing",
+    "faq"
+  ]
+}

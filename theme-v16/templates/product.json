@@ -1,0 +1,153 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {
+        "show_breadcrumbs": true,
+        "show_vendor": true,
+        "button_label": "Enrol now",
+        "show_dynamic_checkout": true,
+        "show_description": true,
+        "rating": 4.9,
+        "rating_count": 0
+      },
+      "blocks": {
+        "acc_included": {
+          "type": "accordion",
+          "settings": {
+            "title": "What's included",
+            "content": "<p>Fifteen live classes · lifetime recordings · AI prompt library · private community · certificate of completion.</p>",
+            "open": true
+          }
+        },
+        "acc_requirements": {
+          "type": "accordion",
+          "settings": {
+            "title": "What you need to start",
+            "content": "<p>A laptop, a stable internet connection and about 6–8 hours a week. No coding, no design skills and no prior business experience required.</p>"
+          }
+        },
+        "acc_refund": {
+          "type": "accordion",
+          "settings": {
+            "title": "Refunds and support",
+            "content": "<p>If the first two classes are not right for you, ask within 7 days for a full refund. Questions afterwards? Message me on WhatsApp any time.</p>"
+          }
+        }
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {
+        "heading": "What students say"
+      },
+      "blocks": {
+        "testimonial-1": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "I joined with zero experience and published my store in the third week. The AI research part alone saved me months.",
+            "author": "Student name",
+            "role": "Kochi · First cohort",
+            "image": "",
+            "rating": 5
+          }
+        },
+        "testimonial-2": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "The classes were practical. We built in real time and I could ask questions about my own product, not a demo product.",
+            "author": "Student name",
+            "role": "Trivandrum · Live cohort",
+            "image": "",
+            "rating": 5
+          }
+        },
+        "testimonial-3": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "I had a store sitting half-finished for a year. Two sessions in, it was live and taking orders.",
+            "author": "Student name",
+            "role": "Calicut · Live cohort",
+            "image": "",
+            "rating": 5
+          }
+        }
+      },
+      "block_order": [
+        "testimonial-1",
+        "testimonial-2",
+        "testimonial-3"
+      ]
+    },
+    "faq": {
+      "type": "faq",
+      "settings": {
+        "eyebrow": "Questions",
+        "heading": "Before you enrol"
+      },
+      "blocks": {
+        "question-1": {
+          "type": "question",
+          "settings": {
+            "question": "Do I need any experience or coding skills?",
+            "answer": "<p>None at all. We start from zero and every class is a guided screen-share. If you can use Gmail and WhatsApp, you can follow this course.</p>",
+            "open": true
+          }
+        },
+        "question-2": {
+          "type": "question",
+          "settings": {
+            "question": "What if I miss a class?",
+            "answer": "<p>Every session is recorded and posted within 24 hours. You keep lifetime access to all recordings, templates and prompts.</p>",
+            "open": false
+          }
+        },
+        "question-3": {
+          "type": "question",
+          "settings": {
+            "question": "How much extra will I need to spend?",
+            "answer": "<p>You can start with only a domain. Shopify's trial covers the first period, and I show you free ways to source products and create content before you spend on ads.</p>",
+            "open": false
+          }
+        },
+        "question-4": {
+          "type": "question",
+          "settings": {
+            "question": "Is this live or recorded?",
+            "answer": "<p>It is fully live on Google Meet at 9:00 PM IST, with Q&amp;A in every session — plus recordings you can rewatch.</p>",
+            "open": false
+          }
+        },
+        "question-5": {
+          "type": "question",
+          "settings": {
+            "question": "Will I really have a store by the end?",
+            "answer": "<p>Yes. Building is not homework here — we build during class. You finish with a live, mobile-ready store and a launch checklist.</p>",
+            "open": false
+          }
+        },
+        "question-6": {
+          "type": "question",
+          "settings": {
+            "question": "What language is the course taught in?",
+            "answer": "<p>English and Malayalam, with Hindi support in the Q&amp;A. Ask in whichever language you are comfortable with.</p>",
+            "open": false
+          }
+        }
+      },
+      "block_order": [
+        "question-1",
+        "question-2",
+        "question-3",
+        "question-4",
+        "question-5",
+        "question-6"
+      ]
+    }
+  },
+  "order": [
+    "main",
+    "testimonials",
+    "faq"
+  ]
+}

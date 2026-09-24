@@ -63,20 +63,21 @@
     </div>
 
     <div class="video-section__media">
-      <div class="media-frame" style="--media-ratio: {{ ratio }}">
+      <div class="media-frame media-frame--3d" style="--media-ratio: {{ ratio }}">
+        <span class="media-frame__glare" aria-hidden="true"></span>
         {%- if has_hosted -%}
           {{ section.settings.video
              | video_tag:
                  image_size: '1400x',
                  controls: true,
                  autoplay: section.settings.autoplay,
-                 muted: section.settings.autoplay,
+                 muted: true,
                  loop: section.settings.loop,
                  playsinline: true,
-                 preload: 'metadata',
+                 preload: 'auto',
                  class: 'media-frame__el media-frame__el--fit' }}
         {%- elsif has_external -%}
-          <div class="video-embed" data-video-embed data-embed-src="{{ embed_src | escape }}">
+          <div class="video-embed" data-video-embed data-autoplay="{{ section.settings.autoplay }}" data-embed-src="{{ embed_src | escape }}">
             {%- if section.settings.poster != blank -%}
               {{ section.settings.poster | image_url: width: 1400 | image_tag: widths: '600,900,1400', sizes: '(max-width: 899px) 92vw, 55vw', loading: 'lazy', class: 'media-frame__poster', alt: section.settings.poster.alt | default: section.settings.heading }}
             {%- else -%}
@@ -91,7 +92,9 @@
           {{ section.settings.poster | image_url: width: 1400 | image_tag: widths: '600,900,1400', sizes: '(max-width: 899px) 92vw, 55vw', loading: 'lazy', class: 'media-frame__el', alt: section.settings.poster.alt | default: section.settings.heading }}
         {%- else -%}
           <div class="media-frame__fallback">
+            <span class="media-frame__ring" aria-hidden="true"></span>
             <span class="media-frame__badge">{% render 'icon', name: 'play', size: 20 %}{{ section.settings.play_label | default: 'Add your walkthrough video' }}</span>
+            <p class="media-frame__hint">Theme editor &rarr; this section → <strong>Shopify-hosted video</strong> or <strong>YouTube / Vimeo URL</strong>. It will autoplay muted, inline.</p>
             <ul class="media-frame__list" role="list">
               <li>Niche &amp; product research with AI</li>
               <li>Store build, theme setup &amp; apps</li>
@@ -126,8 +129,8 @@
       { "value": "1-1", "label": "Square" },
       { "value": "9-16", "label": "Vertical 9:16 (Reels)" }
     ], "default": "auto", "info": "Videos are never cropped \u2014 they are letterboxed inside this shape." },
-    { "type": "checkbox", "id": "autoplay", "label": "Autoplay muted (not recommended on mobile)", "default": false },
-    { "type": "checkbox", "id": "loop", "label": "Loop", "default": false },
+    { "type": "checkbox", "id": "autoplay", "label": "Autoplay (muted, so browsers allow it)", "default": true, "info": "Muted autoplay plays inline everywhere; the visitor can unmute with the control." },
+    { "type": "checkbox", "id": "loop", "label": "Loop", "default": true },
     { "type": "text", "id": "caption", "label": "Caption" },
     { "type": "header", "content": "Call to action" },
     { "type": "text", "id": "cta_label", "label": "Button label", "default": "Get the full curriculum" },
