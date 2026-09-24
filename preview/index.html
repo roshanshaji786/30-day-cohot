@@ -72,6 +72,49 @@
   <em>could</em> look like: the desktop and mobile frames are rendering the actual markup + CSS the Shopify theme ships.</p>
 </header>
 
+
+<section>
+  <h2>Round 2 — the remaining items, done</h2>
+  <p class="sub">Everything I listed as outstanding last time: the code-side polish that was still missing,
+  plus the store-side setup that could only ever be produced as files.</p>
+  <div class="grid">
+    <div class="card">
+      <h4><span class="tag p1">Code</span> Added to the theme</h4>
+      <ul>
+        <li class="done"><b>Instant search</b> — a ⌘K / <code>/</code> search overlay that queries Shopify's predictive
+        search endpoint and shows products, pages and guides as you type. Images, prices, debounced requests,
+        abortable, live-region announcements. Press Enter and it falls through to the full search page, so it works
+        with JavaScript disabled too.</li>
+        <li class="done"><b>One-tap add to cart</b> on collection and search cards for single-variant, in-stock
+        products. Multi-variant products automatically show “View details” instead. Posts to
+        <code>/cart/add</code>, so it works without JavaScript as well.</li>
+        <li class="done"><b>Review-app slots</b> — the testimonials section accepts <code>@app</code> blocks, so a
+        reviews app can be dropped in from the editor rather than hard-coded.</li>
+        <li class="done"><b>Test suite + build script</b> in <code>tools/</code>: <code>verify.py</code> gates
+        <code>build.py</code>, so a broken release can't be zipped.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4><span class="tag p0">Setup</span> New <code>setup/</code> folder</h4>
+      <ul>
+        <li class="done"><b><code>product-import.csv</code></b> — the single product, fully specified: handle,
+        ₹2,999 / ₹5,000, 25 seats in tracked inventory, digital (no shipping), SEO title + description, and a
+        ~500-word product description. Shopify admin → Products → Import, done.</li>
+        <li class="done"><b>Four policy documents</b> — refund (7-day, matching what the theme promises),
+        privacy (DPDP Act 2023 ready), terms (with a no-earnings-guarantee clause), delivery. These are what the
+        footer, contact page and structured data link to.</li>
+        <li class="done"><b><code>content-pack.md</code></b> — testimonial outreach scripts, exact image sizes
+        and shot list, a 90-second video script, and a launch-week checklist.</li>
+        <li class="done"><b><code>setup/README.md</code></b> — the order of operations, and what to trim from the
+        policy drafts.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><b>Why a CSV instead of a checklist:</b> a one-character typo in the product handle breaks
+  every buy button on the site, and forgetting <i>Track quantity</i> silently removes the seats-left chips.
+  Importing the file makes all 24 fields exact on the first attempt.</div>
+</section>
+
 <section>
   <h2>Scores after the rebuild</h2>
   <div class="big">
@@ -187,48 +230,55 @@
       </ul>
     </div>
   </div>
-  <div class="note"><b>Verification performed:</b> all 44 Liquid files parsed with a real Liquid engine (0 errors),
-  28 section schemas + 19 JSON templates validated, 59 rendered anchors audited for dead links (0 empty),
-  CSS class coverage checked (0 dead rules — the old theme had 73), JS syntax checked.
-  One real bug was caught and fixed during testing: a parenthesised expression in the JSON-LD that Shopify's Liquid does not support.</div>
+  <div class="note"><b>Verification performed</b> — now a reusable test suite (<code>theme-v13/tools/verify.py</code>)
+  that gates the build: all <b>46 Liquid files</b> parsed with a real Liquid engine (0 errors), <b>29 section
+  schemas</b> + <b>19 JSON templates</b> validated with no dangling references, every <code>t</code>-filter locale key
+  resolved, <b>57 rendered anchors audited with 0 dead links</b>, <b>419 CSS classes with 0 dead rules</b> (the old
+  theme had 73 dead of 119), and <code>node --check</code> on every script. The checks caught three real bugs during
+  development: a parenthesised Liquid expression Shopify does not support, <code>routes.contact_url</code> (which isn't
+  a real Shopify route), and an entirely unstyled footer.</div>
 </section>
 
 <section style="border-bottom:0">
-  <h2>What you still need to do in Shopify admin</h2>
-  <p class="sub">The theme is complete and self-consistent, but three things live in your store, not the code:</p>
+  <h2>What is left — store-side only</h2>
+  <p class="sub">No code work remains. These are the four things that need your Shopify admin and your real
+  content; the files in <code>setup/</code> do most of the typing for you.</p>
   <div class="grid">
     <div class="card">
-      <h4>1. Create the product</h4>
+      <h4>1. Import the product <span class="tag p0">2 min</span></h4>
       <ul>
-        <li class="todo">Add one product with the handle <code>ai-shopify-business-bootcamp</code>, price ₹2,999 and compare-at ₹5,000.</li>
-        <li class="todo">Turn on <b>Track quantity</b> and set the real seat count — the "Only N seats left" chip reads it.</li>
-        <li class="todo">Paste the course description; the product page and schema use it.</li>
-        <li class="todo">If the handle differs, change it in <b>Theme settings → Course product</b> instead of in code.</li>
+        <li class="todo">Products → <b>Import</b> → <code>setup/product-import.csv</code>. Every field is pre-filled:
+        handle, price, compare-at, inventory tracking, digital flag, SEO.</li>
+        <li class="todo">Confirm the handle is <code>ai-shopify-business-bootcamp</code> — the theme points at it.
+        Different handle? Change it in Theme settings → Course product.</li>
+        <li class="todo">Set the real seat count. The “Only N seats left” chip reads it live.</li>
       </ul>
     </div>
     <div class="card">
-      <h4>2. Settings → Policies</h4>
+      <h4>2. Publish the four policies <span class="tag p0">10 min</span></h4>
       <ul>
-        <li class="todo">Publish Refund, Privacy and Terms. The footer, contact page and checkout then link to them automatically (they're required for Meta/Google ad approval and gateway KYC).</li>
-        <li class="todo">Add WhatsApp number, Instagram, support email and logo in <b>Theme settings</b>.</li>
-        <li class="todo">Set <b>Cohort start date</b> so the countdown is truthful, and pick an accent colour.</li>
+        <li class="todo">Copy each file from <code>setup/policies/</code> into Settings → Policies, replacing every
+        <code>[BRACKET]</code>.</li>
+        <li class="todo">The footer, contact page and structured data link to them automatically once they exist —
+        and they're required for Meta/Google ad approval and gateway KYC.</li>
+        <li class="todo">Have a lawyer glance at the liability and jurisdiction clauses. They're drafts, not legal advice.</li>
       </ul>
     </div>
     <div class="card">
-      <h4>3. Add your real proof</h4>
-      <ul>
-        <li class="todo">Replace the three placeholder testimonials with real student quotes, names and photos.</li>
-        <li class="todo">Add 2–4 student-store screenshots in the results row.</li>
-        <li class="todo">Upload the workshop video and instructor photo — both sections have designed fallbacks until then.</li>
-        <li class="todo">Set the social share image (1200 × 630) for WhatsApp link previews.</li>
+      <h4>3. Theme settings <span class="tag p1">5 min</span></h4>
+      <ul class="todo">
+        <li>WhatsApp number, Instagram, support email, logo, favicon</li>
+        <li>Cohort start date (drives the countdown and <code>Course.startDate</code>)</li>
+        <li>Social share image, 1200 × 630, for WhatsApp link previews</li>
       </ul>
     </div>
     <div class="card">
-      <h4>Install</h4>
-      <ul>
-        <li class="todo">Shopify admin → <b>Online Store → Themes → Add theme → Upload zip</b> → <code>ai-shopify-business-bootcamp-v13.zip</code>.</li>
-        <li class="todo">Preview first (the theme is safe to publish immediately, but the product must exist for the buy buttons to work).</li>
-        <li class="todo">Then <b>Publish</b>. Full step-by-step notes are in <code>THEME_SETUP.md</code>.</li>
+      <h4>4. Real content <span class="tag p1">your weekend</span></h4>
+      <ul class="todo">
+        <li>Replace the 3 placeholder testimonials — <code>content-pack.md</code> has the outreach script</li>
+        <li>Add 2–4 student-store screenshots to the results row</li>
+        <li>Upload the instructor photo (800 × 1000) and hero image (1200 × 1500)</li>
+        <li>Record the 90-second demo video — shot list is written for you</li>
       </ul>
     </div>
   </div>

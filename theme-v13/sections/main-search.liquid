@@ -30,7 +30,10 @@
                 <p class="product-card__kicker">{{ item.object_type }}</p>
                 <h2 class="product-card__title"><a href="{{ item.url }}">{{ item.title }}</a></h2>
                 {%- if item.object_type == 'product' -%}
-                  <div class="product-card__foot">{% render 'price', product: item, size: 'md' %}<a class="btn btn--primary btn--sm" href="{{ item.url }}">{{ 'products.product.view_details' | t }}</a></div>
+                  <div class="product-card__foot">
+                    {% render 'price', product: item, size: 'md' %}
+                    {% render 'quick-add', product: item %}
+                  </div>
                 {%- endif -%}
               </div>
             </li>

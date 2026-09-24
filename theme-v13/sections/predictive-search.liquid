@@ -1,0 +1,85 @@
+{%- comment -%}
+  Rendered by Shopify's predictive search endpoint
+  (/search/suggest?q=…&section_id=predictive-search).
+  Merchant can turn it off in the theme editor (Header → Predictive search).
+{%- endcomment -%}
+{%- if predictive_search.performed -%}
+  {%- assign product_results = predictive_search.resources.products -%}
+  {%- assign page_results = predictive_search.resources.pages -%}
+  {%- assign article_results = predictive_search.resources.articles -%}
+  {%- assign total = product_results.size | plus: page_results.size | plus: article_results.size -%}
+
+  <div class="ps" id="predictive-results">
+    {%- if total == 0 -%}
+      <p class="ps__empty">
+        {% render 'icon', name: 'search', size: 18 %}
+        <span>{{ 'general.search.no_results' | t: terms: predictive_search.terms }}</span>
+      </p>
+    {%- else -%}
+      {%- if product_results.size > 0 -%}
+        <div class="ps__group">
+          <p class="ps__group-title">{{ 'products.facets.sort' | t }} — {{ total }} {{ 'general.search.results_with_count' | t: count: total }}</p>
+          <ul class="ps__list" role="list">
+            {%- for item in product_results -%}
+              <li>
+                <a class="ps__item" href="{{ item.url }}">
+                  <span class="ps__thumb">
+                    {%- if item.featured_image -%}
+                      {{ item.featured_image | image_url: width: 140 | image_tag: widths: '70,140', sizes: '52px', loading: 'lazy', class: 'ps__img', alt: item.featured_image.alt | default: item.title }}
+                    {%- else -%}
+                      {% render 'icon', name: 'spark', size: 20 %}
+                    {%- endif -%}
+                  </span>
+                  <span class="ps__body">
+                    <span class="ps__title">{{ item.title }}</span>
+                    {%- if item.price -%}{% render 'price', product: item, size: 'sm' %}{%- endif -%}
+                  </span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      {%- if page_results.size > 0 -%}
+        <div class="ps__group">
+          <p class="ps__group-title">{{ 'general.nav.home' | t }} &amp; {{ 'sections.cart.view_cart' | t }}</p>
+          <ul class="ps__list" role="list">
+            {%- for item in page_results -%}
+              <li>
+                <a class="ps__item" href="{{ item.url }}">
+                  <span class="ps__thumb">{% render 'icon', name: 'info', size: 20 %}</span>
+                  <span class="ps__body"><span class="ps__title">{{ item.title }}</span></span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      {%- if article_results.size > 0 -%}
+        <div class="ps__group">
+          <p class="ps__group-title">{{ 'blogs.article.read_more' | t }}</p>
+          <ul class="ps__list" role="list">
+            {%- for item in article_results -%}
+              <li>
+                <a class="ps__item" href="{{ item.url }}">
+                  <span class="ps__thumb">{% render 'icon', name: 'quote', size: 20 %}</span>
+                  <span class="ps__body"><span class="ps__title">{{ item.title }}</span></span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <a class="ps__all link-arrow" href="{{ routes.search_url }}?q={{ predictive_search.terms | url_encode }}">
+        {{ 'general.search.submit' | t }}: “{{ predictive_search.terms }}”
+        {% render 'icon', name: 'arrow-right', size: 16 %}
+      </a>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+{%- if predictive_search.performed == false -%}
+  <p class="ps__hint">Start typing to search the course, pages and guides.</p>
+{%- endif -%}

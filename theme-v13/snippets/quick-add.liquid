@@ -1,0 +1,19 @@
+{%- comment -%}
+  One-tap add to cart for single-variant, in-stock products.
+  Posts to Shopify's cart endpoint, so it works with JavaScript disabled too
+  (the visitor simply lands on the cart page instead of the drawer).
+{%- endcomment -%}
+{%- if product.available and product.has_only_default_variant -%}
+  <form class="quick-add" action="{{ routes.cart_add_url }}" method="post" accept-charset="UTF-8" data-quick-add>
+    <input type="hidden" name="form_type" value="product">
+    <input type="hidden" name="utf8" value="✓">
+    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+    <input type="hidden" name="quantity" value="1">
+    <button type="submit" class="btn btn--primary btn--sm quick-add__btn" data-quick-add-btn>
+      <span data-quick-add-label>{{ 'products.product.add_to_cart' | t }}</span>
+      <span class="quick-add__price">{{ product.price | money }}</span>
+    </button>
+  </form>
+{%- else -%}
+  <a class="btn btn--primary btn--sm" href="{{ product.url }}">{{ 'products.product.view_details' | t }}</a>
+{%- endif -%}

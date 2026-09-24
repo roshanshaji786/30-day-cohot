@@ -220,6 +220,180 @@
     });
   }
 
+  /* ------------------------------------------------------ predictive search */
+  var searchModal = $('[data-search-modal]');
+  if (searchModal) {
+    var psSection = searchModal.getAttribute('data-ps-section') || 'predictive-search';
+    var psInput = $('input[type="search"]', searchModal);
+    var psResults = $('[data-ps-results]', searchModal);
+    var psTimer = null;
+    var psController = null;
+
+    var escapeHtml = function (value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    };
+
+    var openSearch = function () {
+      if (menuDialog && menuDialog.open) { closeMenu(); }
+      if (typeof searchModal.showModal === 'function') { searchModal.showModal(); }
+      else { searchModal.setAttribute('open', ''); }
+      document.documentElement.style.overflow = 'hidden';
+      if (psInput) { window.setTimeout(function () { psInput.focus(); }, 40); }
+    };
+
+    var closeSearch = function () {
+      if (typeof searchModal.close === 'function' && searchModal.open) { searchModal.close(); }
+      else { searchModal.removeAttribute('open'); }
+      document.documentElement.style.overflow = '';
+    };
+
+    $$('[data-search-open]').forEach(function (btn) {
+      btn.addEventListener('click', openSearch);
+    });
+    $$('[data-search-close]', searchModal).forEach(function (btn) {
+      btn.addEventListener('click', closeSearch);
+    });
+    searchModal.addEventListener('click', function (event) {
+      if (event.target === searchModal) { closeSearch(); }
+    });
+    searchModal.addEventListener('close', function () {
+      document.documentElement.style.overflow = '';
+    });
+
+    // ⌘K / Ctrl-K, and "/" when nothing else has focus
+    document.addEventListener('keydown', function (event) {
+      if ((event.key === 'k' || event.key === 'K') && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        openSearch();
+      } else if (event.key === '/' && !searchModal.open) {
+        var active = document.activeElement;
+        var typing = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
+        if (!typing) { event.preventDefault(); openSearch(); }
+      }
+    });
+
+    var renderFromJson = function (query, data) {
+      var resources = (data && data.resources && data.resources.results) || {};
+      var groups = [
+        { key: 'products', label: 'Products' },
+        { key: 'pages', label: 'Pages' },
+        { key: 'articles', label: 'Guides' }
+      ];
+      var total = 0;
+      var html = '';
+      groups.forEach(function (group) {
+        var items = resources[group.key] || [];
+        total += items.length;
+        if (!items.length) { return; }
+        html += '<div class="ps__group"><p class="ps__group-title">' + group.label + '</p><ul class="ps__list">';
+        items.forEach(function (item) {
+          var image = item.featured_image && item.featured_image.url
+            ? '<img class="ps__img" src="' + item.featured_image.url + '" alt="" width="52" height="52" loading="lazy">'
+            : '';
+          html += '<li><a class="ps__item" href="' + item.url + '"><span class="ps__thumb">' + image +
+                  '</span><span class="ps__body"><span class="ps__title">' + escapeHtml(item.title) +
+                  '</span>' + (item.price ? '' : '') + '</span></a></li>';
+        });
+        html += '</ul></div>';
+      });
+      if (!total) {
+        return '<p class="ps__empty">No results for &ldquo;' + escapeHtml(query) + '&rdquo;. Try a shorter word.</p>';
+      }
+      html += '<a class="ps__all link-arrow" href="' + root + 'search?q=' + encodeURIComponent(query) +
+              '">See all results for &ldquo;' + escapeHtml(query) + '&rdquo;</a>';
+      return html;
+    };
+
+    var fetchSuggestions = function (query) {
+      if (psController) { psController.abort(); }
+      psController = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var url = root + 'search/suggest?q=' + encodeURIComponent(query) +
+                '&resources[type]=product,page,article&resources[limit]=6&section_id=' + encodeURIComponent(psSection);
+      return fetch(url, {
+        headers: { 'Accept': 'text/html, application/json' },
+        signal: psController ? psController.signal : undefined
+      })
+        .then(function (res) { return res.text(); })
+        .then(function (text) {
+          var trimmed = text.trim();
+          if (trimmed.charAt(0) === '{') {
+            var data = null;
+            try { data = JSON.parse(trimmed); } catch (e) { data = null; }
+            if (data) { return { html: renderFromJson(query, data), count: null }; }
+          }
+          var parsed = new DOMParser().parseFromString(text, 'text/html');
+          var section = parsed.querySelector('#predictive-results') || parsed.querySelector('.ps');
+          return { html: section ? section.innerHTML : renderFromJson(query, null), count: null };
+        });
+    };
+
+    if (psInput && psResults) {
+      psInput.addEventListener('input', function () {
+        var query = psInput.value.trim();
+        window.clearTimeout(psTimer);
+        if (query.length < 2) { psResults.innerHTML = '<p class="ps__hint">Keep typing…</p>'; return; }
+        psTimer = window.setTimeout(function () {
+          psResults.setAttribute('aria-busy', 'true');
+          fetchSuggestions(query)
+            .then(function (result) {
+              psResults.innerHTML = result.html;
+              psResults.removeAttribute('aria-busy');
+              var found = psResults.querySelectorAll('.ps__item').length;
+              announce(found ? found + (found === 1 ? ' suggestion' : ' suggestions') + ' for ' + query : 'No results for ' + query);
+            })
+            .catch(function (error) {
+              psResults.removeAttribute('aria-busy');
+              if (error && error.name === 'AbortError') { return; }
+              psResults.innerHTML = '<p class="ps__empty">Search is unavailable right now.</p>';
+            });
+        }, 220);
+      });
+      // Enter still submits the plain form, so full search works without JS
+      var psForm = psInput.closest('form');
+      if (psForm) {
+        psForm.addEventListener('submit', function () {
+          window.setTimeout(closeSearch, 0);
+        });
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------ quick add */
+  $$('form[data-quick-add]').forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var button = $('[data-quick-add-btn]', form);
+      var label = $('[data-quick-add-label]', form);
+      var original = label ? label.textContent : '';
+      if (button) { button.disabled = true; }
+      if (label) { label.textContent = 'Adding…'; }
+      fetch(root + 'cart/add.js', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: new FormData(form)
+      })
+        .then(function (res) { return res.json().then(function (body) { return { ok: res.ok, body: body }; }); })
+        .then(function (result) {
+          if (!result.ok) { throw new Error((result.body && (result.body.description || result.body.message)) || 'Unable to add to cart'); }
+          return fetch(root + 'cart.js', { headers: { 'Accept': 'application/json' } });
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (cart) {
+          setCartCount(cart.item_count);
+          announce('Added to cart');
+          if (drawer) { return refreshDrawer().then(openDrawer); }
+          window.location.href = root + 'cart';
+        })
+        .catch(function (error) { announce((error && error.message) || 'Could not add to cart'); })
+        .then(function () {
+          if (button) { button.disabled = false; }
+          if (label) { label.textContent = original; }
+        });
+    });
+  });
+
   /* -------------------------------------------------------- gift card QR */
   var qrTarget = $('[data-qr-code]');
   if (qrTarget && typeof window.QRCode !== 'undefined') {

@@ -47,6 +47,12 @@
       </div>
     {%- endif -%}
 
+    {%- for block in section.blocks -%}
+      {%- if block.type == '@app' -%}
+        <div class="t-app" {{ block.shopify_attributes }}>{% render block %}</div>
+      {%- endif -%}
+    {%- endfor -%}
+
     {%- if section.settings.results_label != blank -%}
       <p class="testimonials__results-label">{{ section.settings.results_label }}</p>
       <ul class="results-row" role="list">
@@ -85,6 +91,7 @@
     { "type": "image_picker", "id": "result_4", "label": "Screenshot 4" }
   ],
   "blocks": [
+    { "type": "@app" },
     {
       "type": "testimonial",
       "name": "Testimonial",

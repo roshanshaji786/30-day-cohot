@@ -27,7 +27,11 @@
                 {%- endif -%}
                 <div class="product-card__foot">
                   {% render 'price', product: product, size: 'md' %}
-                  <a class="btn btn--primary btn--sm" href="{{ product.url }}">{{ 'products.product.view_details' | t }}</a>
+                  {%- if section.settings.quick_add -%}
+                    {% render 'quick-add', product: product %}
+                  {%- else -%}
+                    <a class="btn btn--primary btn--sm" href="{{ product.url }}">{{ 'products.product.view_details' | t }}</a>
+                  {%- endif -%}
                 </div>
               </div>
             </li>
@@ -50,6 +54,7 @@
   "settings": [
     { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true },
     { "type": "checkbox", "id": "show_description", "label": "Show product summaries", "default": true },
+    { "type": "checkbox", "id": "quick_add", "label": "One-tap add to cart on cards", "default": true, "info": "In-stock, single-variant products get an Add button. Others show View details." },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our store" },
     { "type": "range", "id": "per_page", "label": "Products per page", "min": 4, "max": 24, "step": 4, "default": 12 }
   ]

@@ -20,6 +20,10 @@ The theme is safe to publish immediately. The buy buttons only work after step 2
 
 ## 2. Create the product (required)
 
+**Fastest path:** Shopify admin → **Products → Import** → `setup/product-import.csv`.
+Every field below is already filled in that file, including a ~500-word description. Import, check the
+handle, and set the real seat count.
+
 The whole theme points at **one** product.
 
 | Field | Value |
@@ -41,7 +45,7 @@ The whole theme points at **one** product.
 
 | Where | Setting | Effect |
 |---|---|---|
-| Settings → Policies | Refund, Privacy, Terms, Shipping | Footer + contact page legal links (auto). Required for ad approval. |
+| Settings → Policies | Refund, Privacy, Terms, Shipping — **drafts in `setup/policies/`** | Footer + contact page legal links (auto). Required for ad approval and gateway KYC. |
 | Theme settings → Contact & social | WhatsApp number | Announcement bar, FAQ, pricing, footer, contact page CTAs |
 | Theme settings → Contact & social | Instagram / YouTube / LinkedIn | Footer icon row + `sameAs` in structured data |
 | Theme settings → Course product | Cohort start date | Countdown timer in the announcement bar and `Course.startDate` |
@@ -121,16 +125,58 @@ Without a WhatsApp number or support email, contact links fall back to `mailto:s
 
 | Check | Result |
 |---|---|
-| Liquid parse (real Liquid engine) | 44 / 44 files, 0 errors |
-| Section schemas (JSON) | 28 / 28 valid, all named |
+| Liquid parse (real Liquid engine) | 46 / 46 files, 0 errors |
+| Section schemas (JSON) | 29 / 29 valid, all named |
 | Template JSON + section references | 19 / 19 valid, no dangling references |
-| Snippet references | 11 snippets, no missing includes |
-| Rendered anchor audit (all sections) | 59 anchors, **0 dead links** |
-| CSS coverage | 0 dead rules (old theme: 73 dead of 119) |
-| Runtime smoke render (schema defaults + stub shop objects) | 38 / 40 sections render; the 2 remaining are `{% form %}` proxy limitations in the test harness, tested separately and passing |
+| Snippet references | 12 snippets, no missing includes |
+| Locale keys | Every `t`-filter key resolves |
+| Rendered anchor audit (all sections) | 57 anchors, **0 dead links** |
+| CSS coverage | 419 classes, **0 dead rules** (old theme: 73 dead of 119) |
 | `theme.js` | `node --check` clean |
 
-## 7. Files
+Run it yourself: `python3 theme-v13/tools/verify.py`.
+
+## 7. What was added after the first build
+
+**Instant search.** A ⌘K / `/` overlay that queries Shopify's predictive search endpoint and renders products,
+pages and guides with images and prices. Requests are debounced and abortable, results announce through a live
+region, Enter falls through to the full search page, and the whole thing works without JavaScript (the form is a
+plain GET to `/search`). Turn it off in Header → *Instant search overlay*.
+
+**One-tap add to cart.** Collection and search cards show an Add button for single-variant, in-stock products
+(`snippets/quick-add.liquid`); anything with options shows *View details* instead, so nobody adds the wrong
+variant. It posts to `/cart/add`, so it degrades to the cart page without JavaScript.
+
+**Review-app slots.** The testimonials section accepts `@app` blocks, so a reviews app can be placed from the
+editor rather than hard-coded.
+
+**A test suite.** `theme-v13/tools/verify.py` runs eight checks (Liquid parse, schema JSON, template references,
+snippet references, locale keys, rendered-link audit, CSS dead-rule detection, JS syntax). `tools/build.py`
+refuses to package a theme that fails them, then zips only the folders Shopify expects and prints the SHA-256.
+
+```bash
+pip install python-liquid            # required for the parse + link checks
+python3 theme-v13/tools/verify.py    # check only
+python3 theme-v13/tools/build.py     # check, then package the zip
+```
+
+**The `setup/` folder** — everything that lives in Shopify admin rather than the theme:
+
+| File | Purpose |
+|---|---|
+| `setup/product-import.csv` | Import-ready product: handle, ₹2,999 / ₹5,000, 25 tracked seats, digital (no shipping), SEO fields, full description |
+| `setup/make_product_csv.py` | Regenerates the CSV if the copy or price changes |
+| `setup/policies/refund-policy.md` | 7-day refund policy matching the on-page promise, plus the grievance officer block |
+| `setup/policies/privacy-policy.md` | Data handling written for the DPDP Act, 2023 |
+| `setup/policies/terms-of-service.md` | Licence, payment, conduct, IP, **no earnings guarantee**, liability cap |
+| `setup/policies/delivery-policy.md` | Digital delivery timings and the "no physical shipping" statement |
+| `setup/content-pack.md` | Testimonial outreach scripts, image sizes, a 90-second video script, launch checklist |
+| `setup/README.md` | Order of operations |
+
+Policy drafts are drafts. Have them reviewed, and delete any processor listed in the privacy policy that you do
+not actually use.
+
+## 8. Files
 
 ```
 theme-v13/
@@ -143,10 +189,11 @@ theme-v13/
 └── templates/        19 templates incl. customers/*
 ```
 
-## 8. Known limits (honest list)
+## 9. Known limits (honest list)
 
 - **Testimonials, photos and video are placeholders** until you add real ones — that's a content task, not a code task.
-- **No reviews app integration.** Testimonials are merchant-authored blocks; a review app can replace them later.
+- **No reviews app bundled.** Testimonials are merchant-authored blocks, and the section accepts `@app` blocks, so
+  installing Judge.me/Loox/Junip is an editor action rather than a code change.
 - **Single-product by default.** Collections/search/cart all work, but the landing page is built around one hero product.
 - The customer account templates use Shopify's **legacy** customer accounts (`customers/*.json`). New Customer
   Accounts (the hosted version) renders its own UI and ignores these files — both work.

@@ -64,9 +64,9 @@
     </nav>
 
     <div class="site-header__actions">
-      <a class="icon-btn" href="{{ routes.search_url }}" aria-label="{{ 'general.nav.search' | t }}">
+      <button type="button" class="icon-btn" data-search-open aria-label="{{ 'general.nav.search' | t }}" aria-haspopup="dialog">
         {% render 'icon', name: 'search', size: 20 %}
-      </a>
+      </button>
       {%- if shop.customer_accounts_enabled -%}
         <a class="icon-btn icon-btn--hide-sm" href="{{ routes.account_url }}" aria-label="{{ 'general.nav.account' | t }}">
           {% render 'icon', name: 'users', size: 20 %}
@@ -120,7 +120,7 @@
           <li><a class="mobile-menu__link" href="{{ routes.root_url }}#faq">FAQ</a></li>
           <li><a class="mobile-menu__link" href="{{ routes.root_url }}#pricing">Enrol</a></li>
         {%- endif -%}
-        <li><a class="mobile-menu__link" href="{{ routes.search_url }}">{{ 'general.nav.search' | t }}</a></li>
+        <li><button type="button" class="mobile-menu__link mobile-menu__link--button" data-search-open>{{ 'general.nav.search' | t }}</button></li>
         {%- if shop.customer_accounts_enabled -%}
           <li><a class="mobile-menu__link" href="{{ routes.account_url }}">{{ 'general.nav.account' | t }}</a></li>
         {%- endif -%}
@@ -139,6 +139,22 @@
       {%- endif -%}
     </div>
   </dialog>
+
+  {%- if section.settings.predictive_search -%}
+    <dialog class="search-modal" id="SearchModal" aria-label="{{ 'general.search.title' | t }}" data-search-modal data-ps-section="predictive-search">
+      <div class="search-modal__inner page-width">
+        <div class="search-modal__head" data-predictive-search>
+          {%- render 'search-form', id_suffix: '-overlay' -%}
+          <button type="button" class="icon-btn search-modal__close" data-search-close aria-label="{{ 'general.accessibility.close' | t }}">
+            {% render 'icon', name: 'close', size: 22 %}
+          </button>
+        </div>
+        <div class="search-modal__body" data-ps-results>
+          <p class="ps__hint">{{ 'general.search.placeholder' | t }}</p>
+        </div>
+      </div>
+    </dialog>
+  {%- endif -%}
 </header>
 
 {% schema %}
@@ -147,6 +163,7 @@
   "class": "section-header",
   "settings": [
     { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu", "info": "Leave empty to use the built-in anchors (Program, Curriculum, Instructor, FAQ)." },
+    { "type": "checkbox", "id": "predictive_search", "label": "Instant search overlay", "default": true, "info": "Shows product, page and guide suggestions as the visitor types." },
     { "type": "checkbox", "id": "transparent_banner", "label": "Overlap the announcement bar", "default": false },
     { "type": "header", "content": "Call to action" },
     { "type": "checkbox", "id": "show_cta", "label": "Show enrol button", "default": true },
