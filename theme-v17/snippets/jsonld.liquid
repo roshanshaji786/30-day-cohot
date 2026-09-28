@@ -20,6 +20,36 @@
   assign org_id = request.origin | append: '/#organization'
   assign site_id = request.origin | append: '/#website'
   assign search_url_template = request.origin | append: '/search?q={search_term_string}'
+
+  # Breadcrumb trail for rich results. Built from the template we are actually on,
+  # so no extra settings are needed for it to work out of the box.
+  assign crumb_2_name = ''
+  assign crumb_2_url = ''
+  assign crumb_3_name = ''
+  assign crumb_3_url = ''
+  if request.page_type == 'product' and product != blank
+    assign crumb_2_name = 'Shop'
+    assign crumb_2_url = routes.all_products_collection_url | prepend: request.origin
+    assign crumb_3_name = product.title
+    assign crumb_3_url = product.url | prepend: request.origin
+  elsif request.page_type == 'collection' and collection != blank
+    assign crumb_2_name = 'Shop'
+    assign crumb_2_url = routes.all_products_collection_url | prepend: request.origin
+    assign crumb_3_name = collection.title
+    assign crumb_3_url = collection.url | prepend: request.origin
+  elsif request.page_type == 'page' and page != blank
+    assign crumb_2_name = page.title
+    assign crumb_2_url = page.url | prepend: request.origin
+  elsif request.page_type == 'article' and article != blank
+    assign crumb_2_name = blog.title
+    assign crumb_2_url = blog.url | prepend: request.origin
+    assign crumb_3_name = article.title
+    assign crumb_3_url = article.url | prepend: request.origin
+  endif
+  assign has_crumbs = false
+  if crumb_2_name != ''
+    assign has_crumbs = true
+  endif
   assign availability = 'https://schema.org/SoldOut'
   if course_product.available
     assign availability = 'https://schema.org/InStock'
@@ -65,6 +95,17 @@
         "query-input": "required name=search_term_string"
       }
     }
+    {%- if has_crumbs -%},
+    {
+      "@type": "BreadcrumbList",
+      "@id": {{ request.origin | append: request.path | append: '#breadcrumb' | json }},
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": {{ 'general.breadcrumbs.home' | t | default: 'Home' | json }}, "item": {{ request.origin | json }} },
+        { "@type": "ListItem", "position": 2, "name": {{ crumb_2_name | json }}, "item": {{ crumb_2_url | json }}}{%- if crumb_3_name != '' -%},
+        { "@type": "ListItem", "position": 3, "name": {{ crumb_3_name | json }}, "item": {{ crumb_3_url | json }}}
+        {%- endif -%}
+      ]
+    }{%- endif -%}
     {%- if course_product != blank and course_product.title != blank -%},
     {
       "@type": "Product",

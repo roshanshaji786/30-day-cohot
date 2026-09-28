@@ -1,0 +1,98 @@
+{%- comment -%}
+  Quick-checkout panel: the reassurance block a Shiprocket-style one-page checkout
+  puts next to the pay button -- delivery estimate, payment methods, coupon box and
+  trust badges -- so a shopper can go from "I want this" to paid in one screen
+  without leaving the product page.
+
+  Everything here is native Shopify: the estimate is computed in the browser,
+  coupons apply through /discount/, and the pay button is a real form submit that
+  skips the cart. Nothing depends on an app or an API key.
+
+  Accepts: product
+{%- endcomment -%}
+{%- liquid
+  assign ca_product = product
+  assign ca_variant = ca_product.selected_or_first_available_variant
+
+  # A digital product has no shipping leg, so the promise changes: instant access
+  # instead of a courier date. Detect it from the product type/tags the merchant
+  # already uses for the course, and let the setting override either way.
+  assign ca_digital = false
+  assign ca_kind = settings.fulfilment_kind | default: 'auto'
+  if ca_kind == 'digital'
+    assign ca_digital = true
+  elsif ca_kind == 'auto'
+    if ca_variant.requires_shipping == false or ca_product.gift_card
+      assign ca_digital = true
+    endif
+  endif
+-%}
+
+<div class="qcheck" data-qcheck>
+  <div class="qcheck__row qcheck__row--estimate">
+    <span class="qcheck__icon">{% render 'icon', name: 'truck-fast', size: 19 %}</span>
+    <div class="qcheck__body">
+      {%- if ca_digital -%}
+        <p class="qcheck__label">{{ settings.fulfilment_label | default: 'Instant access after payment' }}</p>
+        <p class="qcheck__hint" data-qcheck-hint>
+          {{ settings.fulfilment_hint | default: 'Course link, class calendar and recordings land in your inbox within minutes.' }}
+        </p>
+      {%- else -%}
+        <label class="qcheck__label" for="qcheck-pin">Check delivery to your area</label>
+        <div class="qcheck__pin">
+          <input id="qcheck-pin" type="text" inputmode="numeric" autocomplete="postal-code"
+                 maxlength="6" pattern="[0-9]*" placeholder="6-digit pincode" data-qcheck-pin>
+          <button type="button" class="btn btn--ghost btn--sm" data-qcheck-go>Check</button>
+        </div>
+        <p class="qcheck__hint" data-qcheck-hint>
+          {%- assign min_days = settings.delivery_min_days | default: 3 -%}
+          {%- assign max_days = settings.delivery_max_days | default: 6 -%}
+          Usually reaches in {{ min_days }}&ndash;{{ max_days }} working days. Dispatched from {{ settings.dispatch_from | default: 'Kerala' }}.
+        </p>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if settings.qcheck_show_coupon -%}
+    <div class="qcheck__row qcheck__row--coupon">
+      <span class="qcheck__icon">{% render 'icon', name: 'tag', size: 19 %}</span>
+      <div class="qcheck__body">
+        <form class="qcheck__coupon" data-qcheck-coupon action="{{ routes.cart_url }}" method="get">
+          <label class="qcheck__label" for="qcheck-code">{{ settings.coupon_label | default: 'Have a discount code?' }}</label>
+          <div class="qcheck__pin">
+            <input id="qcheck-code" type="text" name="discount" placeholder="Enter code"
+                   autocapitalize="characters" autocomplete="off" data-qcheck-code>
+            <button type="submit" class="btn btn--ghost btn--sm" data-qcheck-apply>Apply</button>
+          </div>
+          <p class="qcheck__hint" data-qcheck-coupon-msg>
+            Codes are applied at checkout and stack with the founding-cohort price.
+          </p>
+        </form>
+      </div>
+    </div>
+  {%- endif -%}
+
+  <div class="qcheck__row qcheck__row--pay">
+    <span class="qcheck__icon">{% render 'icon', name: 'shield', size: 19 %}</span>
+    <div class="qcheck__body">
+      <p class="qcheck__label">{{ settings.pay_label | default: 'Pay however you like' }}</p>
+      <ul class="qcheck__methods" role="list">
+        <li>UPI</li><li>Cards</li><li>Netbanking</li><li>Wallets</li>
+        {%- if settings.qcheck_show_cod -%}<li>COD</li>{%- endif -%}
+      </ul>
+      <p class="qcheck__hint">{{ settings.pay_hint | default: '256-bit encrypted. We never see your card details.' }}</p>
+    </div>
+  </div>
+
+  <ul class="qcheck__badges" role="list">
+    {%- if settings.qcheck_badge_1 != blank -%}
+      <li>{% render 'icon', name: 'check-circle', size: 15 %}<span>{{ settings.qcheck_badge_1 }}</span></li>
+    {%- endif -%}
+    {%- if settings.qcheck_badge_2 != blank -%}
+      <li>{% render 'icon', name: 'check-circle', size: 15 %}<span>{{ settings.qcheck_badge_2 }}</span></li>
+    {%- endif -%}
+    {%- if settings.qcheck_badge_3 != blank -%}
+      <li>{% render 'icon', name: 'check-circle', size: 15 %}<span>{{ settings.qcheck_badge_3 }}</span></li>
+    {%- endif -%}
+  </ul>
+</div>

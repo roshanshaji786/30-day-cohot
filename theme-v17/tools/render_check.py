@@ -24,7 +24,7 @@ So this tool does what a merchant actually does:
 
 Exit code is non-zero on any failure, and tools/build.py refuses to package a zip.
 
-Run:  PYTHONPATH=/home/user/pylibs python3 theme-v16/tools/render_check.py
+Run:  PYTHONPATH=/home/user/pylibs python3 theme-v17/tools/render_check.py
 """
 
 import glob
@@ -66,6 +66,43 @@ def ok(message):
 # --------------------------------------------------------------------------
 # Shopify filter emulation
 # --------------------------------------------------------------------------
+def _video_tag(video, *args, **kwargs):
+    """Mirror Shopify's video_tag: emit the real boolean attributes so the
+    autoplay/muted/playsinline promise can actually be asserted on."""
+    if video in (None, ""):
+        return ""
+    src = "assets/video.mp4"
+    poster = "assets/course-hero.jpg" if kwargs.get("image_size") else ""
+    attrs = ["class=\"%s\"" % kwargs.get("class", "video"),
+             "playsinline" if kwargs.get("playsinline") else "",
+             "autoplay" if kwargs.get("autoplay") else "",
+             "muted" if kwargs.get("muted") else "",
+             "loop" if kwargs.get("loop") else "",
+             "controls" if kwargs.get("controls") else "",
+             'preload="%s"' % kwargs.get("preload", "metadata"),
+             'src="%s"' % src]
+    if poster:
+        attrs.append('poster="%s"' % poster)
+    return "<video " + " ".join(a for a in attrs if a) + "></video>"
+
+
+def _date(value, fmt):
+    """Shopify's date filter honours strftime. The harness used to ignore the
+    format, which made an ISO uploadDate look wrong here and right in Shopify."""
+    import datetime
+    if not fmt:
+        return "1 Sep 2026"
+    try:
+        parsed = value
+        if isinstance(value, str) and value.startswith("20"):
+            parsed = datetime.datetime.strptime(value[:10], "%Y-%m-%d")
+        if not isinstance(parsed, (datetime.date, datetime.datetime)):
+            parsed = datetime.date(2026, 9, 1)
+        return parsed.strftime(fmt)
+    except (ValueError, TypeError):
+        return datetime.date(2026, 9, 1).strftime(fmt)
+
+
 def make_filters(locale):
     def t(value, *args, **kwargs):
         node = locale
@@ -133,7 +170,7 @@ def make_filters(locale):
         "payment_button": lambda *a, **k: '<button type="button" class="shopify-payment-button__button">Buy now</button>',
         "payment_type_svg_tag": lambda *a, **k: '<svg class="payment-icon" width="38" height="24" role="img" aria-label="card"><rect width="38" height="24" rx="3" fill="#ddd"/></svg>',
         "external_video_tag": lambda *a, **k: '<div class="video-embed"><iframe title="video"></iframe></div>',
-        "video_tag": lambda *a, **k: '<video class="video" controls playsinline></video>',
+        "video_tag": _video_tag,
         "media_tag": lambda *a, **k: '<img class="media" src="assets/course-hero.jpg" alt="" width="1200" height="800">',
         "format_address": lambda *a, **k: "",
         "customer_login_link": lambda *a, **k: '<a href="/account/login">Log in</a>',
@@ -153,7 +190,7 @@ def make_filters(locale):
         "font_url": lambda *a, **k: "",
         "pluralize": lambda count, single, plural=None, **k: (
             plural or single + "s") if abs(int(count or 0)) != 1 else single,
-        "date": lambda v, *a, **k: "1 Sep 2026",
+        "date": lambda v, *a, **k: _date(v, a[0] if a else None),
     }
 
 
@@ -240,6 +277,21 @@ def render_source(src):
 def snippet_source(name):
     path = os.path.join(THEME, "snippets", name + ".liquid")
     return render_source(read(path)) if os.path.exists(path) else None
+
+
+# A stand-in for a Shopify-hosted video (uploaded to Content -> Files). Modelling
+# it matters: without a video the autoplay branch and the VideoObject structured
+# data are dead code that never gets tested before a merchant relies on them.
+STUB_VIDEO = {
+    "id": 1,
+    "alt": "Two minutes inside the classroom",
+    "media_type": "video",
+    "aspect_ratio": 1.7777,
+    "duration": 128,
+    "preview_image": "video-poster.jpg",
+    "sources": [{"url": "cdn/video.mp4", "mime_type": "video/mp4",
+                 "format": "mp4", "height": 1080, "width": 1920}],
+}
 
 
 def section_ctx(section_id, name, settings, blocks):
@@ -364,6 +416,10 @@ def render_template(env, template_name, settings, dropped):
             dropped.append(f"{name}: bad schema JSON ({error})")
             schema = {}
         defaults = nil_as_blank(section_defaults(schema))
+        if name == "video":
+            # always exercise the real video path
+            defaults["video"] = STUB_VIDEO
+            defaults.setdefault("autoplay", True)
         defaults.update(raw_settings or {})
         # Shopify stores blocks as an id-keyed object with a parallel block_order;
         # normalise to a list before rendering.
@@ -523,7 +579,11 @@ const cfg = JSON.parse(process.argv[2]);
     for (const vp of cfg.viewports) {
       const page = await browser.newPage();
       const consoleErrors = [];
-      page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text().slice(0,180)); });
+      page.on('console', m => {
+        if (m.type() !== 'error') return;
+        const loc = (m.location && m.location() && m.location().url) || '';
+        consoleErrors.push((m.text().slice(0,150) + ' @ ' + loc).slice(0, 260));
+      });
       page.on('pageerror', e => consoleErrors.push('pageerror: ' + String(e.message).slice(0,180)));
       await page.setViewport({ width: vp.width, height: vp.height, deviceScaleFactor: 1 });
       await page.goto('file://' + pageCfg.file, { waitUntil: 'load', timeout: 30000 });
@@ -619,6 +679,13 @@ const cfg = JSON.parse(process.argv[2]);
         // A section that renders its blocks but received none shows up as a big
         // blank band. Catch it structurally: any element that declares a
         // block-rendering hook must contain content.
+        const videoTags = Array.from(document.querySelectorAll('video')).map(v => ({
+          autoplay: v.hasAttribute('autoplay') || v.autoplay,
+          muted: v.hasAttribute('muted') || v.muted,
+          playsinline: v.hasAttribute('playsinline'),
+          controls: v.hasAttribute('controls'),
+          src: (v.currentSrc || v.getAttribute('src') || '').slice(0, 80)
+        }));
         const emptySections = [];
         for (const sec of Array.from(document.querySelectorAll('main > .shopify-section'))) {
           const cls = sec.className;
@@ -645,6 +712,7 @@ const cfg = JSON.parse(process.argv[2]);
           emptyVars: emptyVars.slice(0, 12),
           strayDialogs,
           emptySections,
+          videoTags,
           buttonCount: buttons.length,
           opaqueButtons: opaque.length,
           invisibleBoxes: Array.from(new Set(invisible)),
@@ -828,6 +896,13 @@ def main():
         if p.get("stillHidden"):
             fail(f"{tag}: scroll-reveal content never became visible "
                  f"({len(p['stillHidden'])} element(s)): {p['stillHidden'][:3]}")
+        for video in p.get("videoTags") or []:
+            if video["autoplay"] and not video["muted"]:
+                fail(f"{tag}: a video autoplays without muted -- every browser blocks "
+                     f"that, so it will never play: {video['src']}")
+            if video["autoplay"] and not video["playsinline"]:
+                fail(f"{tag}: autoplaying video is missing playsinline -- iOS would "
+                     f"fullscreen it instead of playing inline")
         if p["emptySections"]:
             fail(f"{tag}: section rendered with no content -- its blocks were probably "
                  f"never written into the JSON template: {p['emptySections']}")
@@ -853,8 +928,16 @@ def main():
                  f"{p['innerWidth']}px viewport)")
         if p["jsonldBlocks"] == 0 and entry["name"] in ("index", "product"):
             fail(f"{tag}: no JSON-LD block present in the head")
+        # The harness has no real media files, so the Shopify video it stands in
+        # for 404s. Ignore only that; anything else on the console is a failure.
+        def is_harness_media_404(text):
+            low = text.lower()
+            return ("err_file_not_found" in low or "failed to load resource" in low) \
+                and any(low.rstrip().endswith(ext) or (ext + " @") in low
+                        for ext in (".mp4", ".webm", ".mov", ".m4v"))
+
         hard_console = [c for c in entry["consoleErrors"]
-                        if "favicon" not in c.lower()]
+                        if "favicon" not in c.lower() and not is_harness_media_404(c)]
         if hard_console:
             fail(f"{tag}: console errors: {hard_console[:3]}")
         if entry["width"] == 1280:

@@ -1224,3 +1224,77 @@ button,input,select,textarea{font:inherit;color:inherit}
   .depth-in{opacity:1;transform:none}
   .marquee__track{transform:none}
 }
+
+/* ================================================== 22. Quick checkout (express)
+   A Shiprocket-style pay panel: go from product page to paid without a detour
+   through the cart. Express submit uses Shopify's native cart/add with
+   name="checkout", so it lands on the one-page checkout Shopify already ships. */
+
+.btn--express{
+  background:linear-gradient(135deg,#12121a,#2a2350 58%,var(--c-accent, #4f2fd6));
+  color:#fff;border:0;
+  box-shadow:
+    0 14px 30px -12px rgba(20,12,60,.55),
+    inset 0 1px 0 rgba(255,255,255,.22)
+}
+.btn--express:hover{
+  color:#fff;transform:translate3d(0,-2px,0);
+  box-shadow:0 24px 46px -16px rgba(20,12,60,.55),inset 0 1px 0 rgba(255,255,255,.28)
+}
+.btn--express .icon{color:color-mix(in srgb,#ffe58a 88%,#fff)}
+.product-form__express{margin-top:10px}
+.product-form__express-note{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  margin:10px 0 0;font-size:.78rem;line-height:1.45;text-align:center;
+  color:var(--c-muted, #55555f)
+}
+.product-form__express-note .icon{color:var(--c-accent, #4f2fd6);flex:none}
+
+.qcheck{
+  margin-top:16px;border:1px solid var(--c-line, #e7e5f0);border-radius:var(--radius, 18px);
+  background:color-mix(in srgb,var(--c-surface, #f6f5fb) 55%,transparent);
+  overflow:hidden
+}
+.qcheck__row{
+  display:flex;gap:12px;padding:14px 16px;
+  border-bottom:1px solid color-mix(in srgb,var(--c-line, #e7e5f0) 70%,transparent)
+}
+.qcheck__row:last-of-type{border-bottom:0}
+.qcheck__icon{
+  flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;
+  background:color-mix(in srgb,var(--c-accent, #4f2fd6) 12%,transparent);
+  color:var(--c-accent, #4f2fd6)
+}
+.qcheck__body{flex:1;min-width:0}
+.qcheck__label{display:block;margin:0 0 6px;font-size:.83rem;font-weight:700;letter-spacing:-.01em}
+.qcheck__hint{margin:7px 0 0;font-size:.76rem;line-height:1.5;color:var(--c-muted, #55555f)}
+.qcheck__hint.is-ok{color:#15803d;font-weight:600}
+.qcheck__hint.is-warn{color:#b45309;font-weight:600}
+.qcheck__pin{display:flex;gap:8px;align-items:center}
+.qcheck__pin input{
+  flex:1;min-width:0;height:40px;padding:0 13px;font:inherit;font-size:.86rem;
+  border:1px solid var(--c-line, #e7e5f0);border-radius:calc(var(--radius-sm, 9px) + 2px);
+  background:var(--c-bg, #fff);color:inherit
+}
+.qcheck__pin input:focus-visible{outline:2px solid var(--c-accent, #4f2fd6);outline-offset:1px}
+.qcheck__methods{
+  display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none
+}
+.qcheck__methods li{
+  padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+  background:var(--c-bg, #fff);border:1px solid var(--c-line, #e7e5f0);
+  color:var(--c-muted, #55555f)
+}
+.qcheck__badges{
+  display:grid;gap:8px;margin:0;padding:14px 16px;list-style:none;
+  border-top:1px solid color-mix(in srgb,var(--c-line, #e7e5f0) 70%,transparent);
+  background:var(--c-bg, #fff)
+}
+.qcheck__badges li{display:flex;align-items:flex-start;gap:9px;font-size:.79rem;line-height:1.45;font-weight:600}
+.qcheck__badges .icon{color:#16a34a;flex:none;margin-top:1px}
+
+@media (max-width:599px){
+  .qcheck__row{padding:13px 14px}
+  .qcheck__pin{flex-wrap:wrap}
+  .qcheck__pin input{flex:1 1 100%}
+}

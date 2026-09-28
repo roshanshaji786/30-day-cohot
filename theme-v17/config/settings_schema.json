@@ -2,10 +2,148 @@
   {
     "name": "theme_info",
     "theme_name": "Cohort",
-    "theme_version": "16.0.0",
+    "theme_version": "17.0.0",
     "theme_author": "Roshan Shaji × DARTS AI Academy",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://help.shopify.com/manual/online-store/themes"
+  },
+  {
+    "name": "Quick checkout",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Express checkout jumps straight to Shopify's one-page checkout, skipping the cart — the same flow Shiprocket Checkout gives you, using Shopify's native checkout (which cannot be restyled without Shopify Plus)."
+      },
+      {
+        "type": "checkbox",
+        "id": "express_checkout",
+        "label": "Show Buy it now (skip the cart)",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "express_show_price",
+        "label": "Show price on the express button",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "express_label",
+        "label": "Express button label",
+        "default": "Buy it now"
+      },
+      {
+        "type": "text",
+        "id": "express_note",
+        "label": "Express button note",
+        "default": "Straight to secure checkout. Skip the cart — UPI, cards, netbanking and wallets."
+      },
+      {
+        "type": "checkbox",
+        "id": "express_in_buybar",
+        "label": "Express button in the mobile buy bar",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "fulfilment_kind",
+        "label": "How you deliver",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Detect automatically"
+          },
+          {
+            "value": "digital",
+            "label": "Digital / instant access"
+          },
+          {
+            "value": "physical",
+            "label": "Shipped by courier"
+          }
+        ],
+        "default": "auto",
+        "info": "Digital products promise instant access; physical ones get a pincode delivery estimate."
+      },
+      {
+        "type": "text",
+        "id": "fulfilment_label",
+        "label": "Digital delivery label",
+        "default": "Instant access after payment"
+      },
+      {
+        "type": "text",
+        "id": "fulfilment_hint",
+        "label": "Digital delivery hint",
+        "default": "Course link, class calendar and recordings land in your inbox within minutes."
+      },
+      {
+        "type": "number",
+        "id": "delivery_min_days",
+        "label": "Fastest delivery (working days)",
+        "default": 3
+      },
+      {
+        "type": "number",
+        "id": "delivery_max_days",
+        "label": "Slowest delivery (working days)",
+        "default": 6
+      },
+      {
+        "type": "text",
+        "id": "dispatch_from",
+        "label": "Dispatch from",
+        "default": "Kerala"
+      },
+      {
+        "type": "checkbox",
+        "id": "qcheck_show_coupon",
+        "label": "Show discount-code box",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "coupon_label",
+        "label": "Coupon label",
+        "default": "Have a discount code?"
+      },
+      {
+        "type": "checkbox",
+        "id": "qcheck_show_cod",
+        "label": "List cash on delivery",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "pay_label",
+        "label": "Payment heading",
+        "default": "Pay however you like"
+      },
+      {
+        "type": "text",
+        "id": "pay_hint",
+        "label": "Payment hint",
+        "default": "256-bit encrypted. We never see your card details."
+      },
+      {
+        "type": "text",
+        "id": "qcheck_badge_1",
+        "label": "Assurance 1",
+        "default": "7-day full refund if it is not for you"
+      },
+      {
+        "type": "text",
+        "id": "qcheck_badge_2",
+        "label": "Assurance 2",
+        "default": "Certificate and recordings stay yours forever"
+      },
+      {
+        "type": "text",
+        "id": "qcheck_badge_3",
+        "label": "Assurance 3",
+        "default": "GST invoice emailed with your receipt"
+      }
+    ]
   },
   {
     "name": "Course product",
@@ -285,6 +423,12 @@
         "id": "seo_same_as",
         "label": "Organisation profile URL",
         "info": "Instagram, LinkedIn or Google Business URL, used in structured data."
+      },
+      {
+        "type": "video",
+        "id": "share_video",
+        "label": "Social share video",
+        "info": "Pick the same clip you use in the walkthrough section. Adds og:video so WhatsApp, Facebook, LinkedIn and Google render a playable card instead of a bare link."
       }
     ]
   },

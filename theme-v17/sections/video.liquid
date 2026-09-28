@@ -108,6 +108,52 @@
   </div>
 </section>
 
+{%- comment -%}
+  VideoObject structured data. Google uses this for video rich results and the
+  key-moments/"video" label in search; without it an on-page video is invisible to
+  search. Thumbnail and upload date are required fields, so only emit it when we
+  can supply both.
+{%- endcomment -%}
+{%- liquid
+  assign v_name = section.settings.heading | default: shop.name
+  assign v_desc = section.settings.text | default: section.settings.heading | strip_html | truncatewords: 40
+  # uploadDate is required by schema.org. Shopify's video object carries no
+  # creation date, so the merchant sets it (a date they last refreshed the video
+  # is what Google actually wants). preview_image is auto-generated for uploads.
+  assign v_upload = section.settings.upload_date | default: '2026-09-01' | date: '%Y-%m-%d'
+  assign v_thumb = section.settings.poster
+  if has_hosted and v_thumb == blank
+    assign v_thumb = section.settings.video.preview_image
+  endif
+-%}
+{%- if has_hosted or has_external -%}
+  {%- if v_thumb != blank -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": {{ v_name | json }},
+  "description": {{ v_desc | json }},
+  "thumbnailUrl": ["https:{{ v_thumb | image_url: width: 1280 }}"],
+  "uploadDate": {{ v_upload | json }},
+  {%- if has_hosted %}
+  "contentUrl": "https:{{ section.settings.video.sources.first.url }}",
+  {%- endif %}
+  {%- if has_external and external_href != blank %}
+  "embedUrl": {{ external_href | json }},
+  {%- endif %}
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    "url": {{ request.origin | json }}
+  },
+  "isFamilyFriendly": true,
+  "inLanguage": {{ request.locale.iso_code | json }}
+}
+</script>
+  {%- endif -%}
+{%- endif -%}
+
 {% schema %}
 {
   "name": "Video / walkthrough",
@@ -118,10 +164,11 @@
     { "type": "text", "id": "heading", "label": "Heading", "default": "Two minutes inside the classroom" },
     { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Every class is a screen-share walkthrough. Here is a short clip of how the workflow actually looks \u2014 research, build, then launch.</p>" },
     { "type": "header", "content": "Media" },
-    { "type": "video", "id": "video", "label": "Shopify-hosted video", "info": "Best option \u2014 built-in poster and correct aspect ratio." },
-    { "type": "video_url", "id": "video_url", "label": "YouTube or Vimeo URL", "accept": ["youtube", "vimeo"], "info": "Loads only when the visitor taps play, so it costs no data up front." },
-    { "type": "image_picker", "id": "poster", "label": "Poster image" },
+    { "type": "video", "id": "video", "label": "Video (upload or pick from your files)", "info": "This is the one you want. Click Select video, upload from your computer, or pick a file you already uploaded to Content \u2192 Files. It autoplays muted, inline, on every device." },
+    { "type": "video_url", "id": "video_url", "label": "\u2026or paste a YouTube / Vimeo URL", "accept": ["youtube", "vimeo"], "info": "Only used if no file is chosen above. Prefer the upload: it loads faster, has no third-party cookies and does not show YouTube\u2019s own branding." },
+    { "type": "image_picker", "id": "poster", "label": "Poster image", "info": "Optional for an uploaded video (Shopify generates one). Required if you paste a YouTube or Vimeo URL." },
     { "type": "text", "id": "play_label", "label": "Play button label", "default": "Watch: what we build in class" },
+    { "type": "text", "id": "upload_date", "label": "Video publish date (YYYY-MM-DD)", "default": "2026-09-01", "info": "Used for the VideoObject search metadata. Update it when you replace the video." },
     { "type": "select", "id": "aspect", "label": "Video shape", "options": [
       { "value": "auto", "label": "Match the video (recommended)" },
       { "value": "16-9", "label": "Landscape 16:9" },

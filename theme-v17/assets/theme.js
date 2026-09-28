@@ -220,6 +220,93 @@
     }
   });
 
+  /* ------------------------------------------------ quick checkout helpers
+     Pincode delivery estimate and discount-code handoff. Both run entirely in
+     the browser -- no app, no API key -- and both fail soft: if anything is
+     missing the merchant's written copy stays on screen. */
+  (function quickCheckout() {
+    var panel = $('[data-qcheck]');
+    if (!panel) { return; }
+
+    var MIN = parseInt(panel.getAttribute('data-min-days') || '3', 10);
+    var MAX = parseInt(panel.getAttribute('data-max-days') || '6', 10);
+
+    /* --- delivery estimate from a pincode ------------------------------- */
+    var pin = $('[data-qcheck-pin]', panel);
+    var go = $('[data-qcheck-go]', panel);
+    var hint = $('[data-qcheck-hint]', panel);
+
+    function workingDaysFrom(days) {
+      var d = new Date();
+      var added = 0;
+      while (added < days) {
+        d.setDate(d.getDate() + 1);
+        var wd = d.getDay();
+        if (wd !== 0 && wd !== 6) { added++; }
+      }
+      return d;
+    }
+
+    function estimate() {
+      if (!pin || !hint) { return; }
+      var code = (pin.value || '').replace(/\D/g, '');
+      if (code.length !== 6) {
+        hint.className = 'qcheck__hint is-warn';
+        hint.textContent = 'Enter a 6-digit pincode to see an estimate.';
+        return;
+      }
+      // First digit maps to India's postal zones; the spread is a genuine estimate,
+      // not a promise, and the merchant's min/max days stay the source of truth.
+      var zone = parseInt(code.charAt(0), 10);
+      var offset = zone <= 1 ? 0 : zone <= 4 ? 1 : zone <= 6 ? 2 : 3;
+      var fast = workingDaysFrom(MIN + offset);
+      var slow = workingDaysFrom(MAX + offset);
+      var fmt = function (d) {
+        return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+      };
+      hint.className = 'qcheck__hint is-ok';
+      hint.textContent = 'Delivery to ' + code + ': ' + fmt(fast) + ' - ' + fmt(slow) + '.';
+    }
+
+    if (go) { go.addEventListener('click', estimate); }
+    if (pin) {
+      pin.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); estimate(); }
+      });
+      pin.addEventListener('input', function () {
+        pin.value = pin.value.replace(/\D/g, '').slice(0, 6);
+      });
+    }
+
+    /* --- discount code handoff ------------------------------------------ */
+    var coupon = $('[data-qcheck-coupon]', panel);
+    if (coupon) {
+      coupon.addEventListener('submit', function (event) {
+        event.preventDefault();
+        var field = $('[data-qcheck-code]', coupon);
+        var msg = $('[data-qcheck-coupon-msg]', coupon);
+        var code = (field && field.value || '').trim().toUpperCase();
+        if (!code) {
+          if (msg) { msg.className = 'qcheck__hint is-warn'; msg.textContent = 'Enter a code first.'; }
+          return;
+        }
+        // Shopify applies a discount through /discount/<code>, then sends the
+        // shopper on to checkout with the cart intact.
+        window.location.href = '/discount/' + encodeURIComponent(code) + '?redirect=/checkout';
+      });
+    }
+
+    /* --- express submit: show progress so the jump never feels dead ------ */
+    $$('[data-express-checkout]').forEach(function (btn) {
+      var form = btn.closest('form');
+      if (!form) { return; }
+      form.addEventListener('submit', function () {
+        btn.classList.add('is-loading');
+        btn.setAttribute('aria-busy', 'true');
+      });
+    });
+  })();
+
   /* ------------------------------------------------------- sticky buy bar */
   var buyBar = $('[data-buy-bar]');
   if (buyBar) {

@@ -40,3 +40,24 @@
 {%- if og_image != blank -%}
   <meta name="twitter:image" content="https:{{ og_image | image_url: width: 1200 }}">
 {%- endif -%}
+
+{%- comment -%}
+  og:video / twitter:player. Social crawlers and Google Discover need these to
+  render a playable card for a video post; without them a video page shares as a
+  plain image with no player. Video file is available on every template because
+  the walkthrough section lives on the homepage and the landing page.
+{%- endcomment -%}
+{%- assign social_video = settings.share_video -%}
+{%- if social_video != blank -%}
+  <meta property="og:video" content="https:{{ social_video.sources.first.url }}">
+  <meta property="og:video:secure_url" content="https:{{ social_video.sources.first.url }}">
+  <meta property="og:video:type" content="video/mp4">
+  {%- if social_video.aspect_ratio -%}
+    <meta property="og:video:width" content="1280">
+    <meta property="og:video:height" content="{{ 1280 | divided_by: social_video.aspect_ratio | round }}">
+  {%- endif -%}
+  {%- if social_video.preview_image != blank -%}
+    <meta property="og:image" content="https:{{ social_video.preview_image | image_url: width: 1280 }}">
+    <meta name="twitter:card" content="player">
+  {%- endif -%}
+{%- endif -%}

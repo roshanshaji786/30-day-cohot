@@ -70,10 +70,24 @@
           {%- if current_variant.available -%}{{ cta_label }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
         </span>
       </button>
-      {%- if show_dynamic_checkout -%}
+      {%- if settings.express_checkout and current_variant.available -%}
+        {%- render 'express-checkout',
+             label: settings.express_label,
+             product: product,
+             current_variant: current_variant -%}
+      {%- endif -%}
+      {%- comment -%}
+        Express checkout already lands on the same one-page checkout that the
+        dynamic button opens, so showing both stacks two identical CTAs and reads
+        as a mistake. Keep the dynamic button only when express is switched off.
+      {%- endcomment -%}
+      {%- if show_dynamic_checkout and settings.express_checkout != true -%}
         {{ form | payment_button }}
       {%- endif -%}
     </div>
+    {%- if settings.express_checkout -%}
+      {%- render 'checkout-assurance', product: product -%}
+    {%- endif -%}
     <p class="product-form__error" data-form-error role="alert" hidden></p>
   {%- endform -%}
 </product-form>

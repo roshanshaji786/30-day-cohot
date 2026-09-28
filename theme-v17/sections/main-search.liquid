@@ -13,6 +13,8 @@
 
     {%- if search.performed -%}
       {%- if search.results.size > 0 -%}
+        {%- assign per_page = section.settings.per_page | default: 24 -%}
+        {%- paginate search.results by per_page -%}
         <p class="search-results__count">{{ 'general.search.results_with_count' | t: count: search.results_count }}</p>
         <ul class="product-grid" role="list">
           {%- for item in search.results -%}
@@ -40,6 +42,7 @@
           {%- endfor -%}
         </ul>
         {%- render 'pagination', paginate: paginate -%}
+        {%- endpaginate -%}
       {%- else -%}
         <div class="empty-state">
           <p class="empty-state__title">{{ 'general.search.no_results' | t: terms: search.terms }}</p>
@@ -53,6 +56,9 @@
 {% schema %}
 {
   "name": "Search results",
-  "settings": []
+  "settings": [
+    { "type": "range", "id": "per_page", "label": "Results per page", "min": 8, "max": 48, "step": 4, "default": 24 },
+    { "type": "checkbox", "id": "show_quick_add", "label": "Show add-to-cart on results", "default": true }
+  ]
 }
 {% endschema %}

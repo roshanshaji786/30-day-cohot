@@ -1,0 +1,48 @@
+{%- comment -%}
+  Express checkout ("Buy it now" / quick checkout).
+
+  Sits inside the existing {% form 'product' %} so it reuses the variant and
+  quantity the shopper already selected. `name="checkout"` on the submit button
+  tells Shopify to skip the cart entirely and open its one-page checkout --
+  the same jump-to-payment behaviour Shiprocket Checkout gives you, using
+  Shopify's native flow (which is already a single address+payment page).
+
+  Accepts: label, product, current_variant, mode ('button' | 'bar')
+{%- endcomment -%}
+{%- liquid
+  assign express_label = label | default: 'Buy it now'
+  assign express_product = product
+  assign express_variant = current_variant | default: express_product.selected_or_first_available_variant
+  assign express_price = express_variant.price | default: express_product.price
+-%}
+{%- if express_product != blank and express_variant != blank -%}
+  {%- if mode == 'bar' -%}
+    <button
+      type="submit"
+      name="checkout"
+      class="btn btn--express buy-bar__btn"
+      {% unless express_variant.available %}disabled{% endunless %}
+      data-express-checkout
+    >
+      {% render 'icon', name: 'bolt', size: 18 %}
+      <span>{{ express_label }}</span>
+      {%- if settings.express_show_price -%}<span class="express__price">{{ express_price | money }}</span>{%- endif -%}
+    </button>
+  {%- else -%}
+    <button
+      type="submit"
+      name="checkout"
+      class="btn btn--express btn--lg btn--block product-form__express"
+      {% unless express_variant.available %}disabled{% endunless %}
+      data-express-checkout
+      formnovalidate
+    >
+      {% render 'icon', name: 'bolt', size: 19 %}
+      <span>{{ express_label }}{% if settings.express_show_price %} &middot; {{ express_price | money }}{% endif %}</span>
+    </button>
+    <p class="product-form__express-note">
+      {% render 'icon', name: 'shield', size: 14 %}
+      <span>{{ settings.express_note | default: 'Straight to secure checkout. Skip the cart — UPI, cards, netbanking and wallets.' }}</span>
+    </p>
+  {%- endif -%}
+{%- endif -%}
